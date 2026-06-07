@@ -1,0 +1,47 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function TopRowSkeleton() {
+  return (
+    <div className="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-[1.05fr_1.25fr_.95fr]">
+      {/* Welcome Card */}
+      <Skeleton className="min-h-[220px] rounded-xl" />
+      
+      {/* Continue Study List */}
+      <div className="flex min-h-[220px] flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow">
+        <div className="flex flex-row items-center justify-between border-b p-6 py-4">
+          <Skeleton className="h-5 w-32" />
+        </div>
+        <div className="flex flex-1 flex-col p-0">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex items-center gap-2.5 border-b px-3 py-2 last:border-0">
+              <Skeleton className="size-8 shrink-0 rounded-md" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3 w-3/4" />
+                <Skeleton className="h-1.5 w-1/2" />
+              </div>
+              <Skeleton className="size-7 shrink-0 rounded-md" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Progress Widget */}
+      <div className="flex min-h-[220px] flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow">
+        <div className="flex flex-row items-center justify-between border-b p-6 py-4">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-6 w-20 rounded-md" />
+        </div>
+        <div className="flex flex-1 flex-col px-3 pb-3 pt-6">
+          <div className="mb-2 flex items-end justify-between">
+            <Skeleton className="h-8 w-16" />
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
+          <Skeleton className="mb-1 mt-4 h-2 w-full rounded-full" />
+          <div className="mt-auto pt-4">
+            <Skeleton className="h-9 w-full rounded-lg" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

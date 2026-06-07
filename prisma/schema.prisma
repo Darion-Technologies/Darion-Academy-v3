@@ -1,0 +1,480 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MENTOR
+  EMPLOYEE
+  INTERN
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum LessonType {
+  TEXT
+  YOUTUBE
+  VIDEO
+  PDF
+  LINK
+  ASSIGNMENT
+  QUIZ
+}
+
+enum EnrollmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  AWAITING_APPROVAL
+  COMPLETED
+}
+
+enum SubmissionStatus {
+  PENDING
+  SUBMITTED
+  NEEDS_CORRECTION
+  APPROVED
+  REJECTED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  PASSED
+  FAILED
+  TIMEOUT
+  TERMINATED
+}
+
+enum CertificateStatus {
+  ELIGIBLE
+  ISSUING
+  GENERATED
+  FAILED
+  REVOKED
+}
+
+enum CertificateTemplateStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum NotificationType {
+  COURSE_ASSIGNED
+  SUBMISSION_REVIEWED
+  FEEDBACK_ADDED
+  CERTIFICATE_GENERATED
+  GENERAL
+}
+
+enum AppearanceTheme {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+model User {
+  id                  String         @id @db.Uuid
+  email               String         @unique
+  employeeId          String?        @unique
+  name                String
+  role                UserRole       @default(EMPLOYEE)
+  department          String?
+  avatarUrl           String?
+  active              Boolean        @default(true)
+  lastLoginAt         DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  enrollments         Enrollment[]   @relation("LearnerEnrollments")
+  mentoredEnrollments Enrollment[]   @relation("EnrollmentMentor")
+  progress            Progress[]
+  videoProgress       VideoProgress[]
+  videoNotes          VideoNote[]
+  submissions         Submission[]   @relation("LearnerSubmissions")
+  reviewedSubmissions Submission[]   @relation("SubmissionReviewer")
+  quizAttempts        QuizAttempt[]
+  certificates        Certificate[]
+  certificatesIssued  Certificate[]  @relation("CertificateIssuer")
+  certificatesRevoked Certificate[]  @relation("CertificateRevoker")
+  feedbackAuthored    Feedback[]     @relation("FeedbackAuthor")
+  notifications       Notification[]
+  activity            ActivityLog[]
+  loginStreaks         LoginStreak[]
+  sessions             UserSession[]
+  preference           LearningPreference?
+}
+
+model UserSession {
+  id           String    @id @default(cuid())
+  userId       String    @db.Uuid
+  sessionId    String    @unique
+  device       String?
+  browser      String?
+  operatingSystem String?
+  ipHash       String?
+  createdAt    DateTime  @default(now())
+  lastSeenAt   DateTime  @updatedAt
+  revokedAt    DateTime?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+}
+
+model LearningPreference {
+  id                String   @id @default(cuid())
+  userId            String   @unique @db.Uuid
+  resumeLastLesson  Boolean  @default(true)
+  defaultLessonView String   @default("STANDARD")
+  courseReminders   Boolean  @default(true)
+  reviewUpdates     Boolean  @default(true)
+  certificateAlerts Boolean  @default(true)
+  theme             AppearanceTheme @default(SYSTEM)
+  sidebarCollapsed  Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LoginStreak {
+  id     String   @id @default(cuid())
+  userId String   @db.Uuid
+  date   DateTime @db.Date
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+}
+
+model Course {
+  id                    String               @id @default(cuid())
+  title                 String
+  slug                  String               @unique
+  description           String
+  category              String
+  difficulty            Difficulty           @default(BEGINNER)
+  estimatedMinutes      Int                  @default(60)
+  thumbnailUrl          String?
+  status                CourseStatus         @default(DRAFT)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  modules               Module[]
+  enrollments           Enrollment[]
+  certificates          Certificate[]
+  certificateTemplateId String?
+  certificateTemplate   CertificateTemplate? @relation(fields: [certificateTemplateId], references: [id], onDelete: SetNull)
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  courseId    String
+  title       String
+  description String?
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+
+  @@unique([courseId, order])
+}
+
+model Lesson {
+  id                 String      @id @default(cuid())
+  moduleId           String
+  title              String
+  type               LessonType
+  content            String?
+  videoUrl           String?
+  videoDuration      Int?
+  transcriptUrl      String?
+  fileUrl            String?
+  externalUrl        String?
+  order              Int
+  completionRequired Boolean     @default(true)
+  estimatedMinutes   Int         @default(10)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  module             Module      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress           Progress[]
+  videoProgress      VideoProgress[]
+  videoNotes         VideoNote[]
+  assignment         Assignment?
+  quiz               Quiz?
+
+  @@unique([moduleId, order])
+}
+
+model Enrollment {
+  id              String           @id @default(cuid())
+  learnerId       String           @db.Uuid
+  courseId        String
+  mentorId        String?          @db.Uuid
+  status          EnrollmentStatus @default(ASSIGNED)
+  progressPercent Int              @default(0)
+  assignedAt      DateTime         @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  approvedAt      DateTime?
+  learner         User             @relation("LearnerEnrollments", fields: [learnerId], references: [id], onDelete: Cascade)
+  mentor          User?            @relation("EnrollmentMentor", fields: [mentorId], references: [id], onDelete: SetNull)
+  course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  certificates    Certificate[]
+
+  @@unique([learnerId, courseId])
+  @@index([mentorId])
+}
+
+model Progress {
+  id          String    @id @default(cuid())
+  userId      String    @db.Uuid
+  lessonId    String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model VideoProgress {
+  id          String   @id @default(cuid())
+  userId      String   @db.Uuid
+  lessonId    String
+  timestamp   Int      @default(0)
+  completed   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model VideoNote {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  lessonId  String
+  timestamp Int
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([userId, lessonId])
+}
+
+model Assignment {
+  id           String       @id @default(cuid())
+  lessonId     String       @unique
+  instructions String
+  allowText    Boolean      @default(true)
+  allowFile    Boolean      @default(true)
+  allowLink    Boolean      @default(true)
+  dueDays      Int?
+  lesson       Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  submissions  Submission[]
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  assignmentId String
+  learnerId    String           @db.Uuid
+  reviewerId   String?          @db.Uuid
+  textAnswer   String?
+  fileUrl      String?
+  externalUrl  String?
+  status       SubmissionStatus @default(PENDING)
+  submittedAt  DateTime?
+  reviewedAt   DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  learner      User             @relation("LearnerSubmissions", fields: [learnerId], references: [id], onDelete: Cascade)
+  reviewer     User?            @relation("SubmissionReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  feedback     Feedback[]
+
+  @@unique([assignmentId, learnerId])
+}
+
+model Feedback {
+  id           String     @id @default(cuid())
+  submissionId String
+  authorId     String     @db.Uuid
+  message      String
+  createdAt    DateTime   @default(now())
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  author       User       @relation("FeedbackAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Quiz {
+  id           String        @id @default(cuid())
+  lessonId     String        @unique
+  title        String
+  instructions String?
+  passMark     Int           @default(70)
+  maxAttempts  Int?
+  isStrict     Boolean       @default(false)
+  timeLimit    Int?
+  lesson       Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions    Question[]
+  attempts     QuizAttempt[]
+}
+
+model Question {
+  id            String       @id @default(cuid())
+  quizId        String
+  prompt        String
+  type          QuestionType
+  options       Json?
+  correctAnswer String
+  points        Int          @default(1)
+  order         Int
+  quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers       QuizAnswer[]
+
+  @@unique([quizId, order])
+}
+
+model QuizAttempt {
+  id           String        @id @default(cuid())
+  quizId       String
+  userId       String        @db.Uuid
+  score        Int           @default(0)
+  earnedPoints Int           @default(0)
+  totalPoints  Int           @default(0)
+  status       AttemptStatus @default(IN_PROGRESS)
+  warnings     Int           @default(0)
+  startedAt    DateTime      @default(now())
+  submittedAt  DateTime?
+  quiz         Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers      QuizAnswer[]
+
+  @@index([quizId, userId])
+}
+
+model QuizAnswer {
+  id           String      @id @default(cuid())
+  attemptId    String
+  questionId   String
+  answer       String
+  isCorrect    Boolean
+  pointsEarned Int         @default(0)
+  attempt      QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question     Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+}
+
+model Certificate {
+  id               String               @id @default(cuid())
+  certificateId    String               @unique
+  enrollmentId     String
+  userId           String               @db.Uuid
+  courseId         String
+  templateId       String?
+  issuerId         String?              @db.Uuid
+  revokedById      String?              @db.Uuid
+  replacesId       String?
+  status           CertificateStatus    @default(ELIGIBLE)
+  score            Int?
+  fileUrl          String?
+  templateSnapshot Json?
+  failureReason    String?
+  revokedReason    String?
+  revokedAt        DateTime?
+  issuedAt         DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  enrollment       Enrollment           @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course           Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  template         CertificateTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  issuer           User?                @relation("CertificateIssuer", fields: [issuerId], references: [id], onDelete: SetNull)
+  revokedBy        User?                @relation("CertificateRevoker", fields: [revokedById], references: [id], onDelete: SetNull)
+  replaces         Certificate?         @relation("CertificateReplacement", fields: [replacesId], references: [id], onDelete: SetNull)
+  replacements     Certificate[]        @relation("CertificateReplacement")
+
+  @@index([enrollmentId])
+  @@index([status])
+}
+
+model CertificateTemplate {
+  id                 String                    @id @default(cuid())
+  name               String                    @unique
+  status             CertificateTemplateStatus @default(ACTIVE)
+  isDefault          Boolean                   @default(false)
+  primaryColor       String                    @default("#143c72")
+  accentColor        String                    @default("#1764c0")
+  backgroundColor    String                    @default("#f7f9fc")
+  textColor          String                    @default("#10213b")
+  fontFamily         String                    @default("Arial")
+  headingFontFamily  String                    @default("Georgia")
+  borderStyle        String                    @default("DOUBLE")
+  borderWidth        Int                       @default(2)
+  textAlign          String                    @default("CENTER")
+  title              String                    @default("Certificate of Completion")
+  presentationText   String                    @default("This certificate is proudly presented to")
+  completionText     String                    @default("for successfully completing")
+  showScore          Boolean                   @default(true)
+  showCompletionDate Boolean                   @default(true)
+  showCertificateId  Boolean                   @default(true)
+  showQrCode         Boolean                   @default(true)
+  signerName         String?
+  signerTitle        String?
+  logoUrl            String?
+  signatureUrl       String?
+  backgroundUrl      String?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  courses            Course[]
+  certificates       Certificate[]
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @db.Uuid
+  type      NotificationType @default(GENERAL)
+  title     String
+  message   String
+  href      String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  actorId    String?  @db.Uuid
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+}
