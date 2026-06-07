@@ -10,8 +10,6 @@ export const metadata = {
   description: "Track your learning progress, streaks, and upcoming assignments.",
 };
 
-export const experimental_ppr = true;
-
 export default async function LearnerDashboard() {
   const user = await requireRole("EMPLOYEE", "INTERN");
 
