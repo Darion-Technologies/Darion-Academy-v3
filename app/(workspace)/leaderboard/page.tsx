@@ -1,7 +1,8 @@
-import { Trophy, Medal, Award, Flame, CheckCircle2, ChevronUp } from "lucide-react";
+import { Trophy, Medal, Award, Flame, CheckCircle2, ChevronUp, Star } from "lucide-react";
 import { getLeaderboardRankings } from "@/lib/leaderboard-data";
 import { requireRole } from "@/lib/auth";
 import { initials } from "@/lib/utils";
+import { BadgeType } from "@/generated/prisma";
 
 export const metadata = {
   title: "Leaderboard — Darion Academy",
@@ -87,7 +88,16 @@ export default async function LeaderboardPage() {
 
                 {/* Name & Score */}
                 <div className="text-center">
-                  <p className="font-bold text-foreground line-clamp-1 max-w-[120px]">{entry.name}</p>
+                  <div className="flex items-center justify-center gap-1.5 font-bold text-foreground line-clamp-1 max-w-[150px] mx-auto">
+                    {entry.badges?.slice(0, 2).map((ub: any) => (
+                      <span key={ub.id} title={ub.badge.name}>
+                        {ub.badge.type === BadgeType.WEEKLY_STAR && <Star className="size-4 text-yellow-500 fill-yellow-500" />}
+                        {ub.badge.type === BadgeType.MONTHLY_HERO && <Award className="size-4 text-blue-500" />}
+                        {ub.badge.type === BadgeType.YEARLY_CHAMPION && <Trophy className="size-4 text-violet-500" />}
+                      </span>
+                    ))}
+                    <p className="truncate">{entry.name}</p>
+                  </div>
                   <p className="text-sm font-black text-primary mt-1">{entry.score.toLocaleString()} pts</p>
                 </div>
 
@@ -143,10 +153,17 @@ export default async function LeaderboardPage() {
 
                 {/* Name */}
                 <div className="flex-1 min-w-0">
-                  <p className={`truncate font-semibold ${entry.id === user.id ? "text-primary" : "text-foreground"}`}>
-                    {entry.name}
-                    {entry.id === user.id && <span className="ml-2 text-xs font-normal text-muted-foreground">(You)</span>}
-                  </p>
+                  <div className={`flex items-center gap-1.5 truncate font-semibold ${entry.id === user.id ? "text-primary" : "text-foreground"}`}>
+                    {entry.badges?.map((ub: any) => (
+                      <span key={ub.id} title={ub.badge.name}>
+                        {ub.badge.type === BadgeType.WEEKLY_STAR && <Star className="size-3.5 text-yellow-500 fill-yellow-500" />}
+                        {ub.badge.type === BadgeType.MONTHLY_HERO && <Award className="size-3.5 text-blue-500" />}
+                        {ub.badge.type === BadgeType.YEARLY_CHAMPION && <Trophy className="size-3.5 text-violet-500" />}
+                      </span>
+                    ))}
+                    <p className="truncate">{entry.name}</p>
+                    {entry.id === user.id && <span className="ml-1 text-xs font-normal text-muted-foreground">(You)</span>}
+                  </div>
                 </div>
 
                 {/* Stats */}

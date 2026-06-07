@@ -165,7 +165,7 @@ function NavLink({ item, active, collapsed, onClick }: { item: NavItem; active: 
   return collapsed ? <Tooltip><TooltipTrigger asChild>{link}</TooltipTrigger><TooltipContent side="right">{item.label}</TooltipContent></Tooltip> : link;
 }
 
-function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; user: { name: string; role: UserRole; avatarUrl?: string | null }; close: () => void; pathname: string }) {
+function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; user: { name: string; role: UserRole; avatarUrl?: string | null; employeeId?: string | null }; close: () => void; pathname: string }) {
   return <div className="fixed inset-0 z-50 lg:hidden">
     <button className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={close} aria-label="Close navigation" />
     <aside className="relative flex h-full w-[290px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl">

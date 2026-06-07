@@ -11,6 +11,7 @@ export type LeaderboardEntry = {
   quizzes: number;
   streaks: number;
   rank: number;
+  badges: any[];
 };
 
 export const getLeaderboardRankings = unstable_cache(
@@ -29,6 +30,10 @@ export const getLeaderboardRankings = unstable_cache(
             loginStreaks: true,
           },
         },
+        badges: {
+          include: { badge: true },
+          orderBy: { awardedAt: "desc" }
+        }
       },
     });
 
@@ -51,6 +56,7 @@ export const getLeaderboardRankings = unstable_cache(
         quizzes,
         streaks,
         rank: 0, // Assigned below
+        badges: user.badges,
       };
     });
 

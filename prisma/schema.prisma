@@ -94,6 +94,13 @@ enum AppearanceTheme {
   DARK
 }
 
+enum BadgeType {
+  WEEKLY_STAR
+  MONTHLY_HERO
+  YEARLY_CHAMPION
+  ACHIEVEMENT
+}
+
 model User {
   id                  String         @id @db.Uuid
   email               String         @unique
@@ -123,6 +130,7 @@ model User {
   loginStreaks         LoginStreak[]
   sessions             UserSession[]
   preference           LearningPreference?
+  badges               UserBadge[]    @relation("UserBadges")
 }
 
 model UserSession {
@@ -480,4 +488,30 @@ model ActivityLog {
   actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  type        BadgeType
+  iconUrl     String?
+  color       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  badgeId   String
+  period    String?
+  metadata  Json?
+  awardedAt DateTime @default(now())
+  user      User     @relation("UserBadges", fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId, period])
+  @@index([userId])
 }

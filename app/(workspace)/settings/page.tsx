@@ -5,7 +5,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { requireUser } from "@/lib/auth";
-import { Shield, Bell, Laptop, Building2, CalendarDays, KeyRound, MonitorSmartphone } from "lucide-react";
+import { Shield, Bell, Laptop, Building2, CalendarDays, KeyRound, MonitorSmartphone, Trophy } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { sessionIdFromToken } from "@/lib/session";
@@ -14,6 +14,7 @@ import { AppearanceSettings } from "@/components/appearance-settings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AvatarUpload } from "./_components/avatar-upload";
+import { BadgeCard } from "@/components/badges/badge-card";
 
 function SettingPanel({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
@@ -50,9 +51,10 @@ export default async function SettingsPage() {
   const { data: { session } } = await supabase.auth.getSession();
   const currentSessionId = session?.access_token ? sessionIdFromToken(session.access_token) : null;
   
-  const [sessions, preference] = await Promise.all([
+  const [sessions, preference, userBadges] = await Promise.all([
     prisma.userSession.findMany({ where: { userId: user.id, revokedAt: null }, orderBy: { lastSeenAt: "desc" } }),
     prisma.learningPreference.findUnique({ where: { userId: user.id } }),
+    prisma.userBadge.findMany({ where: { userId: user.id }, include: { badge: true }, orderBy: { awardedAt: "desc" } }),
   ]);
 
   return (
@@ -96,8 +98,9 @@ export default async function SettingsPage() {
 
         {/* Tabbed Interface */}
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="mb-6 grid w-full max-w-md grid-cols-3">
+          <TabsList className="mb-6 grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="badges">Badges</TabsTrigger>
             <TabsTrigger value="learning">Learning</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
@@ -147,6 +150,30 @@ export default async function SettingsPage() {
 
             <SettingPanel title="Appearance" description="Choose how Darion Academy looks across your signed-in devices.">
               <AppearanceSettings initialTheme={preference?.theme ?? "SYSTEM"} initialSidebarCollapsed={preference?.sidebarCollapsed ?? false} />
+            </SettingPanel>
+          </TabsContent>
+
+          {/* Badges Tab */}
+          <TabsContent value="badges" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+            <SettingPanel
+              title="Trophies & Badges"
+              description="Recognitions you have earned for outstanding performance."
+            >
+              {userBadges.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {userBadges.map((ub) => (
+                    <BadgeCard key={ub.id} badge={ub.badge} userBadge={ub} />
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center border-2 border-dashed rounded-xl border-border bg-muted/10">
+                  <div className="inline-flex items-center justify-center p-4 rounded-full bg-muted mb-4">
+                    <Trophy className="size-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold">No badges yet</h3>
+                  <p className="text-muted-foreground max-w-sm mx-auto mt-1">Keep completing courses and maintaining streaks to earn your first recognition badge!</p>
+                </div>
+              )}
             </SettingPanel>
           </TabsContent>
 
