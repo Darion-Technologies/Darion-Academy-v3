@@ -315,6 +315,7 @@ model Submission {
   feedback     Feedback[]
 
   @@unique([assignmentId, learnerId])
+  @@index([learnerId])
 }
 
 model Feedback {
@@ -372,6 +373,7 @@ model QuizAttempt {
   answers      QuizAnswer[]
 
   @@index([quizId, userId])
+  @@index([userId])
 }
 
 model QuizAnswer {
@@ -418,6 +420,7 @@ model Certificate {
 
   @@index([enrollmentId])
   @@index([status])
+  @@index([userId])
 }
 
 model CertificateTemplate {
