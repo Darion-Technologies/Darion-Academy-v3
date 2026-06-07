@@ -3,7 +3,7 @@
 import {
   Award, BarChart3, Bell, BookOpen, ChevronLeft, ChevronRight, ClipboardCheck,
   FileQuestion, GraduationCap, LayoutDashboard, LayoutTemplate, LogOut, Menu,
-  Users, X,
+  Users, X, Trophy
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -28,6 +28,7 @@ const learnerItems: NavItem[] = [
   { href: "/courses", label: "My Courses", icon: BookOpen },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/certificates", label: "Certificates", icon: Award },
+  { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];
 const adminItems: NavItem[] = [
@@ -54,7 +55,7 @@ export function AppShell({
   initialTheme = "SYSTEM",
   children,
 }: {
-  user: { name: string; email: string; role: UserRole; employeeId?: string | null };
+  user: { name: string; email: string; role: UserRole; employeeId?: string | null; avatarUrl?: string | null };
   unreadCount?: number;
   hasEnrollment?: boolean;
   initialSidebarCollapsed?: boolean;
@@ -110,8 +111,10 @@ export function AppShell({
             "mb-2 flex items-center rounded-lg text-sidebar-foreground transition-colors hover:bg-white/6 hover:text-white",
             collapsed ? "justify-center p-2.5" : "gap-3 p-2.5",
           )}>
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 text-xs font-bold text-white">{initials(user.name)}</span>
-            {!collapsed && <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-white">{user.name}</span><span className="block truncate text-xs text-[var(--sidebar-muted)]">{user.role.toLowerCase()}</span></span>}
+            <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/10 text-xs font-bold text-white">
+              {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
+            </span>
+            {!collapsed && <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-white">{user.name}</span><span className="block truncate text-xs text-[var(--sidebar-muted)]">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</span></span>}
           </Link>
           <div className={cn("flex", collapsed ? "flex-col items-center gap-1" : "items-center gap-1")}>
             <Tooltip><TooltipTrigger asChild><Button type="button" variant="ghost" size="icon-sm" onClick={toggleSidebar} aria-expanded={!collapsed} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} className="text-sidebar-foreground hover:bg-white/8 hover:text-white">{collapsed ? <ChevronRight /> : <ChevronLeft />}</Button></TooltipTrigger><TooltipContent side="right">{collapsed ? "Expand sidebar" : "Collapse sidebar"}</TooltipContent></Tooltip>
@@ -134,8 +137,10 @@ export function AppShell({
               <Link href="/notifications" aria-label={`${unreadCount} unread notifications`}><Bell />{unreadCount > 0 && <span className="absolute right-1 top-1 size-2 rounded-full bg-primary ring-2 ring-card" />}</Link>
             </Button>
             <div className="ml-2 hidden items-center gap-3 border-l pl-4 sm:flex">
-              <div className="text-right"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}</p></div>
-              <Link href="/settings" className="grid size-9 place-items-center rounded-lg bg-muted text-xs font-bold text-foreground">{initials(user.name)}</Link>
+              <div className="text-right"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
+              <Link href="/settings" className="grid size-9 place-items-center overflow-hidden rounded-lg bg-muted text-xs font-bold text-foreground">
+                {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
+              </Link>
             </div>
           </div>
         </header>
@@ -160,13 +165,21 @@ function NavLink({ item, active, collapsed, onClick }: { item: NavItem; active: 
   return collapsed ? <Tooltip><TooltipTrigger asChild>{link}</TooltipTrigger><TooltipContent side="right">{item.label}</TooltipContent></Tooltip> : link;
 }
 
-function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; user: { name: string; role: UserRole }; close: () => void; pathname: string }) {
+function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; user: { name: string; role: UserRole; avatarUrl?: string | null }; close: () => void; pathname: string }) {
   return <div className="fixed inset-0 z-50 lg:hidden">
     <button className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={close} aria-label="Close navigation" />
     <aside className="relative flex h-full w-[290px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl">
       <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-5"><Brand inverse /><Button variant="ghost" size="icon-sm" onClick={close} className="text-sidebar-foreground hover:bg-white/8 hover:text-white"><X /></Button></div>
       <nav className="flex-1 overflow-y-auto p-3">{groups.map((group) => <div key={group.label} className="mb-6"><p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-1">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} />)}</div></div>)}</nav>
-      <div className="border-t border-sidebar-border p-4"><p className="text-sm font-semibold text-white">{user.name}</p><p className="text-xs capitalize text-[var(--sidebar-muted)]">{user.role.toLowerCase()}</p></div>
+      <div className="border-t border-sidebar-border p-4 flex items-center gap-3">
+        <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/10 text-xs font-bold text-white">
+          {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-white">{user.name}</p>
+          <p className="text-xs capitalize text-[var(--sidebar-muted)]">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p>
+        </div>
+      </div>
     </aside>
   </div>;
 }

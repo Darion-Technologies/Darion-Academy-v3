@@ -16,7 +16,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   
   return (
     <AppShell
-      user={{ name: user.name, email: user.email, role: user.role, employeeId: user.employeeId }}
+      user={{ name: user.name, email: user.email, role: user.role, employeeId: user.employeeId, avatarUrl: user.avatarUrl }}
       unreadCount={unreadCount}
       hasEnrollment={hasEnrollment}
       initialSidebarCollapsed={preference?.sidebarCollapsed ?? false}
