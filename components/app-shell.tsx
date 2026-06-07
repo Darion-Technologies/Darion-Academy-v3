@@ -131,14 +131,16 @@ export function AppShell({
           <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden h-8 w-8" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-4" /></Button>
           <div className="lg:hidden"><Brand /></div>
           <div className="hidden min-w-0 max-w-xl flex-1 lg:block"><SearchBar /></div>
-          <div className="ml-auto flex items-center gap-1.5">
-            <AppearanceMenu initialTheme={initialTheme} sidebarCollapsed={collapsed} />
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
+            <div className="hidden sm:block">
+              <AppearanceMenu initialTheme={initialTheme} sidebarCollapsed={collapsed} />
+            </div>
             <Button variant="ghost" size="icon-sm" asChild className="relative">
               <Link href="/notifications" aria-label={`${unreadCount} unread notifications`}><Bell />{unreadCount > 0 && <span className="absolute right-1 top-1 size-2 rounded-full bg-primary ring-2 ring-card" />}</Link>
             </Button>
-            <div className="ml-2 hidden items-center gap-3 border-l pl-4 sm:flex">
-              <div className="text-right"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
-              <Link href="/settings" className="grid size-9 place-items-center overflow-hidden rounded-lg bg-muted text-xs font-bold text-foreground">
+            <div className="ml-1 sm:ml-2 flex items-center gap-3 sm:border-l sm:pl-4">
+              <div className="hidden text-right sm:block"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
+              <Link href="/settings" className="grid size-7 sm:size-9 place-items-center overflow-hidden rounded-md sm:rounded-lg bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0">
                 {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
               </Link>
             </div>

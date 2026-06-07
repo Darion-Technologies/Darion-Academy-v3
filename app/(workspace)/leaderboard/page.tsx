@@ -25,10 +25,10 @@ export default async function LeaderboardPage() {
     <div className="mx-auto max-w-4xl space-y-10 pb-20">
       {/* Header */}
       <div className="flex flex-col items-center text-center">
-        <div className="mb-4 inline-flex items-center justify-center rounded-full bg-primary/10 p-4">
-          <Trophy className="size-8 text-primary" />
+        <div className="mb-3 sm:mb-4 inline-flex items-center justify-center rounded-full bg-primary/10 p-3 sm:p-4">
+          <Trophy className="size-6 sm:size-8 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Academy Leaderboard</h1>
+        <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">Academy Leaderboard</h1>
         <p className="mt-2 text-muted-foreground">
           Rankings based on certificates earned, courses completed, and active streaks.
         </p>
@@ -36,7 +36,7 @@ export default async function LeaderboardPage() {
 
       {/* Podium */}
       {podium.length > 0 && (
-        <div className="mt-12 flex flex-wrap items-end justify-center gap-4 sm:gap-6">
+        <div className="mt-12 flex flex-nowrap items-end justify-center gap-4 sm:gap-6">
           {podium.map((entry, idx) => {
             if (!entry) return null;
             // Map array index back to actual rank for styling
@@ -48,21 +48,21 @@ export default async function LeaderboardPage() {
               <div
                 key={entry.id}
                 className={`flex flex-col items-center ${
-                  isFirst ? "order-1 sm:order-none z-10 scale-110" : "opacity-90"
+                  isFirst ? "z-10 scale-110" : "opacity-90"
                 }`}
               >
                 {/* Avatar & Crown */}
-                <div className="relative mb-4">
+                <div className="relative mb-3 sm:mb-4">
                   {isFirst && (
-                    <Trophy className="absolute -top-8 left-1/2 -translate-x-1/2 size-7 text-yellow-500 drop-shadow-md" />
+                    <Trophy className="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 size-5 sm:size-7 text-yellow-500 drop-shadow-md" />
                   )}
                   <div
                     className={`flex items-center justify-center rounded-full font-bold shadow-lg ${
                       isFirst
-                        ? "size-20 bg-gradient-to-br from-yellow-300 to-amber-500 text-yellow-950 text-xl border-4 border-yellow-200"
+                        ? "size-14 sm:size-20 bg-gradient-to-br from-yellow-300 to-amber-500 text-yellow-950 text-base sm:text-xl border-4 border-yellow-200"
                         : isSecond
-                        ? "size-16 bg-gradient-to-br from-slate-200 to-slate-400 text-slate-800 text-lg border-2 border-slate-100"
-                        : "size-16 bg-gradient-to-br from-orange-300 to-amber-600 text-orange-950 text-lg border-2 border-orange-200"
+                        ? "size-12 sm:size-16 bg-gradient-to-br from-slate-200 to-slate-400 text-slate-800 text-sm sm:text-lg border-2 border-slate-100"
+                        : "size-12 sm:size-16 bg-gradient-to-br from-orange-300 to-amber-600 text-orange-950 text-sm sm:text-lg border-2 border-orange-200"
                     }`}
                   >
                     {entry.avatarUrl ? (
@@ -78,7 +78,7 @@ export default async function LeaderboardPage() {
                   </div>
                   {/* Rank Badge */}
                   <div
-                    className={`absolute -bottom-3 left-1/2 -translate-x-1/2 flex size-7 items-center justify-center rounded-full border-2 border-background text-xs font-bold text-white shadow-sm ${
+                    className={`absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 flex size-5 sm:size-7 items-center justify-center rounded-full border-2 border-background text-[10px] sm:text-xs font-bold text-white shadow-sm ${
                       isFirst ? "bg-yellow-500" : isSecond ? "bg-slate-400" : "bg-orange-500"
                     }`}
                   >
@@ -88,31 +88,31 @@ export default async function LeaderboardPage() {
 
                 {/* Name & Score */}
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-1.5 font-bold text-foreground line-clamp-1 max-w-[150px] mx-auto">
+                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 font-bold text-foreground line-clamp-1 max-w-[100px] sm:max-w-[150px] mx-auto text-xs sm:text-base">
                     {entry.badges?.slice(0, 2).map((ub: any) => (
                       <span key={ub.id} title={ub.badge.name}>
-                        {ub.badge.type === BadgeType.WEEKLY_STAR && <Star className="size-4 text-yellow-500 fill-yellow-500" />}
-                        {ub.badge.type === BadgeType.MONTHLY_HERO && <Award className="size-4 text-blue-500" />}
-                        {ub.badge.type === BadgeType.YEARLY_CHAMPION && <Trophy className="size-4 text-violet-500" />}
+                        {ub.badge.type === BadgeType.WEEKLY_STAR && <Star className="size-3 sm:size-4 text-yellow-500 fill-yellow-500" />}
+                        {ub.badge.type === BadgeType.MONTHLY_HERO && <Award className="size-3 sm:size-4 text-blue-500" />}
+                        {ub.badge.type === BadgeType.YEARLY_CHAMPION && <Trophy className="size-3 sm:size-4 text-violet-500" />}
                       </span>
                     ))}
                     <p className="truncate">{entry.name}</p>
                   </div>
-                  <p className="text-sm font-black text-primary mt-1">{entry.score.toLocaleString()} pts</p>
+                  <p className="text-[10px] sm:text-sm font-black text-primary mt-0.5 sm:mt-1">{entry.score.toLocaleString()} pts</p>
                 </div>
 
                 {/* Breakdown Stats */}
-                <div className="mt-3 flex items-center justify-center gap-3 rounded-lg border border-border bg-card px-3 py-2 text-xs text-muted-foreground shadow-sm">
+                <div className="mt-2 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3 rounded-lg border border-border bg-card px-2 py-1 sm:px-3 sm:py-2 text-[10px] sm:text-xs text-muted-foreground shadow-sm">
                   <div className="flex items-center gap-1" title="Certificates">
-                    <Award className="size-3.5 text-blue-500" />
+                    <Award className="size-3 sm:size-3.5 text-blue-500" />
                     <span className="font-semibold text-foreground">{entry.certificates}</span>
                   </div>
                   <div className="flex items-center gap-1" title="Courses Completed">
-                    <CheckCircle2 className="size-3.5 text-emerald-500" />
+                    <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500" />
                     <span className="font-semibold text-foreground">{entry.courses}</span>
                   </div>
                   <div className="flex items-center gap-1" title="Active Days">
-                    <Flame className="size-3.5 text-orange-500" />
+                    <Flame className="size-3 sm:size-3.5 text-orange-500" />
                     <span className="font-semibold text-foreground">{entry.streaks}</span>
                   </div>
                 </div>
@@ -124,25 +124,25 @@ export default async function LeaderboardPage() {
 
       {/* Rankings List */}
       <div className="mt-12 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-        <div className="border-b border-border bg-muted/40 px-6 py-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">All Rankings</h2>
+        <div className="border-b border-border bg-muted/40 px-4 sm:px-6 py-2.5 sm:py-4">
+          <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground">All Rankings</h2>
         </div>
         <div className="divide-y divide-border">
           {others.length > 0 ? (
             others.map((entry) => (
               <div
                 key={entry.id}
-                className={`flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-muted/30 ${
+                className={`flex items-center gap-2 sm:gap-3 px-3 py-2 sm:px-4 sm:py-2.5 transition-colors hover:bg-muted/30 ${
                   entry.id === user.id ? "bg-primary/5 hover:bg-primary/10" : ""
                 }`}
               >
                 {/* Rank Number */}
-                <div className="flex w-8 justify-center">
-                  <span className="text-sm font-bold text-muted-foreground">#{entry.rank}</span>
+                <div className="flex w-6 sm:w-8 justify-center">
+                  <span className="text-xs sm:text-sm font-bold text-muted-foreground">#{entry.rank}</span>
                 </div>
 
                 {/* Avatar */}
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold text-foreground">
+                <div className="flex size-6 sm:size-8 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] sm:text-xs font-bold text-foreground">
                   {entry.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={entry.avatarUrl} alt={entry.name} className="size-full rounded-full object-cover" />
@@ -153,16 +153,16 @@ export default async function LeaderboardPage() {
 
                 {/* Name */}
                 <div className="flex-1 min-w-0">
-                  <div className={`flex items-center gap-1.5 truncate font-semibold ${entry.id === user.id ? "text-primary" : "text-foreground"}`}>
+                  <div className={`flex items-center gap-1 sm:gap-1.5 truncate font-semibold text-xs sm:text-sm ${entry.id === user.id ? "text-primary" : "text-foreground"}`}>
                     {entry.badges?.map((ub: any) => (
                       <span key={ub.id} title={ub.badge.name}>
-                        {ub.badge.type === BadgeType.WEEKLY_STAR && <Star className="size-3.5 text-yellow-500 fill-yellow-500" />}
-                        {ub.badge.type === BadgeType.MONTHLY_HERO && <Award className="size-3.5 text-blue-500" />}
-                        {ub.badge.type === BadgeType.YEARLY_CHAMPION && <Trophy className="size-3.5 text-violet-500" />}
+                        {ub.badge.type === BadgeType.WEEKLY_STAR && <Star className="size-3 sm:size-3.5 text-yellow-500 fill-yellow-500" />}
+                        {ub.badge.type === BadgeType.MONTHLY_HERO && <Award className="size-3 sm:size-3.5 text-blue-500" />}
+                        {ub.badge.type === BadgeType.YEARLY_CHAMPION && <Trophy className="size-3 sm:size-3.5 text-violet-500" />}
                       </span>
                     ))}
                     <p className="truncate">{entry.name}</p>
-                    {entry.id === user.id && <span className="ml-1 text-xs font-normal text-muted-foreground">(You)</span>}
+                    {entry.id === user.id && <span className="ml-1 text-[9px] sm:text-xs font-normal text-muted-foreground">(You)</span>}
                   </div>
                 </div>
 
@@ -184,8 +184,8 @@ export default async function LeaderboardPage() {
 
                 {/* Score */}
                 <div className="text-right">
-                  <span className="font-bold text-foreground">{entry.score.toLocaleString()}</span>
-                  <span className="ml-1 text-xs text-muted-foreground">pts</span>
+                  <span className="text-xs sm:text-sm font-bold text-foreground">{entry.score.toLocaleString()}</span>
+                  <span className="ml-0.5 sm:ml-1 text-[9px] sm:text-xs text-muted-foreground">pts</span>
                 </div>
               </div>
             ))
