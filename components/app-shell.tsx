@@ -91,9 +91,9 @@ export function AppShell({
     <div className="min-h-screen bg-background">
       <aside className={cn(
         "fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 lg:flex lg:flex-col",
-        collapsed ? "w-[76px]" : "w-[248px]",
+        collapsed ? "w-[64px]" : "w-[220px]",
       )}>
-        <div className={cn("flex h-16 items-center border-b border-sidebar-border", collapsed ? "justify-center px-3" : "px-5")}>
+        <div className={cn("flex h-12 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "px-4")}>
           {!collapsed && <Brand inverse />}
         </div>
         <nav className="flex-1 overflow-y-auto px-3 py-4">
@@ -126,8 +126,8 @@ export function AppShell({
 
       {mobileOpen && <MobileDrawer groups={groups} user={user} pathname={pathname} close={() => setMobileOpen(false)} />}
 
-      <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[76px]" : "lg:pl-[248px]")}>
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card/90 px-4 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:px-6 lg:px-8">
+      <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[220px]")}>
+        <header className="sticky top-0 z-30 flex h-12 items-center gap-4 border-b bg-card/90 px-4 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:px-6">
           <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-5" /></Button>
           <div className="lg:hidden"><Brand /></div>
           <div className="hidden min-w-0 max-w-xl flex-1 lg:block"><SearchBar /></div>
@@ -144,7 +144,7 @@ export function AppShell({
             </div>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1440px] flex-1 p-4 pb-24 sm:p-6 lg:p-8">{children}</main>
+        <main className="mx-auto w-full max-w-[1440px] flex-1 p-4 pb-24 sm:p-6">{children}</main>
         <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-2 backdrop-blur-xl lg:hidden">
           {mobileItems.map((item) => <Link key={item.href} href={item.href} className={cn("flex min-w-14 flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-[10px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-5" />{item.label}</Link>)}
         </nav>
@@ -155,11 +155,11 @@ export function AppShell({
 
 function NavLink({ item, active, collapsed, onClick }: { item: NavItem; active: boolean; collapsed: boolean; onClick?: () => void }) {
   const link = <Link href={item.href} onClick={onClick} className={cn(
-    "relative flex h-10 items-center rounded-lg text-sm font-medium transition-colors",
-    collapsed ? "justify-center px-2" : "gap-3 px-3",
+    "relative flex h-8 items-center rounded-md text-sm font-medium transition-colors",
+    collapsed ? "justify-center px-1" : "gap-2.5 px-2.5",
     active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-white/6 hover:text-white",
   )}>
-    <item.icon className="size-[18px] shrink-0" />
+    <item.icon className="size-4 shrink-0" />
     {!collapsed && <span>{item.label}</span>}
   </Link>;
   return collapsed ? <Tooltip><TooltipTrigger asChild>{link}</TooltipTrigger><TooltipContent side="right">{item.label}</TooltipContent></Tooltip> : link;

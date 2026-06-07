@@ -132,17 +132,17 @@ export default async function LeaderboardPage() {
             others.map((entry) => (
               <div
                 key={entry.id}
-                className={`flex items-center gap-4 px-6 py-4 transition-colors hover:bg-muted/30 ${
+                className={`flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-muted/30 ${
                   entry.id === user.id ? "bg-primary/5 hover:bg-primary/10" : ""
                 }`}
               >
                 {/* Rank Number */}
                 <div className="flex w-8 justify-center">
-                  <span className="text-lg font-bold text-muted-foreground">#{entry.rank}</span>
+                  <span className="text-sm font-bold text-muted-foreground">#{entry.rank}</span>
                 </div>
 
                 {/* Avatar */}
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold text-foreground">
                   {entry.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={entry.avatarUrl} alt={entry.name} className="size-full rounded-full object-cover" />

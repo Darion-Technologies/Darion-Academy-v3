@@ -64,21 +64,21 @@ export default async function SettingsPage() {
         description="Manage your professional identity and workspace preferences."
       />
 
-      <div className="max-w-5xl space-y-8 pb-20">
+      <div className="max-w-5xl space-y-4 pb-20">
         
         {/* Premium Corporate Hero Banner */}
         <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           {/* Banner background */}
-          <div className="h-32 bg-gradient-to-r from-slate-900 via-[#10202D] to-primary/80" />
+          <div className="h-20 bg-gradient-to-r from-slate-900 via-[#10202D] to-primary/80" />
           
-          <div className="px-6 pb-6 pt-4 sm:flex sm:items-end sm:gap-5">
-            <div className="-mt-14 relative z-10">
+          <div className="px-4 pb-4 pt-2 sm:flex sm:items-end sm:gap-4">
+            <div className="-mt-10 relative z-10">
               <AvatarUpload name={user.name} currentAvatarUrl={user.avatarUrl} />
             </div>
             
-            <div className="mt-4 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:gap-6 sm:pb-1">
+            <div className="mt-2 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:gap-6 sm:pb-1">
               <div className="min-w-0 flex-1">
-                <h1 className="text-2xl font-bold truncate text-foreground">{user.name}</h1>
+                <h1 className="text-xl font-bold truncate text-foreground">{user.name}</h1>
                 <p className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mt-1">
                   <Building2 className="size-3.5" />
                   {user.department ?? "No Department Set"} • {user.role}
@@ -86,8 +86,8 @@ export default async function SettingsPage() {
                 </p>
               </div>
               
-              <div className="mt-5 flex flex-col justify-stretch gap-3 sm:flex-row sm:mt-0 sm:gap-4">
-                <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm font-medium text-muted-foreground">
+              <div className="mt-3 flex flex-col justify-stretch gap-2 sm:flex-row sm:mt-0 sm:gap-3">
+                <div className="inline-flex items-center gap-2 rounded-md border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground">
                   <CalendarDays className="size-4" />
                   Joined {user.createdAt.getFullYear()}
                 </div>
@@ -98,7 +98,7 @@ export default async function SettingsPage() {
 
         {/* Tabbed Interface */}
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="mb-6 grid w-full max-w-2xl grid-cols-4">
+          <TabsList className="mb-4 grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="badges">Badges</TabsTrigger>
             <TabsTrigger value="learning">Learning</TabsTrigger>
@@ -106,13 +106,13 @@ export default async function SettingsPage() {
           </TabsList>
 
           {/* General Tab */}
-          <TabsContent value="general" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+          <TabsContent value="general" className="space-y-4 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
             <SettingPanel
               title="Personal Information"
               description="Update your corporate details. Note that role and email are locked by IT."
             >
-              <form action={updateProfileAction} className="space-y-5 max-w-xl">
-                <div className="grid gap-5 sm:grid-cols-2">
+              <form action={updateProfileAction} className="space-y-4 max-w-xl">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <Label className="text-sm font-semibold">Full Name</Label>
                     <Input name="name" defaultValue={user.name} required />
@@ -127,7 +127,7 @@ export default async function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <Label className="flex items-center justify-between text-sm font-semibold">
                       Email Address
