@@ -127,8 +127,8 @@ export function AppShell({
       {mobileOpen && <MobileDrawer groups={groups} user={user} pathname={pathname} close={() => setMobileOpen(false)} />}
 
       <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[220px]")}>
-        <header className="sticky top-0 z-30 flex h-12 items-center gap-4 border-b bg-card/90 px-4 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:px-6">
-          <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-5" /></Button>
+        <header className="sticky top-0 z-30 flex h-10 lg:h-12 items-center gap-2 lg:gap-4 border-b bg-card/90 px-3 lg:px-4 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:px-6">
+          <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden h-8 w-8" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-4" /></Button>
           <div className="lg:hidden"><Brand /></div>
           <div className="hidden min-w-0 max-w-xl flex-1 lg:block"><SearchBar /></div>
           <div className="ml-auto flex items-center gap-1.5">
@@ -144,9 +144,9 @@ export function AppShell({
             </div>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1440px] flex-1 p-4 pb-24 sm:p-6">{children}</main>
-        <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-2 backdrop-blur-xl lg:hidden">
-          {mobileItems.map((item) => <Link key={item.href} href={item.href} className={cn("flex min-w-14 flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-[10px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-5" />{item.label}</Link>)}
+        <main className="mx-auto w-full max-w-[1440px] flex-1 p-2 pb-16 sm:p-4 lg:p-6">{children}</main>
+        <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-1 backdrop-blur-xl lg:hidden pb-safe">
+          {mobileItems.map((item) => <Link key={item.href} href={item.href} className={cn("flex min-w-12 flex-col items-center gap-0.5 rounded-md px-1 py-1 text-[9px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-4" />{item.label}</Link>)}
         </nav>
       </div>
     </div>
@@ -168,11 +168,11 @@ function NavLink({ item, active, collapsed, onClick }: { item: NavItem; active: 
 function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; user: { name: string; role: UserRole; avatarUrl?: string | null; employeeId?: string | null }; close: () => void; pathname: string }) {
   return <div className="fixed inset-0 z-50 lg:hidden">
     <button className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={close} aria-label="Close navigation" />
-    <aside className="relative flex h-full w-[290px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl">
-      <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-5"><Brand inverse /><Button variant="ghost" size="icon-sm" onClick={close} className="text-sidebar-foreground hover:bg-white/8 hover:text-white"><X /></Button></div>
-      <nav className="flex-1 overflow-y-auto p-3">{groups.map((group) => <div key={group.label} className="mb-6"><p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-1">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} />)}</div></div>)}</nav>
-      <div className="border-t border-sidebar-border p-4 flex items-center gap-3">
-        <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/10 text-xs font-bold text-white">
+    <aside className="relative flex h-full w-[240px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl">
+      <div className="flex h-12 items-center justify-between border-b border-sidebar-border px-4"><Brand inverse /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-white/8 hover:text-white"><X /></Button></div>
+      <nav className="flex-1 overflow-y-auto p-2">{groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} />)}</div></div>)}</nav>
+      <div className="border-t border-sidebar-border p-3 flex items-center gap-2">
+        <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-md bg-white/10 text-[10px] font-bold text-white">
           {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
         </div>
         <div>
