@@ -27,7 +27,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.8.2",
-    "@sparticuz/chromium": "^137.0.0",
+    "@sparticuz/chromium-min": "^137.0.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.8",
     "@tensorflow-models/coco-ssd": "^2.2.3",

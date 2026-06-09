@@ -1,4 +1,4 @@
-import chromium from "@sparticuz/chromium";
+import chromium from "@sparticuz/chromium-min";
 import QRCode from "qrcode";
 import puppeteer from "puppeteer-core";
 import { Prisma } from "@/generated/prisma";
@@ -181,7 +181,9 @@ export function certificateHtml(input: {
 }
 
 export async function renderCertificatePdf(html: string) {
-  const executablePath = process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath());
+  const executablePath = process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath(
+    "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+  ));
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: { width: 1123, height: 794 },
