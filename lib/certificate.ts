@@ -254,7 +254,7 @@ export async function issueCertificate(input: {
     const issuer = input.issuerId
       ? await prisma.user.findUnique({ where: { id: input.issuerId }, select: { name: true } })
       : null;
-    const verificationUrl = `https://darion.in/verify/${certificate.certificateId}`;
+    const verificationUrl = `https://academy.darion.in/verify/${certificate.certificateId}`;
     const [qrDataUrl, logoUrl, signatureUrl, backgroundUrl] = await Promise.all([
       template.showQrCode ? QRCode.toDataURL(verificationUrl, { margin: 0, width: 180 }) : null,
       resolveAssetUrl(template.logoUrl),
