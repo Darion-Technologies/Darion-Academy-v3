@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Trophy, Medal, Award, Flame, CheckCircle2, ChevronUp, Star } from "lucide-react";
 import { getLeaderboardRankings } from "@/lib/leaderboard-data";
 import { requireRole } from "@/lib/auth";
@@ -66,10 +67,11 @@ export default async function LeaderboardPage() {
                     }`}
                   >
                     {entry.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={entry.avatarUrl}
                         alt={entry.name}
+                        width={100}
+                        height={100}
                         className="size-full rounded-full object-cover"
                       />
                     ) : (
@@ -144,8 +146,7 @@ export default async function LeaderboardPage() {
                 {/* Avatar */}
                 <div className="flex size-6 sm:size-8 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] sm:text-xs font-bold text-foreground">
                   {entry.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={entry.avatarUrl} alt={entry.name} className="size-full rounded-full object-cover" />
+                    <Image src={entry.avatarUrl} alt={entry.name} width={40} height={40} className="size-full rounded-full object-cover" />
                   ) : (
                     initials(entry.name)
                   )}

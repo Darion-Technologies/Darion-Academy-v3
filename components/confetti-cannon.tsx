@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import confetti from "canvas-confetti";
 
 export function ConfettiCannon({ fire }: { fire: boolean }) {
   useEffect(() => {
     if (!fire) return;
 
-    const duration = 3 * 1000;
-    const end = Date.now() + duration;
+    import("canvas-confetti").then((module) => {
+      const confetti = module.default;
+      const duration = 3 * 1000;
+      const end = Date.now() + duration;
 
-    const frame = () => {
+      const frame = () => {
       confetti({
         particleCount: 5,
         angle: 60,
@@ -26,12 +27,13 @@ export function ConfettiCannon({ fire }: { fire: boolean }) {
         colors: ["#008CBB", "#E6D5B8", "#10202D"]
       });
 
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    };
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
 
-    frame();
+      frame();
+    });
   }, [fire]);
 
   return null;

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { logoutAction } from "@/app/actions/auth";
@@ -121,7 +122,7 @@ export function AppShell({
             collapsed ? "justify-center p-2.5" : "gap-3 p-2.5",
           )}>
             <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/10 text-xs font-bold text-white">
-              {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
+              {user.avatarUrl ? <Image src={user.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" /> : initials(user.name)}
             </span>
             {!collapsed && <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-white">{user.name}</span><span className="block truncate text-xs text-[var(--sidebar-muted)]">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</span></span>}
           </Link>
@@ -171,7 +172,7 @@ export function AppShell({
             <div className="ml-1 sm:ml-2 flex items-center gap-3 sm:border-l sm:pl-4">
               <div className="hidden text-right sm:block"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
               <Link href="/settings" className="grid size-7 sm:size-9 place-items-center overflow-hidden rounded-md sm:rounded-lg bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0">
-                {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
+                {user.avatarUrl ? <Image src={user.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" /> : initials(user.name)}
               </Link>
             </div>
           </div>
@@ -209,7 +210,7 @@ function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; u
       <nav className="flex-1 overflow-y-auto p-2">{groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} />)}</div></div>)}</nav>
       <div className="border-t border-sidebar-border p-3 flex items-center gap-2">
         <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-md bg-white/10 text-[10px] font-bold text-white">
-          {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-full object-cover" /> : initials(user.name)}
+          {user.avatarUrl ? <Image src={user.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" /> : initials(user.name)}
         </div>
         <div>
           <p className="text-sm font-semibold text-white">{user.name}</p>

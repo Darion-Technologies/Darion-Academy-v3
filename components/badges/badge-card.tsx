@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Award, Star, Trophy, Target } from "lucide-react";
@@ -39,7 +40,7 @@ export function BadgeCard({ badge, userBadge, className }: { badge: any; userBad
             style={{ borderColor: `${color}60` }}
           >
             {badge.iconUrl && !badge.iconUrl.startsWith("/badges/") ? ( // Temporarily fallback to Lucide if the SVG isn't uploaded yet
-              <img src={badge.iconUrl} alt={badge.name} className="size-8 object-contain" />
+              <Image src={badge.iconUrl} alt={badge.name} width={32} height={32} className="size-8 object-contain" />
             ) : (
               <Icon className="size-8" style={{ color }} />
             )}
