@@ -22,11 +22,11 @@ export function LoginForm() {
   return (
     <div>
       {/* Tab switcher */}
-      <div className="mb-6 flex rounded-lg bg-muted p-1">
+      <div className="mb-5 flex rounded-lg bg-muted p-1 lg:mb-6">
         <button
           type="button"
           onClick={() => setMethod("email")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2.5 text-sm font-semibold transition-all ${
+          className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold transition-all lg:gap-2 lg:px-3 lg:py-2.5 ${
             method === "email"
               ? "bg-card text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -38,7 +38,7 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => setMethod("employeeId")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2.5 text-sm font-semibold transition-all ${
+          className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold transition-all lg:gap-2 lg:px-3 lg:py-2.5 ${
             method === "employeeId"
               ? "bg-card text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -49,7 +49,7 @@ export function LoginForm() {
         </button>
       </div>
 
-      <form action={action} className="space-y-4">
+      <form action={action} className="space-y-3 lg:space-y-4">
         {method === "email" ? (
           <div>
             <Label htmlFor="email">Work email</Label>
@@ -58,7 +58,7 @@ export function LoginForm() {
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="you@darion.com"
+              placeholder="you@darion.in"
               required
             />
           </div>
@@ -95,7 +95,7 @@ export function LoginForm() {
           {pending ? "Signing in..." : "Sign in"}
         </Button>
       </form>
-      <div className="mt-4 text-right">
+      <div className="mt-3 text-right lg:mt-4">
         <Link href="/forgot-password" className="text-xs font-semibold text-primary hover:underline">
           Forgot password?
         </Link>

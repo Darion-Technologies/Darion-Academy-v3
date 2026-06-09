@@ -11,7 +11,7 @@ export function WelcomeCard({ data }: { data: TopDashboardData }) {
   const hasActiveStreak = currentStreak > 0;
 
   return (
-    <div className="gradient-welcome relative flex h-full flex-col justify-between overflow-hidden rounded-xl p-4 text-white shadow-[var(--shadow-md)]">
+    <div className="gradient-welcome relative flex h-full flex-col justify-between overflow-hidden rounded-xl p-3 sm:p-4 text-white shadow-[var(--shadow-md)]">
       <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full border border-white/10" />
       <div className="pointer-events-none absolute -bottom-24 -right-8 size-56 rounded-full bg-primary/20 blur-2xl" />
 
@@ -22,9 +22,9 @@ export function WelcomeCard({ data }: { data: TopDashboardData }) {
         </div>
         <Link
           href="/courses"
-          className="rounded-lg border border-white/15 bg-white/5 p-2 transition-colors hover:bg-white/12"
+          className="rounded-lg border border-white/15 bg-white/5 p-1.5 sm:p-2 transition-colors hover:bg-white/12"
         >
-          <ArrowUpRight className="size-5 text-[#8fd9ee]" />
+          <ArrowUpRight className="size-4 sm:size-5 text-[#8fd9ee]" />
         </Link>
       </div>
 
@@ -33,7 +33,7 @@ export function WelcomeCard({ data }: { data: TopDashboardData }) {
           <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8fd9ee]">
             Darion Group Internal Academy
           </div>
-          <h1 className="text-xl font-semibold leading-tight tracking-tight">
+          <h1 className="text-lg sm:text-xl font-semibold leading-tight tracking-tight">
             Welcome back,<br />
             {firstName}
           </h1>
@@ -42,7 +42,7 @@ export function WelcomeCard({ data }: { data: TopDashboardData }) {
         <div
           aria-label={formatStreakLabel(currentStreak)}
           className={cn(
-            "relative w-fit shrink-0 overflow-hidden rounded-xl border px-3 py-2 backdrop-blur-sm",
+            "relative w-fit shrink-0 overflow-hidden rounded-xl border px-2.5 py-1.5 sm:px-3 sm:py-2 backdrop-blur-sm",
             hasActiveStreak
               ? "border-amber-200/70 bg-gradient-to-br from-orange-500/45 via-amber-400/30 to-yellow-300/20 text-white shadow-[0_0_36px_rgba(251,146,60,0.38),inset_0_1px_0_rgba(255,255,255,0.28)]"
               : "border-white/15 bg-white/7 text-white/75",
@@ -56,12 +56,12 @@ export function WelcomeCard({ data }: { data: TopDashboardData }) {
           )}
           <div className="relative flex items-center gap-1">
             {hasActiveStreak && (
-              <span className="text-3xl leading-none select-none">🔥</span>
+              <span className="text-2xl sm:text-3xl leading-none select-none">🔥</span>
             )}
             <span
               aria-hidden="true"
               className={cn(
-                "text-4xl font-semibold leading-none tracking-tight",
+                "text-3xl sm:text-4xl font-semibold leading-none tracking-tight",
                 hasActiveStreak && "text-yellow-100 drop-shadow-[0_0_24px_rgba(255,220,50,1)]",
               )}
             >
@@ -71,7 +71,7 @@ export function WelcomeCard({ data }: { data: TopDashboardData }) {
           <p
             aria-hidden="true"
             className={cn(
-              "relative mt-2 text-xs font-semibold uppercase tracking-[0.14em]",
+              "relative mt-1 sm:mt-2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em]",
               hasActiveStreak && "text-amber-50",
             )}
           >

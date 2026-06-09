@@ -1,11 +1,12 @@
 "use client";
 
-import { CheckCircle2, LoaderCircle } from "lucide-react";
+import { CheckCircle2, LoaderCircle, Play } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { completeLessonAction } from "@/app/actions/learning";
 
 type YouTubePlayerInstance = {
   destroy: () => void;
+  playVideo: () => void;
 };
 
 type YouTubePlayerEvent = {
@@ -18,10 +19,13 @@ type YouTubeApi = {
     options: {
       videoId: string;
       playerVars: Record<string, number>;
-      events: { onStateChange: (event: YouTubePlayerEvent) => void };
+      events: { 
+        onReady?: (event: { target: YouTubePlayerInstance }) => void;
+        onStateChange?: (event: YouTubePlayerEvent) => void;
+      };
     },
   ) => YouTubePlayerInstance;
-  PlayerState: { ENDED: number };
+  PlayerState: { ENDED: number; PLAYING: number; PAUSED: number; CUED: number; };
 };
 
 declare global {
@@ -67,9 +71,12 @@ export function YouTubePlayer({
   initiallyCompleted: boolean;
 }) {
   const playerRoot = useRef<HTMLDivElement>(null);
+  const ytPlayerRef = useRef<YouTubePlayerInstance | null>(null);
   const completionStarted = useRef(false);
   const [completed, setCompleted] = useState(initiallyCompleted);
   const [isPending, startTransition] = useTransition();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     let player: YouTubePlayerInstance | null = null;
@@ -80,15 +87,22 @@ export function YouTubePlayer({
       player = new YT.Player(playerRoot.current, {
         videoId,
         playerVars: {
-          controls: 1,
-          disablekb: 0,
+          controls: 0,
+          disablekb: 1,
           fs: 1,
           modestbranding: 1,
           playsinline: 1,
           rel: 0,
         },
         events: {
+          onReady(event) {
+            ytPlayerRef.current = event.target;
+            setIsReady(true);
+          },
           onStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) setIsPlaying(true);
+            if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) setIsPlaying(false);
+
             if (
               event.data !== YT.PlayerState.ENDED ||
               !canComplete ||
@@ -116,8 +130,27 @@ export function YouTubePlayer({
   }, [canComplete, completed, lessonId, videoId]);
 
   return (
-    <div className="bg-black">
-      <div className="aspect-video w-full [&_iframe]:size-full [&_iframe]:border-0" ref={playerRoot} />
+    <div className="mx-auto w-full max-w-[1920px] bg-black overflow-hidden rounded-xl shadow-md border border-border">
+      <div className="relative w-full aspect-video group">
+        <div className="absolute inset-0 size-full border-0" ref={playerRoot} />
+        
+        {/* Custom Overlay */}
+        {!isPlaying && (
+          <div 
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md cursor-pointer transition-all hover:bg-black/50"
+            onClick={() => ytPlayerRef.current?.playVideo()}
+          >
+            <div className="flex flex-col items-center gap-5 transform transition-transform duration-300 group-hover:scale-105">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-110 hover:bg-primary-hover">
+                <Play className="h-8 w-8 ml-1 fill-white" />
+              </div>
+              <span className="text-white font-medium tracking-wide drop-shadow-md">
+                {isReady ? "Click to Play Video" : "Loading Player..."}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
       {canComplete && (
         <div className="flex items-center gap-2 border-t border-slate-800 bg-slate-950 px-4 py-3 text-sm text-muted-foreground">
           {completed ? (
@@ -125,7 +158,7 @@ export function YouTubePlayer({
           ) : isPending ? (
             <><LoaderCircle className="size-4 animate-spin" />Saving completion...</>
           ) : (
-            "Watch to the end to complete this lesson. Seeking is available."
+            "Watch to the end to complete this lesson. Skipping is disabled."
           )}
         </div>
       )}

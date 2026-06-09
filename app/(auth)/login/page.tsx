@@ -20,15 +20,15 @@ export default function LoginPage() {
         </div>
         <p className="text-sm text-white/55">Internal learning and development workspace</p>
       </section>
-      <section className="flex items-center justify-center bg-card p-6">
-        <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-[var(--shadow-md)] lg:border-0 lg:p-0 lg:shadow-none">
-          <div className="mb-10 lg:hidden"><Brand /></div>
-          <h2 className="text-3xl font-semibold tracking-tight">Welcome back</h2>
-          <p className="mb-7 mt-2 text-muted-foreground">
+      <section className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-6 lg:min-h-screen lg:bg-card lg:p-6">
+        <div className="w-full max-w-[340px] lg:max-w-md lg:rounded-2xl lg:p-0">
+          <div className="mb-6 flex justify-center lg:hidden"><Brand /></div>
+          <h2 className="text-2xl font-semibold tracking-tight lg:text-3xl">Welcome back</h2>
+          <p className="mb-5 mt-1 text-sm text-muted-foreground lg:mb-7 lg:mt-2 lg:text-base">
             Sign in with your email or Employee ID.
           </p>
           <LoginForm />
-          <p className="mt-6 text-center text-xs text-muted-foreground">
+          <p className="mt-5 text-center text-[11px] leading-tight text-muted-foreground lg:mt-6 lg:text-xs">
             Access is limited to invited Darion Technologies team members.
           </p>
         </div>

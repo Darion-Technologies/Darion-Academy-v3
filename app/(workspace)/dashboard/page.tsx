@@ -14,7 +14,7 @@ export default async function LearnerDashboard() {
   const user = await requireRole("EMPLOYEE", "INTERN");
 
   return (
-    <div className="mx-auto max-w-[1360px] space-y-3">
+    <div className="mx-auto max-w-[1360px] space-y-2 sm:space-y-3 px-2 sm:px-0">
       {/* Top Grid Row: Hero, Study List, Progress */}
       <Suspense fallback={<TopRowSkeleton />}>
         <TopRow userId={user.id} />

@@ -28,7 +28,7 @@ export function YourProgressWidget({
         </div>
       </CardHeader>
 
-      <CardContent className="px-3 pb-3 flex flex-col flex-1">
+      <CardContent className="px-2 pb-2 sm:px-3 sm:pb-3 flex flex-col flex-1">
         {/* Big percentage */}
         <div className="flex items-end justify-between mb-2">
           <div className="text-3xl font-semibold leading-none tracking-tight">
@@ -51,8 +51,8 @@ export function YourProgressWidget({
         </div>
 
         {/* Stats footer */}
-        <div className="mt-auto pt-4">
-          <div className="flex w-full items-center justify-center rounded-lg bg-secondary px-3 py-2 text-xs font-semibold text-secondary-foreground">
+        <div className="mt-auto pt-3 sm:pt-4">
+          <div className="flex w-full items-center justify-center rounded-lg bg-secondary px-2 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs font-semibold text-secondary-foreground">
             {completedTasks}/{totalTasks || 1} completed
           </div>
         </div>

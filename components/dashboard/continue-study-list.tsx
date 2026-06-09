@@ -23,7 +23,7 @@ export function ContinueStudyList({ enrollments }: { enrollments: DashboardEnrol
           {enrollments.slice(0, 4).map((e) => (
             <div
               key={e.id}
-              className="flex items-center gap-2.5 border-b px-3 py-2 transition-colors last:border-0 hover:bg-muted/45"
+              className="flex items-center gap-2 border-b px-2 py-1.5 sm:gap-2.5 sm:px-3 sm:py-2 transition-colors last:border-0 hover:bg-muted/45"
             >
               {/* Course avatar */}
               <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-accent">

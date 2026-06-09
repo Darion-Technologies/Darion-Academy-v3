@@ -86,7 +86,7 @@ export function ContributionHeatmap({ heatmapDays }: Props) {
 
   return (
     <Card className="h-full">
-      <CardHeader className="mb-1 flex flex-row items-center justify-between border-b pb-2">
+      <CardHeader className="mb-1 flex flex-row items-center justify-between border-b pb-1.5 sm:pb-2">
         <CardTitle>Learning Activity</CardTitle>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span className="rounded-md border bg-muted px-2.5 py-1 font-medium text-foreground">
@@ -98,7 +98,7 @@ export function ContributionHeatmap({ heatmapDays }: Props) {
         </div>
       </CardHeader>
 
-      <CardContent className="px-3 pb-2">
+      <CardContent className="px-2 pb-2 sm:px-3 sm:pb-3">
         <div className="w-full overflow-x-auto">
           <div style={{ minWidth: `${WEEK_COUNT * 14 + 32}px` }}>
 

@@ -11,7 +11,7 @@ export async function BottomRow({ userId }: { userId: string }) {
   ]);
 
   return (
-    <div className="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-[1.8fr_1fr]">
+    <div className="grid grid-cols-1 items-stretch gap-2 sm:gap-3 xl:grid-cols-[1.8fr_1fr]">
       <div className="min-h-[280px]">
         <ContributionHeatmap heatmapDays={heatmapDays} />
       </div>
