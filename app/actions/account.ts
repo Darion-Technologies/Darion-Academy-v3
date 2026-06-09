@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { logoutOtherSessionsAction } from "@/app/actions/auth";
 import { parseAppearancePreference } from "@/lib/appearance";
 
 export async function markNotificationReadAction(formData: FormData) {
@@ -127,5 +126,3 @@ export async function revokeSessionAction(formData: FormData) {
   });
   revalidatePath("/settings");
 }
-
-export { logoutOtherSessionsAction };

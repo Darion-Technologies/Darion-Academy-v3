@@ -1,4 +1,5 @@
-import { cache } from "react";
+import { cache as reactCache } from "react";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { EnrollmentStatus, AttemptStatus } from "@/generated/prisma";
 
@@ -61,7 +62,8 @@ export type TopDashboardData = {
 /* Data fetcher (cached per request)                                    */
 /* ------------------------------------------------------------------ */
 
-export const getTopDashboardData = cache(async (userId: string): Promise<TopDashboardData> => {
+export const getTopDashboardData = reactCache(async (userId: string): Promise<TopDashboardData> => {
+  return unstable_cache(async () => {
   const [user, enrollmentsRaw, progressRecords, submissions, quizAttempts, certificates, streaks] = await Promise.all([
     prisma.user.findUniqueOrThrow({
       where: { id: userId },
@@ -307,15 +309,18 @@ export const getTopDashboardData = cache(async (userId: string): Promise<TopDash
     },
     activeCourse,
   };
+  }, [`dashboard-data-${userId}`], { tags: [`dashboard-${userId}`], revalidate: 300 })();
 });
 
-export const getHeatmapData = cache(async (userId: string) => {
+export const getHeatmapData = reactCache(async (userId: string) => {
+  return unstable_cache(async () => {
   const heatmapStreaks = await prisma.loginStreak.findMany({
     where: { userId, date: { gte: getStartOfYear() } },
     select: { date: true },
     orderBy: { date: "asc" },
   });
   return { heatmapDays: heatmapStreaks.map((s) => s.date) };
+  }, [`heatmap-data-${userId}`], { tags: [`heatmap-${userId}`], revalidate: 3600 })();
 });
 
 /* ------------------------------------------------------------------ */

@@ -1,4 +1,5 @@
-import { logoutOtherSessionsAction, revokeSessionAction, updatePreferencesAction, updateProfileAction } from "@/app/actions/account";
+import { revokeSessionAction, updatePreferencesAction, updateProfileAction } from "@/app/actions/account";
+import { logoutOtherSessionsAction } from "@/app/actions/auth";
 import { PasswordForm } from "@/components/auth/password-form";
 import { PageHeader } from "@/components/page-header";
 import { SubmitButton } from "@/components/submit-button";
@@ -15,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AvatarUpload } from "./_components/avatar-upload";
 import { BadgeCard } from "@/components/badges/badge-card";
+import { PushSettings } from "@/components/push-settings";
 
 function SettingPanel({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
@@ -229,6 +231,9 @@ export default async function SettingsPage() {
             >
               <div className="space-y-3 max-w-xl">
                 <LockedRow icon={Bell} label="Verified email delivery" sublabel="Security and mandatory account emails are always enabled." />
+              </div>
+              <div className="mt-6 pt-6 border-t border-border max-w-xl">
+                <PushSettings />
               </div>
             </SettingPanel>
           </TabsContent>

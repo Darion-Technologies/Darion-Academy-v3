@@ -1,14 +1,14 @@
 "use client";
 
 import {
-  Award, BarChart3, Bell, BookOpen, ChevronLeft, ChevronRight, ClipboardCheck,
+  Award, BarChart3, Bell, BookOpen, ClipboardCheck,
   FileQuestion, GraduationCap, LayoutDashboard, LayoutTemplate, LogOut, Menu,
-  Users, X, Trophy
+  Users, X, Trophy, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { logoutAction } from "@/app/actions/auth";
 import { updateAppearanceAction } from "@/app/actions/account";
 import { AppearanceMenu } from "@/components/appearance-menu";
@@ -67,6 +67,14 @@ export function AppShell({
   const [collapsed, setCollapsed] = useState(initialSidebarCollapsed);
   const [, startTransition] = useTransition();
 
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        console.error("Service Worker registration failed:", err);
+      });
+    }
+  }, []);
+
   const groups: NavGroup[] = user.role === "ADMIN"
     ? [{ label: "Administration", items: adminItems }, ...(hasEnrollment ? [{ label: "My learning", items: learnerItems }] : [])]
     : user.role === "MENTOR"
@@ -116,10 +124,33 @@ export function AppShell({
             </span>
             {!collapsed && <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-white">{user.name}</span><span className="block truncate text-xs text-[var(--sidebar-muted)]">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</span></span>}
           </Link>
-          <div className={cn("flex", collapsed ? "flex-col items-center gap-1" : "items-center gap-1")}>
-            <Tooltip><TooltipTrigger asChild><Button type="button" variant="ghost" size="icon-sm" onClick={toggleSidebar} aria-expanded={!collapsed} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} className="text-sidebar-foreground hover:bg-white/8 hover:text-white">{collapsed ? <ChevronRight /> : <ChevronLeft />}</Button></TooltipTrigger><TooltipContent side="right">{collapsed ? "Expand sidebar" : "Collapse sidebar"}</TooltipContent></Tooltip>
-            {!collapsed && <span className="flex-1" />}
-            <form action={logoutAction}><SubmitButton variant="ghost" size="icon-sm" pendingText="..." aria-label="Sign out" className="text-sidebar-foreground hover:bg-white/8 hover:text-white"><LogOut /></SubmitButton></form>
+          <div className="flex flex-col gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size={collapsed ? "icon-sm" : "sm"} 
+                  onClick={toggleSidebar} 
+                  aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} 
+                  className={cn("text-sidebar-foreground hover:bg-white/8 hover:text-white", !collapsed ? "w-full justify-start gap-2.5 px-2.5 h-8" : "mx-auto")}
+                >
+                  {collapsed ? <PanelLeftOpen className="size-4" /> : <><PanelLeftClose className="size-4 shrink-0" /><span className="text-sm font-medium">Collapse</span></>}
+                </Button>
+              </TooltipTrigger>
+              {collapsed && <TooltipContent side="right">Expand sidebar</TooltipContent>}
+            </Tooltip>
+            <form action={logoutAction} className={cn(!collapsed ? "w-full" : "mx-auto")}>
+              <SubmitButton 
+                variant="ghost" 
+                size={collapsed ? "icon-sm" : "sm"} 
+                pendingText="..." 
+                aria-label="Sign out" 
+                className={cn("text-sidebar-foreground hover:bg-white/8 hover:text-white", !collapsed ? "w-full justify-start gap-2.5 px-2.5 h-8" : "")}
+              >
+                {collapsed ? <LogOut className="size-4" /> : <><LogOut className="size-4 shrink-0" /><span className="text-sm font-medium">Sign out</span></>}
+              </SubmitButton>
+            </form>
           </div>
         </div>
       </aside>

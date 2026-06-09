@@ -154,8 +154,25 @@ button:not(:disabled), a { cursor: pointer; }
   50% { opacity: 0.95; transform: translateY(-50%) scale(1.12); }
 }
 
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slide-up-fade {
+  0% { opacity: 0; transform: translateY(12px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .streak-halo {
   animation: streak-halo 1.8s ease-in-out infinite;
+}
+
+.active-press {
+  @apply transition-transform duration-100 ease-out active:scale-[0.97];
+}
+
+.animate-slide-up-fade {
+  animation: slide-up-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .gradient-primary { background: linear-gradient(135deg, var(--sidebar), #17364a); }

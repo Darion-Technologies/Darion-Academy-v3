@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as tf from "@tensorflow/tfjs";
-import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import { Loader2 } from "lucide-react";
 
 type WebcamProctorProps = {
@@ -18,12 +16,23 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
   useEffect(() => {
     let active = true;
     let detectionInterval: NodeJS.Timeout;
+    let worker: Worker | null = null;
 
     async function initProctoring() {
       try {
         console.log("[Proctor] Requesting camera...");
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        let stream: MediaStream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        } catch (initialErr) {
+          console.warn("[Proctor] Failed to get user-facing camera, falling back to default...", initialErr);
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        }
+
         if (!active || !videoRef.current) return;
+        
+        // Optimization: Remember that the user granted camera access
+        document.cookie = "camera_granted=1; path=/; max-age=31536000; SameSite=Lax";
         
         console.log("[Proctor] Camera acquired, setting video source...");
         videoRef.current.srcObject = stream;
@@ -41,23 +50,17 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
           console.warn("[Proctor] Play interrupted, but ignoring:", playErr);
         }
 
-        console.log("[Proctor] Waiting for tfjs ready...");
-        await tf.ready();
+        console.log("[Proctor] Spawning AI Web Worker...");
+        worker = new Worker(new URL("./proctor.worker.ts", import.meta.url));
         
-        console.log("[Proctor] Loading coco-ssd...");
-        const model = await cocoSsd.load({ base: "lite_mobilenet_v2" });
-        if (!active) return;
-        
-        console.log("[Proctor] AI Model loaded successfully.");
-        setModelLoading(false);
-        onModelLoaded();
-
-        detectionInterval = setInterval(async () => {
-          if (!videoRef.current || videoRef.current.paused || videoRef.current.ended) return;
-          
-          try {
-            // Lower threshold to 0.4 to catch more phones, even at bad angles
-            const predictions = await model.detect(videoRef.current, 10, 0.4);
+        worker.onmessage = (e) => {
+          if (e.data.type === 'loaded') {
+            if (!active) return;
+            console.log("[Proctor] AI Model loaded in Worker successfully.");
+            setModelLoading(false);
+            onModelLoaded();
+          } else if (e.data.type === 'result') {
+            const predictions = e.data.predictions;
             let personCount = 0;
             let cellPhoneDetected = false;
 
@@ -73,9 +76,28 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
             } else if (personCount === 0) {
               onWarning("Face not visible in frame.");
             }
-          } catch (e) {
           }
+        };
+
+        worker.postMessage({ type: 'load' });
+
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        detectionInterval = setInterval(() => {
+          if (!videoRef.current || videoRef.current.paused || videoRef.current.ended || !ctx || !worker) return;
+          const video = videoRef.current;
+          
+          if (video.videoWidth === 0 || video.videoHeight === 0) return;
+          
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          
+          worker.postMessage({ type: 'detect', imageData });
         }, 3000); 
+
       } catch (err: any) {
         console.error("[Proctor] Initialization error:", err);
         if (active) onCameraDenied(err?.message || "Unknown camera error");
@@ -87,6 +109,7 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
     return () => {
       active = false;
       clearInterval(detectionInterval);
+      if (worker) worker.terminate();
       if (videoRef.current && videoRef.current.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach((t) => t.stop());

@@ -18,77 +18,88 @@ export default async function CoursesPage() {
     orderBy: { assignedAt: "desc" },
   });
 
+  const enrollmentsByCategory = enrollments.reduce((acc, curr) => {
+    const cat = curr.course.category || "Uncategorized";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(curr);
+    return acc;
+  }, {} as Record<string, typeof enrollments>);
+
   return (
     <>
       <PageHeader title="My Courses" description="Your assigned learning catalog." />
       {!enrollments.length ? (
         <EmptyState title="No courses found" description="Assigned courses will appear here." />
       ) : (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {enrollments.map(({ course, progressPercent, status }) => (
-            <div
-              key={`${course.id}-${status}`}
-              className="flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-sm)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
-            >
-              {/* Course header */}
-              <div className="gradient-welcome relative min-h-36 overflow-hidden px-6 py-5 text-white">
-                {course.thumbnailUrl && (
-                  <Image
-                    src={`/api/admin/courses/${course.id}/thumbnail`}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#10202D]/95 via-[#10202D]/55 to-[#10202D]/20" />
-                <div className="relative flex h-full flex-col justify-end">
-                  <Badge className="w-fit border-white/20 bg-white/10 text-[9px] text-white">
-                    {course.category}
-                  </Badge>
-                  <h2 className="mt-3 text-lg font-semibold leading-snug">{course.title}</h2>
-                </div>
-              </div>
-
-              {/* Course body */}
-              <div className="flex flex-col flex-1 p-5">
-                <p className="line-clamp-2 min-h-10 text-sm text-muted-foreground mb-4">
-                  {course.description}
-                </p>
-
-                <div className="flex justify-between items-center mb-4">
-                  <Badge variant="neutral">{course.difficulty}</Badge>
-                  <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-                    <BookOpen className="size-3" />
-                    {formatDuration(course.estimatedMinutes)}
-                  </span>
-                </div>
-
-                <div className="mb-1.5 flex justify-between text-xs">
-                  <span className="font-medium text-muted-foreground">Progress</span>
-                  <span className="font-bold text-foreground">{progressPercent}%</span>
-                </div>
-                <Progress value={progressPercent} />
-
-                <div className="mt-2 flex justify-between items-center">
-                  <Badge
-                    variant={
-                      status === "COMPLETED"        ? "success"
-                      : status === "IN_PROGRESS"    ? "info"
-                      : status === "AWAITING_APPROVAL" ? "warning"
-                      : "neutral"
-                    }
+        <div className="space-y-12">
+          {Object.entries(enrollmentsByCategory).map(([category, catEnrollments]) => (
+            <div key={category}>
+              <h2 className="mb-5 text-2xl font-bold tracking-tight text-foreground">{category}</h2>
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {catEnrollments.map(({ course, progressPercent, status }) => (
+                  <div
+                    key={`${course.id}-${status}`}
+                    className="flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-sm)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
                   >
-                    {status.replaceAll("_", " ")}
-                  </Badge>
-                </div>
+                    {/* Course header */}
+                    <div className="gradient-welcome relative min-h-36 overflow-hidden px-6 py-5 text-white">
+                      {course.thumbnailUrl && (
+                        <Image
+                          src={`/api/admin/courses/${course.id}/thumbnail`}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#10202D]/95 via-[#10202D]/55 to-[#10202D]/20" />
+                      <div className="relative flex h-full flex-col justify-end">
+                        <h2 className="mt-3 text-lg font-semibold leading-snug">{course.title}</h2>
+                      </div>
+                    </div>
 
-                <Button className="mt-auto w-full mt-4" asChild>
-                  <Link href={`/courses/${course.slug}`}>
-                    {progressPercent === 100 ? "Review Course" : "Open Course"}
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
+                    {/* Course body */}
+                    <div className="flex flex-col flex-1 p-5">
+                      <p className="line-clamp-2 min-h-10 text-sm text-muted-foreground mb-4">
+                        {course.description}
+                      </p>
+
+                      <div className="flex justify-between items-center mb-4">
+                        <Badge variant="neutral">{course.difficulty}</Badge>
+                        <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                          <BookOpen className="size-3" />
+                          {formatDuration(course.estimatedMinutes)}
+                        </span>
+                      </div>
+
+                      <div className="mb-1.5 flex justify-between text-xs">
+                        <span className="font-medium text-muted-foreground">Progress</span>
+                        <span className="font-bold text-foreground">{progressPercent}%</span>
+                      </div>
+                      <Progress value={progressPercent} />
+
+                      <div className="mt-2 flex justify-between items-center">
+                        <Badge
+                          variant={
+                            status === "COMPLETED"        ? "success"
+                            : status === "IN_PROGRESS"    ? "info"
+                            : status === "AWAITING_APPROVAL" ? "warning"
+                            : "neutral"
+                          }
+                        >
+                          {status.replaceAll("_", " ")}
+                        </Badge>
+                      </div>
+
+                      <Button className="mt-auto w-full mt-4" asChild>
+                        <Link href={`/courses/${course.slug}`}>
+                          {progressPercent === 100 ? "Review Course" : "Open Course"}
+                          <ArrowRight className="size-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}

@@ -131,6 +131,7 @@ model User {
   sessions             UserSession[]
   preference           LearningPreference?
   badges               UserBadge[]    @relation("UserBadges")
+  pushSubscriptions    PushSubscription[]
 }
 
 model UserSession {
@@ -512,6 +513,19 @@ model UserBadge {
   user      User     @relation("UserBadges", fields: [userId], references: [id], onDelete: Cascade)
   badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, badgeId, period])
   @@index([userId])
 }
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+

@@ -4,7 +4,24 @@ export function TopRowSkeleton() {
   return (
     <div className="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-[1.05fr_1.25fr_.95fr]">
       {/* Welcome Card */}
-      <Skeleton className="min-h-[220px] rounded-xl" />
+      <div className="flex min-h-[220px] flex-col justify-between overflow-hidden rounded-xl border bg-card p-4 shadow">
+        {/* Header row */}
+        <div className="flex items-start justify-between">
+          <Skeleton className="h-6 w-20 rounded-full" />
+          <Skeleton className="size-8 rounded-lg" />
+        </div>
+
+        {/* Bottom row */}
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="w-full max-w-[280px]">
+            <Skeleton className="mb-2 h-3 w-48" />
+            <Skeleton className="h-7 w-3/4 max-w-[200px]" />
+            <Skeleton className="mt-2 h-7 w-1/2 max-w-[150px]" />
+          </div>
+          
+          <Skeleton className="h-[76px] w-[88px] shrink-0 rounded-xl" />
+        </div>
+      </div>
       
       {/* Continue Study List */}
       <div className="flex min-h-[220px] flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow">

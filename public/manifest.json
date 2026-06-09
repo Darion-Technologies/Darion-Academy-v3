@@ -1,0 +1,17 @@
+{
+  "name": "Darion Academy",
+  "short_name": "Darion Academy",
+  "description": "Darion Corporate Learning Management System",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
