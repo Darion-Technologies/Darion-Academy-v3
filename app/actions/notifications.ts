@@ -59,3 +59,13 @@ export async function sendManualNotificationAction(formData: FormData) {
 
   return { success: true };
 }
+
+export async function getRecentNotificationsAction() {
+  const user = await requireUser();
+  const notifications = await prisma.notification.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
+  return notifications;
+}

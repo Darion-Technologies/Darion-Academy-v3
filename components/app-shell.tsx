@@ -14,6 +14,7 @@ import { updateAppearanceAction } from "@/app/actions/account";
 import { AppearanceMenu } from "@/components/appearance-menu";
 import { Brand } from "@/components/brand";
 import { SearchBar } from "@/components/search-bar";
+import { NotificationDropdown } from "@/components/notification-dropdown";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -166,9 +167,7 @@ export function AppShell({
             <div className="hidden sm:block">
               <AppearanceMenu initialTheme={initialTheme} sidebarCollapsed={collapsed} />
             </div>
-            <Button variant="ghost" size="icon-sm" asChild className="relative">
-              <Link href="/notifications" aria-label={`${unreadCount} unread notifications`}><Bell />{unreadCount > 0 && <span className="absolute right-1 top-1 size-2 rounded-full bg-primary ring-2 ring-card" />}</Link>
-            </Button>
+            <NotificationDropdown unreadCount={unreadCount} />
             <div className="ml-1 sm:ml-2 flex items-center gap-3 sm:border-l sm:pl-4">
               <div className="hidden text-right sm:block"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
               <Link href="/settings" className="grid size-7 sm:size-9 place-items-center overflow-hidden rounded-md sm:rounded-lg bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0">
@@ -177,7 +176,11 @@ export function AppShell({
             </div>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1440px] flex-1 p-2 pb-16 sm:p-4 lg:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-[1440px] flex-1 p-2 pb-16 sm:p-4 lg:p-6">
+          <div key={pathname} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
+            {children}
+          </div>
+        </main>
         <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-1 backdrop-blur-xl lg:hidden pb-safe">
           {mobileItems.map((item) => <Link key={item.href} href={item.href} className={cn("flex min-w-12 flex-col items-center gap-0.5 rounded-md px-1 py-1 text-[9px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-4" />{item.label}</Link>)}
         </nav>

@@ -152,6 +152,42 @@ export function QuizClient({ quiz, canAttempt }: QuizProps) {
     });
   };
 
+  const currentQ = quiz.questions[currentIndex];
+  const isFirst  = currentIndex === 0;
+  const isLast   = currentIndex === quiz.questions.length - 1;
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    if (examState !== "in_progress" || !currentQ) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if typing in a text area or input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      const key = e.key.toLowerCase();
+      
+      if (currentQ.type === "MULTIPLE_CHOICE" && currentQ.options) {
+        const options = currentQ.options as string[];
+        if (key === "1" && options[0]) handleAnswerChange(currentQ.id, options[0]);
+        if (key === "2" && options[1]) handleAnswerChange(currentQ.id, options[1]);
+        if (key === "3" && options[2]) handleAnswerChange(currentQ.id, options[2]);
+        if (key === "4" && options[3]) handleAnswerChange(currentQ.id, options[3]);
+      } else if (currentQ.type === "TRUE_FALSE") {
+        if (key === "t") handleAnswerChange(currentQ.id, "True");
+        if (key === "f") handleAnswerChange(currentQ.id, "False");
+      }
+
+      if (key === "enter") {
+        e.preventDefault();
+        if (!isLast) handleNavigate(currentIndex + 1);
+        else handleSubmitInit();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [examState, currentQ, currentIndex, isLast, handleAnswerChange]);
+
   // ── Not eligible ──
   if (!canAttempt) {
     return (
@@ -168,10 +204,6 @@ export function QuizClient({ quiz, canAttempt }: QuizProps) {
   if (examState === "instructions") {
     return <InstructionsScreen quiz={quiz} onStart={handleStart} isPending={isPending} />;
   }
-
-  const currentQ = quiz.questions[currentIndex];
-  const isFirst  = currentIndex === 0;
-  const isLast   = currentIndex === quiz.questions.length - 1;
 
   // ── Exam in progress ──
   return (

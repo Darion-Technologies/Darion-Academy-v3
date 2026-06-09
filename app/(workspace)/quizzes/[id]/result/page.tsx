@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import {
   Trophy, XCircle, CheckCircle2, Circle, ArrowLeft, RotateCcw, BookOpen,
 } from "lucide-react";
+import { ConfettiCannon } from "@/components/confetti-cannon";
 
 export default async function QuizResultPage({
   params,
@@ -46,6 +47,9 @@ export default async function QuizResultPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 pt-6">
+      {/* Confetti */}
+      <ConfettiCannon fire={isPassed} />
+
       {/* Back link */}
       <Link href={`/courses/${course.slug}`} className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline">
         <ArrowLeft className="size-3.5" />

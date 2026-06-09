@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { markNotificationReadAction } from "@/app/actions/account";
+import { markNotificationReadAction, markAllNotificationsReadAction } from "@/app/actions/account";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { CheckCheck } from "lucide-react";
 
 export default async function NotificationsPage() {
   const user = await requireUser();
@@ -25,6 +26,16 @@ export default async function NotificationsPage() {
       <PageHeader
         title="Notifications"
         description="Updates about assignments, reviews, and certificates."
+        action={
+          unreadItems.length > 0 ? (
+            <form action={markAllNotificationsReadAction}>
+              <SubmitButton variant="secondary" className="active-press gap-2" pendingText="Clearing...">
+                <CheckCheck className="size-4" />
+                Mark all as read
+              </SubmitButton>
+            </form>
+          ) : null
+        }
       />
       {items.length === 0 ? (
         <EmptyState title="No notifications" description="You're all caught up." />

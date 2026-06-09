@@ -12,6 +12,12 @@ export async function markNotificationReadAction(formData: FormData) {
   revalidatePath("/notifications");
 }
 
+export async function markAllNotificationsReadAction() {
+  const user = await requireUser();
+  await prisma.notification.updateMany({ where: { userId: user.id, read: false }, data: { read: true } });
+  revalidatePath("/notifications");
+}
+
 export async function updateProfileAction(formData: FormData) {
   const user = await requireUser();
   const name = String(formData.get("name") ?? "").trim();
