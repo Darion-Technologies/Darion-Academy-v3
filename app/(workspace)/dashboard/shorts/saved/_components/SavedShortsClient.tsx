@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { YouTubeShort } from "@prisma/client";
+import { YouTubeShort } from "@/generated/prisma";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

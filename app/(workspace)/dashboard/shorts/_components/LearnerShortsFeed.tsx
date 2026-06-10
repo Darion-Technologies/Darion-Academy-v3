@@ -410,7 +410,7 @@ export function LearnerShortsFeed({
                     <div className="pointer-events-auto flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-white drop-shadow-md">@{short.channelName}</span>
-                        <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30 border-0 text-[10px] backdrop-blur-md px-2 py-0.5">
+                        <Badge variant="neutral" className="bg-white/20 text-white hover:bg-white/30 border-0 text-[10px] backdrop-blur-md px-2 py-0.5">
                           {short.category}
                         </Badge>
                       </div>

@@ -173,7 +173,6 @@ export async function markShortWatchedAction(shortId: string, userId: string) {
       }
     }
     revalidatePath(`/dashboard/shorts`);
-    revalidateTag("global-leaderboard");
     return { success: true };
   } catch (error: any) {
     console.error("Error marking short as watched:", error);

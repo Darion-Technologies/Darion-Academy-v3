@@ -163,7 +163,7 @@ export function ShortsAdminPanel({ adminId }: { adminId: string }) {
                   allowFullScreen
                 />
                 <div className="absolute top-2 right-2 z-10">
-                  <Badge variant="secondary" className="bg-black/70 text-white border-0">{video.durationSeconds}s</Badge>
+                  <Badge variant="neutral" className="bg-black/70 text-white border-0">{video.durationSeconds}s</Badge>
                 </div>
               </div>
               

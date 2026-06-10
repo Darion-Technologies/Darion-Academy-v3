@@ -27,7 +27,7 @@ export function InteractiveVideoLayout({
           videoUrl={videoUrl}
           canComplete={canComplete}
           initiallyCompleted={initiallyCompleted}
-          initialProgress={seekToTime !== null ? seekToTime : initialProgress}
+          initialProgress={initialProgress}
         initialMaxProgress={initialMaxProgress}
         onProgress={setCurrentTime}
       />

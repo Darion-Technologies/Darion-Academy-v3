@@ -174,7 +174,6 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
             initiallyCompleted={existingProgress?.completed ?? false}
             initialProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
             initialMaxProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
-            notes={lesson.videoNotes ?? []}
           />
         ) : (
           <div className="space-y-6">

@@ -55,7 +55,7 @@ export default async function AdminShortDetailPage({
             <p className="text-muted-foreground text-sm">{short.channelName}</p>
             <div className="flex gap-2 mt-2">
               <Badge>{short.category}</Badge>
-              <Badge variant="outline">{short.durationSeconds}s</Badge>
+              <Badge variant="neutral">{short.durationSeconds}s</Badge>
             </div>
           </div>
         </div>

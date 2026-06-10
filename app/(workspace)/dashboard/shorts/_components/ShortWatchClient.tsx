@@ -91,8 +91,8 @@ export function ShortWatchClient({
           <div>
             <h3 className="font-semibold">{short.channelName}</h3>
             <div className="flex gap-2 mt-1">
-              <Badge variant="secondary">{short.category}</Badge>
-              <Badge variant="outline">{short.durationSeconds}s</Badge>
+              <Badge variant="neutral">{short.category}</Badge>
+              <Badge variant="neutral">{short.durationSeconds}s</Badge>
             </div>
           </div>
           <div className="flex gap-2">

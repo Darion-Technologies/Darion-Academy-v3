@@ -17,6 +17,7 @@ export function NativeVideoPlayer({
   canComplete,
   initiallyCompleted,
   initialProgress = 0,
+  initialMaxProgress = 0,
   onProgress,
 }: {
   lessonId: string;
@@ -75,7 +76,7 @@ export function NativeVideoPlayer({
     const current = videoRef.current.currentTime;
     setProgress(current);
     setCurrentTimestamp(current);
-    setMaxWatched(prev => Math.max(prev, current));
+    setMaxWatched((prev: number) => Math.max(prev, current));
     if (onProgress) onProgress(current);
   };
 

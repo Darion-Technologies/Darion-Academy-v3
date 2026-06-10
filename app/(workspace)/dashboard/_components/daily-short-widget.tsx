@@ -56,7 +56,7 @@ export async function DailyShortWidget({ userId }: { userId: string }) {
             <PlayCircle className="h-12 w-12 text-white hover:scale-110 transition-transform shadow-sm rounded-full bg-black/30" />
           </Link>
         </div>
-        <Badge variant="secondary" className="absolute top-2 right-2 bg-black/70 text-white border-0">
+        <Badge variant="neutral" className="absolute top-2 right-2 bg-black/70 text-white border-0">
           Daily Tip
         </Badge>
         {progress?.watched && (
@@ -69,7 +69,7 @@ export async function DailyShortWidget({ userId }: { userId: string }) {
       <div className="flex-1 p-4 md:p-6 flex flex-col justify-center">
         <div className="flex justify-between items-start mb-2">
           <div>
-            <Badge variant="outline" className="mb-2">{short.category}</Badge>
+            <Badge variant="neutral" className="mb-2">{short.category}</Badge>
             <CardTitle className="text-xl line-clamp-1 group-hover:underline">
               <Link href={`/dashboard/shorts/${short.id}`}>{short.title}</Link>
             </CardTitle>
