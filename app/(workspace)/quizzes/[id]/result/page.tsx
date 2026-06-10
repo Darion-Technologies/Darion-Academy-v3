@@ -88,6 +88,28 @@ export default async function QuizResultPage({
           <h1 className="mt-6 text-xl font-semibold">{attempt.quiz.title}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Pass mark: {attempt.quiz.passMark}%</p>
 
+          <div className="mt-6 flex justify-center">
+            {isPassed ? (
+              <div className="w-full max-w-sm border border-emerald-200 bg-emerald-50/50 px-4 py-3">
+                <p className="text-sm font-semibold text-emerald-800">
+                  Congratulations on passing! 🎉
+                </p>
+                <p className="mt-1 text-xs italic text-emerald-700/90">
+                  &quot;Success is the sum of small efforts, repeated day in and day out.&quot;
+                </p>
+              </div>
+            ) : (
+              <div className="w-full max-w-sm border border-red-200 bg-red-50/50 px-4 py-3">
+                <p className="text-sm font-semibold text-red-800">
+                  Keep trying, you can do it! 💪
+                </p>
+                <p className="mt-1 text-xs italic text-red-700/90">
+                  &quot;Our greatest glory is not in never falling, but in rising every time we fall.&quot;
+                </p>
+              </div>
+            )}
+          </div>
+
           {/* Actions */}
           <div className="mt-7 flex justify-center gap-3">
             <Button variant="outline" asChild>
