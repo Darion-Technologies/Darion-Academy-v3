@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Trophy, Medal, Award, Flame, CheckCircle2, ChevronUp, Star } from "lucide-react";
+import { Trophy, Medal, Award, Flame, CheckCircle2, ChevronUp, Star, PlayCircle } from "lucide-react";
 import { getLeaderboardRankings } from "@/lib/leaderboard-data";
 import { requireRole } from "@/lib/auth";
 import { initials } from "@/lib/utils";
@@ -117,6 +117,10 @@ export default async function LeaderboardPage() {
                     <Flame className="size-3 sm:size-3.5 text-orange-500" />
                     <span className="font-semibold text-foreground">{entry.streaks}</span>
                   </div>
+                  <div className="flex items-center gap-1" title="Shorts Score">
+                    <PlayCircle className="size-3 sm:size-3.5 text-red-500" />
+                    <span className="font-semibold text-foreground">{entry.shortScore}</span>
+                  </div>
                 </div>
               </div>
             );
@@ -181,6 +185,10 @@ export default async function LeaderboardPage() {
                     <Flame className="size-4" />
                     <span className="text-sm font-medium">{entry.streaks}</span>
                   </div>
+                  <div className="flex w-16 items-center gap-1.5 text-muted-foreground" title="Shorts Score">
+                    <PlayCircle className="size-4" />
+                    <span className="text-sm font-medium">{entry.shortScore}</span>
+                  </div>
                 </div>
 
                 {/* Score */}
@@ -217,6 +225,7 @@ export default async function LeaderboardPage() {
                 <span className="flex items-center gap-1"><Award className="size-3.5" /> {currentUserRank.certificates}</span>
                 <span className="flex items-center gap-1"><CheckCircle2 className="size-3.5" /> {currentUserRank.courses}</span>
                 <span className="flex items-center gap-1"><Flame className="size-3.5" /> {currentUserRank.streaks}</span>
+                <span className="flex items-center gap-1"><PlayCircle className="size-3.5" /> {currentUserRank.shortScore}</span>
               </div>
               <div className="flex flex-col items-end">
                 <span className="font-black text-primary">{currentUserRank.score.toLocaleString()} pts</span>

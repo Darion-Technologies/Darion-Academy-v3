@@ -157,13 +157,15 @@ export async function saveVideoProgressAction(formData: FormData) {
   const user = await requireRole("EMPLOYEE", "INTERN");
   const lessonId = String(formData.get("lessonId") ?? "");
   const timestamp = parseInt(String(formData.get("timestamp") ?? "0"), 10);
+  const maxTimestampStr = formData.get("maxTimestamp");
+  const maxTimestamp = maxTimestampStr ? parseInt(String(maxTimestampStr), 10) : undefined;
   const completed = formData.get("completed") === "true";
   const { lesson } = await requireLessonEnrollment(user.id, lessonId);
   
   await prisma.videoProgress.upsert({
     where: { userId_lessonId: { userId: user.id, lessonId } },
-    update: { timestamp, completed: completed ? true : undefined },
-    create: { userId: user.id, lessonId, timestamp, completed }
+    update: { timestamp, maxTimestamp: maxTimestamp !== undefined ? { set: maxTimestamp } : undefined, completed: completed ? true : undefined },
+    create: { userId: user.id, lessonId, timestamp, maxTimestamp: maxTimestamp !== undefined ? maxTimestamp : timestamp, completed }
   });
   
   if (completed) {
@@ -182,13 +184,26 @@ export async function createVideoNoteAction(formData: FormData) {
   const lessonId = String(formData.get("lessonId") ?? "");
   const timestamp = parseInt(String(formData.get("timestamp") ?? "0"), 10);
   const text = String(formData.get("text") ?? "").trim();
+  const isDoubt = formData.get("isDoubt") === "true";
   
   if (!text) return { error: "Note text is required." };
-  await requireLessonEnrollment(user.id, lessonId);
+  const { lesson, enrollment } = await requireLessonEnrollment(user.id, lessonId);
   
   await prisma.videoNote.create({
-    data: { userId: user.id, lessonId, timestamp, text }
+    data: { userId: user.id, lessonId, timestamp, text, isDoubt }
   });
+  
+  if (isDoubt && enrollment.mentorId) {
+    await prisma.notification.create({
+      data: {
+        userId: enrollment.mentorId,
+        type: "GENERAL",
+        title: "Question from learner",
+        message: `${user.name} asked a question in ${lesson.title}`,
+        href: `/mentor/learners/${user.id}`
+      }
+    });
+  }
   
   revalidatePath(`/lessons/${lessonId}`);
   return { success: true };
@@ -203,5 +218,44 @@ export async function deleteVideoNoteAction(formData: FormData) {
   
   await prisma.videoNote.delete({ where: { id: noteId } });
   revalidatePath(`/lessons/${note.lessonId}`);
+  return { success: true };
+}
+
+export async function replyToDoubtAction(formData: FormData) {
+  const user = await requireRole("MENTOR", "ADMIN");
+  const noteId = String(formData.get("noteId") ?? "");
+  const text = String(formData.get("text") ?? "").trim();
+  
+  if (!text) return { error: "Reply text is required." };
+  
+  const note = await prisma.videoNote.findUnique({
+    where: { id: noteId },
+    include: { lesson: true }
+  });
+  
+  if (!note) return { error: "Doubt not found." };
+  
+  await prisma.videoNote.update({
+    where: { id: noteId },
+    data: {
+      mentorReply: text,
+      repliedAt: new Date(),
+      resolved: true,
+    }
+  });
+
+  // Notify learner
+  await prisma.notification.create({
+    data: {
+      userId: note.userId,
+      type: "GENERAL",
+      title: "Mentor Replied",
+      message: `${user.name} responded to your doubt in ${note.lesson.title}`,
+      href: `/lessons/${note.lessonId}`
+    }
+  });
+  
+  revalidatePath(`/lessons/${note.lessonId}`);
+  revalidatePath(`/mentor/learners/${note.userId}`);
   return { success: true };
 }

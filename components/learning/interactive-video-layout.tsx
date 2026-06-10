@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { NativeVideoPlayer } from "./native-video-player";
-import { VideoNotes, VideoNoteItem } from "./video-notes";
 
 export function InteractiveVideoLayout({
   lessonId,
@@ -10,44 +9,28 @@ export function InteractiveVideoLayout({
   canComplete,
   initiallyCompleted,
   initialProgress = 0,
-  notes,
+  initialMaxProgress = 0,
 }: {
   lessonId: string;
   videoUrl: string;
   canComplete: boolean;
   initiallyCompleted: boolean;
   initialProgress?: number;
-  notes: VideoNoteItem[];
+  initialMaxProgress?: number;
 }) {
   const [currentTime, setCurrentTime] = useState(initialProgress);
-  const [seekToTime, setSeekToTime] = useState<number | null>(null);
-
-  const handleSeek = (time: number) => {
-    setSeekToTime(time);
-    // Reset seekToTime so the player can consume it once
-    setTimeout(() => setSeekToTime(null), 100);
-  };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] border border-border bg-card shadow-sm overflow-hidden">
-      <div className="flex flex-col border-b lg:border-b-0 lg:border-r border-border">
-        <NativeVideoPlayer
+    <div className="border border-border bg-black shadow-sm overflow-hidden rounded-none">
+      <NativeVideoPlayer
           lessonId={lessonId}
           videoUrl={videoUrl}
           canComplete={canComplete}
           initiallyCompleted={initiallyCompleted}
           initialProgress={seekToTime !== null ? seekToTime : initialProgress}
-          onProgress={setCurrentTime}
-        />
-      </div>
-      <div className="h-[400px] lg:h-auto">
-        <VideoNotes
-          lessonId={lessonId}
-          currentProgress={currentTime}
-          notes={notes}
-          onSeekTo={handleSeek}
-        />
-      </div>
+        initialMaxProgress={initialMaxProgress}
+        onProgress={setCurrentTime}
+      />
     </div>
   );
 }

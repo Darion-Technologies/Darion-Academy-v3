@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useTransition } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize, Settings, CheckCircle2, LoaderCircle } from "lucide-react";
 import { saveVideoProgressAction } from "@/app/actions/learning";
+import { useLesson } from "./lesson-context";
 
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -23,18 +24,26 @@ export function NativeVideoPlayer({
   canComplete: boolean;
   initiallyCompleted: boolean;
   initialProgress?: number;
+  initialMaxProgress?: number;
   onProgress?: (time: number) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(initialProgress);
+  const [maxWatched, setMaxWatched] = useState(initialMaxProgress || initialProgress);
+  const progressRef = useRef(progress);
+  const maxWatchedRef = useRef(maxWatched);
+  useEffect(() => { progressRef.current = progress; }, [progress]);
+  useEffect(() => { maxWatchedRef.current = maxWatched; }, [maxWatched]);
+
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
   const [completed, setCompleted] = useState(initiallyCompleted);
   const [isPending, startTransition] = useTransition();
+  const { setCurrentTimestamp, registerSeekCallback } = useLesson();
 
   // Auto-resume on mount
   useEffect(() => {
@@ -42,6 +51,15 @@ export function NativeVideoPlayer({
       videoRef.current.currentTime = initialProgress;
     }
   }, [initialProgress]);
+
+  useEffect(() => {
+    registerSeekCallback((time) => {
+      setProgress(time);
+      if (videoRef.current) {
+        videoRef.current.currentTime = time;
+      }
+    });
+  }, [registerSeekCallback]);
 
   // Handle Play/Pause
   const togglePlay = () => {
@@ -52,32 +70,35 @@ export function NativeVideoPlayer({
     }
   };
 
-  // Handle Progress tracking and auto-save
   const handleTimeUpdate = () => {
     if (!videoRef.current) return;
     const current = videoRef.current.currentTime;
     setProgress(current);
+    setCurrentTimestamp(current);
+    setMaxWatched(prev => Math.max(prev, current));
     if (onProgress) onProgress(current);
   };
 
   // Debounced auto-save every 10 seconds
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || completed || !canComplete) return;
     const interval = setInterval(() => {
-      if (!completed && canComplete) {
-        const formData = new FormData();
-        formData.set("lessonId", lessonId);
-        formData.set("timestamp", Math.floor(progress).toString());
-        startTransition(() => {
-          saveVideoProgressAction(formData);
-        });
-      }
+      const formData = new FormData();
+      formData.set("lessonId", lessonId);
+      formData.set("timestamp", Math.floor(progressRef.current).toString());
+      formData.set("maxTimestamp", Math.floor(maxWatchedRef.current).toString());
+      startTransition(() => {
+        saveVideoProgressAction(formData);
+      });
     }, 10000);
     return () => clearInterval(interval);
-  }, [isPlaying, progress, lessonId, canComplete, completed]);
+  }, [isPlaying, lessonId, canComplete, completed]);
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value);
+    let newTime = parseFloat(e.target.value);
+    if (newTime > maxWatched) {
+      newTime = maxWatched; // Prevent seeking forward past what has been watched
+    }
     setProgress(newTime);
     if (videoRef.current) videoRef.current.currentTime = newTime;
     if (onProgress) onProgress(newTime);
@@ -89,6 +110,7 @@ export function NativeVideoPlayer({
       const formData = new FormData();
       formData.set("lessonId", lessonId);
       formData.set("timestamp", Math.floor(progress).toString());
+      formData.set("maxTimestamp", Math.floor(maxWatched).toString());
       formData.set("completed", "true");
       startTransition(async () => {
         await saveVideoProgressAction(formData);

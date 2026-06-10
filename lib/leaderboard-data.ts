@@ -10,6 +10,7 @@ export type LeaderboardEntry = {
   courses: number;
   quizzes: number;
   streaks: number;
+  shortScore: number;
   rank: number;
   badges: any[];
 };
@@ -22,6 +23,7 @@ export const getLeaderboardRankings = unstable_cache(
         id: true,
         name: true,
         avatarUrl: true,
+        totalShortScore: true,
         _count: {
           select: {
             certificates: { where: { status: "GENERATED" } },
@@ -44,7 +46,7 @@ export const getLeaderboardRankings = unstable_cache(
       const streaks = user._count.loginStreaks;
       
       // Calculate total score based on the point system
-      const score = certs * 100 + courses * 50 + quizzes * 20 + streaks * 1;
+      const score = certs * 100 + courses * 50 + quizzes * 20 + streaks * 1 + user.totalShortScore;
 
       return {
         id: user.id,
@@ -55,6 +57,7 @@ export const getLeaderboardRankings = unstable_cache(
         courses,
         quizzes,
         streaks,
+        shortScore: user.totalShortScore,
         rank: 0, // Assigned below
         badges: user.badges,
       };

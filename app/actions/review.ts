@@ -13,6 +13,7 @@ export async function reviewSubmissionAction(formData: FormData) {
   const message = String(formData.get("feedback") ?? "").trim();
   if (!["APPROVED", "REJECTED", "NEEDS_CORRECTION"].includes(status)) throw new Error("Invalid review status.");
   const submission = await prisma.submission.findUniqueOrThrow({ where: { id: submissionId }, include: { assignment: { include: { lesson: { include: { module: true } } } } } });
+  if (submission.status !== "SUBMITTED") throw new Error("Only submitted assignments can be reviewed.");
   if (!(await canReviewLearner(reviewer.id, reviewer.role, submission.learnerId))) throw new Error("You cannot review this learner.");
   await prisma.$transaction(async (tx) => {
     await tx.submission.update({ where: { id: submissionId }, data: { status, reviewerId: reviewer.id, reviewedAt: new Date() } });

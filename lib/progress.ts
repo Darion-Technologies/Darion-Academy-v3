@@ -58,6 +58,7 @@ export async function refreshEnrollmentProgress(
       distinct: ["quizId"],
     }),
   ]);
+  const hasAssignments = lessons.some((lesson) => lesson.completionRequired && lesson.assignment);
   const percent = calculateCourseProgress({
     requiredLessonIds: lessons
       .filter((lesson) => lesson.completionRequired && !lesson.assignment && !lesson.quiz)
@@ -68,12 +69,34 @@ export async function refreshEnrollmentProgress(
     requiredQuizIds: lessons.flatMap((lesson) => (lesson.completionRequired && lesson.quiz ? [lesson.quiz.id] : [])),
     passedQuizIds: attempts.map((item) => item.quizId),
   });
-  return db.enrollment.update({
+
+  const isCompleted = percent === 100 && !hasAssignments;
+  const status = percent === 100
+    ? (hasAssignments ? "AWAITING_APPROVAL" : "COMPLETED")
+    : percent > 0 ? "IN_PROGRESS" : "ASSIGNED";
+
+  const updatedEnrollment = await db.enrollment.update({
     where: { learnerId_courseId: { learnerId, courseId } },
     data: {
       progressPercent: percent,
-      status: percent === 100 ? "AWAITING_APPROVAL" : percent > 0 ? "IN_PROGRESS" : "ASSIGNED",
+      status,
       startedAt: percent > 0 ? new Date() : undefined,
+      completedAt: isCompleted ? new Date() : undefined,
+      approvedAt: isCompleted ? new Date() : undefined,
     },
   });
+
+  if (isCompleted) {
+    const existing = await db.certificate.findFirst({
+      where: { enrollmentId: updatedEnrollment.id, status: { not: "REVOKED" } },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!existing || existing.status !== "GENERATED") {
+      import("@/lib/certificate").then(({ issueCertificate }) => {
+        issueCertificate({ enrollmentId: updatedEnrollment.id }).catch(() => {});
+      });
+    }
+  }
+
+  return updatedEnrollment;
 }

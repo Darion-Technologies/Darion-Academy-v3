@@ -12,6 +12,8 @@ import { createSignedUrl } from "@/lib/storage";
 import { getYouTubeVideoId } from "@/lib/youtube";
 import { YouTubePlayer } from "@/components/learning/youtube-player";
 import { InteractiveVideoLayout } from "@/components/learning/interactive-video-layout";
+import { LessonProvider } from "@/components/learning/lesson-context";
+import { LessonNotes } from "@/components/learning/lesson-notes";
 import {
   CheckCircle2, Clock, AlertTriangle, XCircle, ArrowLeft,
 } from "lucide-react";
@@ -82,6 +84,43 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
   const lessonFileUrl = lesson.fileUrl ? await createSignedUrl("lesson-files", lesson.fileUrl) : null;
   const youtubeVideoId = lesson.videoUrl ? getYouTubeVideoId(lesson.videoUrl) : null;
   const canComplete = isLearner;
+
+  // Find next and previous lessons
+  let nextLessonUrl: string | null = null;
+  const nextLessonInModule = await prisma.lesson.findFirst({
+    where: { moduleId: lesson.moduleId, order: { gt: lesson.order } },
+    orderBy: { order: "asc" }
+  });
+  if (nextLessonInModule) {
+    nextLessonUrl = `/lessons/${nextLessonInModule.id}`;
+  } else {
+    const nextModule = await prisma.module.findFirst({
+      where: { courseId: lesson.module.courseId, order: { gt: lesson.module.order } },
+      orderBy: { order: "asc" },
+      include: { lessons: { orderBy: { order: "asc" }, take: 1 } }
+    });
+    if (nextModule && nextModule.lessons.length > 0) {
+      nextLessonUrl = `/lessons/${nextModule.lessons[0].id}`;
+    }
+  }
+
+  let prevLessonUrl: string | null = null;
+  const prevLessonInModule = await prisma.lesson.findFirst({
+    where: { moduleId: lesson.moduleId, order: { lt: lesson.order } },
+    orderBy: { order: "desc" }
+  });
+  if (prevLessonInModule) {
+    prevLessonUrl = `/lessons/${prevLessonInModule.id}`;
+  } else {
+    const prevModule = await prisma.module.findFirst({
+      where: { courseId: lesson.module.courseId, order: { lt: lesson.module.order } },
+      orderBy: { order: "desc" },
+      include: { lessons: { orderBy: { order: "desc" }, take: 1 } }
+    });
+    if (prevModule && prevModule.lessons.length > 0) {
+      prevLessonUrl = `/lessons/${prevModule.lessons[0].id}`;
+    }
+  }
   const existingProgress = canComplete
     ? await prisma.progress.findUnique({ where: { userId_lessonId: { userId: user.id, lessonId: lesson.id } } })
     : null;
@@ -96,21 +135,36 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <Link href={`/courses/${lesson.module.course.slug}`} className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline">
-          <ArrowLeft className="size-3.5" />
-          Back to {lesson.module.course.title}
-        </Link>
-        <div className="mt-3 flex items-center gap-3">
-          <h1 className="text-2xl font-bold">{lesson.title}</h1>
-          <Badge>{lesson.type}</Badge>
+    <LessonProvider>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div>
+            <Link href={`/courses/${lesson.module.course.slug}`} className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline">
+              <ArrowLeft className="size-3.5" />
+              Back to {lesson.module.course.title}
+            </Link>
+            <div className="mt-3 flex items-center gap-3">
+              <h1 className="text-2xl font-bold">{lesson.title}</h1>
+              <Badge>{lesson.type}</Badge>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">{lesson.module.title}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {prevLessonUrl && (
+              <Button variant="outline" size="sm" className="rounded-none" asChild>
+                <Link href={prevLessonUrl}>Previous</Link>
+              </Button>
+            )}
+            {nextLessonUrl && (
+              <Button size="sm" className="rounded-none" asChild>
+                <Link href={nextLessonUrl}>Next Lesson</Link>
+              </Button>
+            )}
+          </div>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">{lesson.module.title}</p>
-      </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.5fr_.8fr]">
+        <div className="grid gap-6 xl:grid-cols-[1.5fr_.8fr]">
         {/* Main content */}
         {lesson.type === "VIDEO" && lesson.videoUrl ? (
           <InteractiveVideoLayout
@@ -118,62 +172,82 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
             videoUrl={lesson.videoUrl}
             canComplete={canComplete}
             initiallyCompleted={existingProgress?.completed ?? false}
-            initialProgress={lesson.videoProgress?.[0]?.timestamp ?? 0}
+            initialProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
+            initialMaxProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
             notes={lesson.videoNotes ?? []}
           />
         ) : (
-          <Card className={lesson.type === "YOUTUBE" ? "border-0 bg-transparent shadow-none" : undefined}>
-            <CardContent className={lesson.type === "YOUTUBE" ? "p-0" : "pt-5"}>
+          <div className="space-y-6">
             {lesson.type === "YOUTUBE" && youtubeVideoId && (
               <YouTubePlayer
                 lessonId={lesson.id}
                 videoId={youtubeVideoId}
                 canComplete={canComplete}
                 initiallyCompleted={existingProgress?.completed ?? false}
+                initialProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
+                initialMaxProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
               />
             )}
-            {lesson.type === "YOUTUBE" && lesson.videoUrl && !youtubeVideoId && (
-              <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
-                <p className="text-sm text-amber-900">This saved URL cannot be embedded.</p>
-                <Button className="mt-3" variant="outline" asChild>
-                  <a href={lesson.videoUrl} target="_blank" rel="noreferrer">Open on YouTube</a>
+            {((lesson.type === "YOUTUBE" && lesson.videoUrl && !youtubeVideoId) || lesson.type === "LINK" || lessonFileUrl || lesson.content || lesson.assignment || lesson.quiz) && (
+              <Card>
+                <CardContent className="pt-5 space-y-6">
+                  {lesson.type === "YOUTUBE" && lesson.videoUrl && !youtubeVideoId && (
+                    <div className="border border-amber-300 bg-amber-50 p-4">
+                      <p className="text-sm text-amber-900">This saved URL cannot be embedded.</p>
+                      <Button className="mt-3 rounded-none" variant="outline" asChild>
+                        <a href={lesson.videoUrl} target="_blank" rel="noreferrer">Open on YouTube</a>
+                      </Button>
+                    </div>
+                  )}
+                  {lesson.type === "LINK" && lesson.externalUrl && (
+                    <Button asChild className="rounded-none">
+                      <a href={lesson.externalUrl} target="_blank" rel="noreferrer">Open resource</a>
+                    </Button>
+                  )}
+                  {lessonFileUrl && (
+                    <Button variant="outline" asChild className="rounded-none">
+                      <a href={lessonFileUrl} target="_blank" rel="noreferrer">Open lesson file</a>
+                    </Button>
+                  )}
+                  {lesson.content && (
+                    <div className="prose-content whitespace-pre-wrap text-sm">{lesson.content}</div>
+                  )}
+                  {lesson.assignment && (
+                    <div>
+                      <h2 className="mb-2 font-semibold">Assignment</h2>
+                      <p className="mb-5 text-sm text-muted-foreground">{lesson.assignment.instructions}</p>
+                      {(!submission || submission.status === "NEEDS_CORRECTION" || submission.status === "PENDING") && (
+                        <SubmissionForm
+                          assignmentId={lesson.assignment.id}
+                          allowText={lesson.assignment.allowText}
+                          allowFile={lesson.assignment.allowFile}
+                          allowLink={lesson.assignment.allowLink}
+                        />
+                      )}
+                    </div>
+                  )}
+                  {lesson.quiz && (
+                    <Button className="rounded-none" asChild>
+                      <Link href={`/quizzes/${lesson.quiz.id}`}>Take quiz</Link>
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            
+            <div className="flex items-center justify-between pt-6 border-t border-border">
+              {prevLessonUrl ? (
+                <Button variant="outline" className="rounded-none" asChild>
+                  <Link href={prevLessonUrl}>Previous Lesson</Link>
                 </Button>
-              </div>
-            )}
-            {lesson.type === "LINK" && lesson.externalUrl && (
-              <Button asChild>
-                <a href={lesson.externalUrl} target="_blank" rel="noreferrer">Open resource</a>
-              </Button>
-            )}
-            {lessonFileUrl && (
-              <Button variant="outline" asChild>
-                <a href={lessonFileUrl} target="_blank" rel="noreferrer">Open lesson file</a>
-              </Button>
-            )}
-            {lesson.content && (
-              <div className="prose-content whitespace-pre-wrap text-sm">{lesson.content}</div>
-            )}
-            {lesson.assignment && (
-              <div className="mt-6">
-                <h2 className="mb-2 font-semibold">Assignment</h2>
-                <p className="mb-5 text-sm text-muted-foreground">{lesson.assignment.instructions}</p>
-                {(!submission || submission.status === "NEEDS_CORRECTION" || submission.status === "PENDING") && (
-                  <SubmissionForm
-                    assignmentId={lesson.assignment.id}
-                    allowText={lesson.assignment.allowText}
-                    allowFile={lesson.assignment.allowFile}
-                    allowLink={lesson.assignment.allowLink}
-                  />
-                )}
-              </div>
-            )}
-            {lesson.quiz && (
-              <Button className="mt-5" asChild>
-                <Link href={`/quizzes/${lesson.quiz.id}`}>Take quiz</Link>
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+              ) : <div />}
+              {nextLessonUrl && (
+                <Button className="rounded-none" asChild>
+                  <Link href={nextLessonUrl}>Next Lesson</Link>
+                </Button>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Sidebar */}
@@ -255,8 +329,17 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
               </CardContent>
             </Card>
           ) : null}
+
+          <div className="h-[500px]">
+            <LessonNotes 
+              lessonId={lesson.id} 
+              notes={lesson.videoNotes ?? []} 
+              isMentor={!!mentorAccess && !isLearner}
+            />
+          </div>
+        </div>
         </div>
       </div>
-    </div>
+    </LessonProvider>
   );
 }

@@ -132,6 +132,11 @@ model User {
   preference           LearningPreference?
   badges               UserBadge[]    @relation("UserBadges")
   pushSubscriptions    PushSubscription[]
+  shortProgress        ShortProgress[]
+  shortBookmarks       ShortBookmark[]
+  shortComments        ShortComment[]
+  shortNotes           ShortNote[]
+  totalShortScore      Int            @default(0)
 }
 
 model UserSession {
@@ -267,28 +272,33 @@ model Progress {
 }
 
 model VideoProgress {
-  id          String   @id @default(cuid())
-  userId      String   @db.Uuid
-  lessonId    String
-  timestamp   Int      @default(0)
-  completed   Boolean  @default(false)
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  userId       String   @db.Uuid
+  lessonId     String
+  timestamp    Int      @default(0)
+  maxTimestamp Int      @default(0)
+  completed    Boolean  @default(false)
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson       Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
 
 model VideoNote {
-  id        String   @id @default(cuid())
-  userId    String   @db.Uuid
-  lessonId  String
-  timestamp Int
-  text      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  userId      String    @db.Uuid
+  lessonId    String
+  timestamp   Int
+  text        String
+  isDoubt     Boolean   @default(false)
+  resolved    Boolean   @default(false)
+  mentorReply String?
+  repliedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@index([userId, lessonId])
 }
@@ -527,5 +537,100 @@ model PushSubscription {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model YouTubeShort {
+  id              String   @id @default(cuid())
+  youtubeVideoId  String   @unique
+  title           String
+  description     String?
+  channelName     String?
+  channelId       String?
+  thumbnailUrl    String?
+  durationSeconds Int
+  sourceUrl       String
+  category        String
+  tags            String[]
+  shortScore      Int      @default(5)
+  approved        Boolean  @default(false)
+  rejected        Boolean  @default(false)
+  createdById     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  progress        ShortProgress[]
+  bookmarks       ShortBookmark[]
+  quizzes         ShortQuiz[]
+  comments        ShortComment[]
+  notes           ShortNote[]
+}
+
+model ShortProgress {
+  id          String   @id @default(cuid())
+  userId      String   @db.Uuid
+  shortId     String
+  watched     Boolean  @default(false)
+  watchedAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  short       YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, shortId])
+}
+
+model ShortBookmark {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  shortId   String
+  createdAt DateTime @default(now())
+
+  short     YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, shortId])
+}
+
+model ShortQuiz {
+  id          String   @id @default(cuid())
+  shortId     String
+  question    String
+  optionA     String
+  optionB     String
+  optionC     String
+  optionD     String
+  answer      String
+  explanation String?
+  createdAt   DateTime @default(now())
+
+  short       YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
+}
+
+model ShortComment {
+  id        String   @id @default(cuid())
+  shortId   String
+  userId    String   @db.Uuid
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  short     YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([shortId, createdAt(sort: Desc)])
+}
+
+model ShortNote {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  shortId   String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  short     YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, shortId])
 }
 
