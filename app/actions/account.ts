@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseAppearancePreference } from "@/lib/appearance";
+import { uploadPrivateFile } from "@/lib/storage";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function markNotificationReadAction(formData: FormData) {
   const user = await requireUser();
@@ -51,25 +53,16 @@ export async function uploadAvatarAction(formData: FormData) {
       return { error: "Avatar must be under 5MB." };
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    // Dynamically import node native modules to prevent Turbopack client-side bundling errors
-    const { writeFile, mkdir } = await import("fs/promises");
-    const { join } = await import("path");
-    
-    // Save locally to public/avatars folder
-    const uploadDir = join(process.cwd(), "public", "avatars");
-    await mkdir(uploadDir, { recursive: true });
-    
-    // Create a unique filename
     const extension = file.type.split("/")[1] || "jpg";
     const filename = `${user.id}-${Date.now()}.${extension}`;
-    const filePath = join(uploadDir, filename);
     
-    await writeFile(filePath, buffer);
+    // Upload to Supabase instead of local filesystem
+    const safePath = await uploadPrivateFile("profile-images", filename, file);
     
-    const avatarUrl = `/avatars/${filename}`;
+    // Get public URL
+    const supabase = createAdminClient();
+    const { data: publicData } = supabase.storage.from("profile-images").getPublicUrl(safePath);
+    const avatarUrl = publicData.publicUrl;
     
     await prisma.user.update({
       where: { id: user.id },
