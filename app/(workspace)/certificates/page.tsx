@@ -65,7 +65,7 @@ export default async function CertificatesPage() {
                     href={`/verify/${c.certificateId}`}
                     target="_blank"
                   >
-                    Verify credential →
+                    Public link →
                   </a>
                   {["GENERATED", "ELIGIBLE"].includes(c.status) && (
                     <CertificateButton id={c.id} />
