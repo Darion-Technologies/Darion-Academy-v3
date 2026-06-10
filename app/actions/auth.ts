@@ -102,7 +102,9 @@ export async function requestPasswordResetAction(_state: AuthState, formData: Fo
 
 export async function updatePasswordAction(_state: AuthState, formData: FormData): Promise<AuthState> {
   const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
   if (password.length < 8) return { error: "Password must contain at least 8 characters." };
+  if (password !== confirmPassword) return { error: "Passwords do not match." };
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: error.message };
