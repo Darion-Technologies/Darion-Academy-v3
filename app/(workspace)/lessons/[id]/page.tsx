@@ -17,6 +17,7 @@ import { LessonNotes } from "@/components/learning/lesson-notes";
 import {
   CheckCircle2, Clock, AlertTriangle, XCircle, ArrowLeft,
 } from "lucide-react";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 export default async function LessonPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
@@ -209,7 +210,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                     </Button>
                   )}
                   {lesson.content && (
-                    <div className="prose-content whitespace-pre-wrap text-sm">{lesson.content}</div>
+                    <MarkdownRenderer content={lesson.content} />
                   )}
                   {lesson.assignment && (
                     <div>

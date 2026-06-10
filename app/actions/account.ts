@@ -37,46 +37,55 @@ export async function updateProfileAction(formData: FormData) {
 }
 
 export async function uploadAvatarAction(formData: FormData) {
-  const user = await requireUser();
-  const file = formData.get("avatar") as File | null;
-  
-  if (!file || file.size === 0) {
-    throw new Error("No file uploaded.");
-  }
-  if (!file.type.startsWith("image/")) {
-    throw new Error("File must be an image.");
-  }
-  if (file.size > 5 * 1024 * 1024) { // 5MB limit
-    throw new Error("Avatar must be under 5MB.");
-  }
+  try {
+    const user = await requireUser();
+    const file = formData.get("avatar") as File | null;
+    
+    if (!file || file.size === 0) {
+      return { error: "No file uploaded." };
+    }
+    if (!file.type.startsWith("image/")) {
+      return { error: "File must be an image." };
+    }
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      return { error: "Avatar must be under 5MB." };
+    }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  
-  // Dynamically import node native modules to prevent Turbopack client-side bundling errors
-  const { writeFile, mkdir } = await import("fs/promises");
-  const { join } = await import("path");
-  
-  // Save locally to public/avatars folder
-  const uploadDir = join(process.cwd(), "public", "avatars");
-  await mkdir(uploadDir, { recursive: true });
-  
-  // Create a unique filename
-  const extension = file.type.split("/")[1] || "jpg";
-  const filename = `${user.id}-${Date.now()}.${extension}`;
-  const filePath = join(uploadDir, filename);
-  
-  await writeFile(filePath, buffer);
-  
-  const avatarUrl = `/avatars/${filename}`;
-  
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { avatarUrl }
-  });
-  
-  revalidatePath("/settings");
-  return { success: true, avatarUrl };
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    
+    // Dynamically import node native modules to prevent Turbopack client-side bundling errors
+    const { writeFile, mkdir } = await import("fs/promises");
+    const { join } = await import("path");
+    
+    // Save locally to public/avatars folder
+    const uploadDir = join(process.cwd(), "public", "avatars");
+    await mkdir(uploadDir, { recursive: true });
+    
+    // Create a unique filename
+    const extension = file.type.split("/")[1] || "jpg";
+    const filename = `${user.id}-${Date.now()}.${extension}`;
+    const filePath = join(uploadDir, filename);
+    
+    await writeFile(filePath, buffer);
+    
+    const avatarUrl = `/avatars/${filename}`;
+    
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { avatarUrl }
+    });
+    
+    revalidatePath("/settings");
+    return { success: true, avatarUrl };
+  } catch (error: any) {
+    console.error("UPLOAD ERROR:", error);
+    try {
+      const fs = await import("fs");
+      fs.writeFileSync("upload-error.log", error.stack || error.message);
+    } catch(e) {}
+    return { error: error.message || "Upload failed due to a server error." };
+  }
 }
 
 export async function updatePreferencesAction(formData: FormData) {

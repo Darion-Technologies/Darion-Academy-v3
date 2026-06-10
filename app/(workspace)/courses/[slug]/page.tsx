@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { formatDuration } from "@/lib/utils";
+import { cn, formatDuration } from "@/lib/utils";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { notFound } from "next/navigation";
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -118,7 +119,9 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           )}
           <div className="p-5">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{course.title}</h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{course.description}</p>
+            <div className="mt-4 max-w-2xl">
+              <MarkdownRenderer content={course.description} />
+            </div>
           </div>
         </div>
       </div>

@@ -37,7 +37,10 @@ export function AvatarUpload({
     startTransition(async () => {
       try {
         const result = await uploadAvatarAction(formData);
-        if (result?.success && result.avatarUrl) {
+        if (result?.error) {
+          toast.error(result.error);
+          setPreview(currentAvatarUrl);
+        } else if (result?.success && result.avatarUrl) {
           setPreview(result.avatarUrl);
           toast.success("Profile picture updated");
         }
