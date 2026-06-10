@@ -25,15 +25,6 @@ export function PushSettings() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
-      checkSubscription();
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
   async function checkSubscription() {
     try {
       const registration = await navigator.serviceWorker.ready;
@@ -45,6 +36,15 @@ export function PushSettings() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      setIsSupported(true);
+      checkSubscription();
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
   async function handleToggle() {
     setIsLoading(true);

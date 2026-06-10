@@ -146,7 +146,7 @@ export function AppShell({
               <SubmitButton 
                 variant="ghost" 
                 size={collapsed ? "icon-sm" : "sm"} 
-                pendingText="..." 
+                pendingText={collapsed ? "" : "Signing out..."} 
                 aria-label="Sign out" 
                 className={cn("text-sidebar-foreground hover:bg-white/8 hover:text-white", !collapsed ? "w-full justify-start gap-2.5 px-2.5 h-8" : "")}
               >
