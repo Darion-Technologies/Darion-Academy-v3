@@ -7,7 +7,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { getAvailableUsersAction, createConversationAction, sendMessageAction } from "@/app/actions/chat";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 type AvailableUser = {
   id: string;
@@ -131,13 +130,19 @@ export function ShareShortDialog({
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="size-8 overflow-hidden rounded-none bg-muted border border-border">
-                          {user.avatarUrl ? (
-                            <Image src={user.avatarUrl} alt="" width={32} height={32} className="size-full object-cover" />
-                          ) : (
-                            <div className="flex h-full items-center justify-center text-[10px] font-bold text-foreground">
-                              {user.name.substring(0, 2).toUpperCase()}
-                            </div>
+                        <div className="relative size-8 overflow-hidden rounded-none bg-muted border border-border">
+                          <div className="absolute inset-0 flex h-full items-center justify-center text-[10px] font-bold text-foreground">
+                            {user.name.substring(0, 2).toUpperCase()}
+                          </div>
+                          {user.avatarUrl && (
+                            <img 
+                              src={user.avatarUrl} 
+                              alt="" 
+                              width={32} 
+                              height={32} 
+                              className="relative z-10 size-full object-cover" 
+                              onError={(e) => { e.currentTarget.style.display = 'none'; }} 
+                            />
                           )}
                         </div>
                         <div className="flex flex-col">

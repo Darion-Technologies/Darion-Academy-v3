@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 type Message = {
   id: string;
@@ -72,13 +71,19 @@ export function ChatWindow({
                 {!isMe && (
                   <div className="w-8 shrink-0">
                     {showAvatar ? (
-                      <div className="size-8 overflow-hidden rounded-none bg-muted border border-border">
-                        {msg.sender.avatarUrl ? (
-                          <Image src={msg.sender.avatarUrl} alt="" width={32} height={32} className="size-full object-cover" />
-                        ) : (
-                          <div className="flex h-full items-center justify-center text-[10px] font-bold text-foreground">
-                            {msg.sender.name.substring(0, 2).toUpperCase()}
-                          </div>
+                      <div className="relative size-8 overflow-hidden rounded-none bg-muted border border-border">
+                        <div className="absolute inset-0 flex h-full items-center justify-center text-[10px] font-bold text-foreground">
+                          {msg.sender.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        {msg.sender.avatarUrl && (
+                          <img 
+                            src={msg.sender.avatarUrl} 
+                            alt="" 
+                            width={32} 
+                            height={32} 
+                            className="relative z-10 size-full object-cover" 
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }} 
+                          />
                         )}
                       </div>
                     ) : (

@@ -54,17 +54,19 @@ export function AvatarUpload({
   return (
     <div className="relative group size-24 shrink-0 border-4 border-background bg-muted shadow-lg transition-transform hover:scale-105">
       {/* Avatar Image or Initials */}
-      {preview ? (
+      <div className="absolute inset-0 flex items-center justify-center bg-primary/10 text-3xl font-bold text-primary">
+        {initials(name)}
+      </div>
+      {preview && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={preview}
           alt={name}
-          className="size-full object-cover"
+          className="relative z-10 size-full object-cover"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
         />
-      ) : (
-        <div className="flex size-full items-center justify-center bg-primary/10 text-xl font-bold text-primary">
-          {initials(name)}
-        </div>
       )}
 
       {/* Upload Overlay */}

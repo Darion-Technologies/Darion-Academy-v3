@@ -181,11 +181,18 @@ export function certificateHtml(input: {
 }
 
 export async function renderCertificatePdf(html: string) {
+  const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
   const executablePath = process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath(
     "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
   ));
   const browser = await puppeteer.launch({
-    args: chromium.args,
+    args: isLocal ? [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--headless",
+    ] : chromium.args,
     defaultViewport: { width: 1123, height: 794 },
     executablePath,
     headless: true,

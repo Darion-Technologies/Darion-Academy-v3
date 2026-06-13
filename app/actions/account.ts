@@ -56,7 +56,7 @@ export async function uploadAvatarAction(formData: FormData) {
     const extension = file.type.split("/")[1] || "jpg";
     const filename = `${user.id}-${Date.now()}.${extension}`;
     
-    // Upload to Supabase instead of local filesystem
+    // Upload to Supabase
     const safePath = await uploadPrivateFile("profile-images", filename, file);
     
     // Get public URL

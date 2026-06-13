@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { UserAvatar } from "@/components/user-avatar";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 import { getLeaderboardRankings } from "@/lib/leaderboard-data";
@@ -38,11 +38,7 @@ export async function MiniLeaderboard() {
                   0{index + 1}
                 </span>
                 <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden bg-secondary font-bold text-[10px] text-foreground rounded-full">
-                  {user.avatarUrl ? (
-                    <Image src={user.avatarUrl} alt="" fill className="object-cover" sizes="32px" />
-                  ) : (
-                    initials(user.name)
-                  )}
+                  <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={32} />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm font-semibold leading-tight text-foreground truncate max-w-[100px] sm:max-w-[140px]">

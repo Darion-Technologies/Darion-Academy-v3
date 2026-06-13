@@ -22,7 +22,8 @@ export async function uploadPrivateFile(bucket: string, path: string, file: File
   if (path.includes("..") || path.startsWith("/")) throw new Error("Invalid storage path.");
   const supabase = createAdminClient();
   const safePath = path.split("/").map((segment) => segment.replace(/[^a-zA-Z0-9._-]/g, "_")).join("/");
-  const { error } = await supabase.storage.from(bucket).upload(safePath, file, { upsert: true, contentType: file.type });
+  const arrayBuffer = await file.arrayBuffer();
+  const { error } = await supabase.storage.from(bucket).upload(safePath, arrayBuffer, { upsert: true, contentType: file.type });
   if (error) throw new Error(error.message);
   return safePath;
 }
