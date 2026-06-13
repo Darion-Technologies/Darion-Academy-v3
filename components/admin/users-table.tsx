@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useOptimistic } from "react";
-import Image from "next/image";
+
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { SubmitButton } from "@/components/submit-button";
@@ -98,7 +98,7 @@ export function UsersTable({ users }: { users: User[] }) {
                     <div className="flex items-center gap-3">
                       <div className="grid size-9 shrink-0 place-items-center overflow-hidden bg-muted text-xs font-bold text-foreground">
                         {u.avatarUrl ? (
-                          <Image src={u.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" />
+                          <img src={u.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" />
                         ) : (
                           u.name.charAt(0)
                         )}

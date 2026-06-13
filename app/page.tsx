@@ -4,13 +4,21 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, BookOpen, GraduationCap, PlaySquare, ShieldCheck } from "lucide-react";
 
+import { redirect } from "next/navigation";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function Home() {
   const user = await getCurrentUser();
-  const ctaLink = user ? roleHome[user.role] : "/login";
-  const ctaText = user ? "Go to Dashboard" : "Sign In to Academy";
+  
+  // If the user is already logged in, skip the landing page and go straight to their dashboard
+  if (user) {
+    redirect(roleHome[user.role]);
+  }
+
+  const ctaLink = "/login";
+  const ctaText = "Sign In to Academy";
   const randomImage = Math.floor(Math.random() * 3) + 1;
 
   return (
