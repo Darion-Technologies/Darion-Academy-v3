@@ -200,6 +200,19 @@ export function QuizClient({ quiz, canAttempt }: QuizProps) {
     );
   }
 
+  // ── No Questions Available ──
+  if (!quiz.questions || quiz.questions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center max-w-2xl mx-auto mt-12 bg-card border border-border shadow-[var(--shadow-sm)]">
+        <ShieldAlert className="size-12 text-[var(--warning)] mb-4" />
+        <h2 className="text-xl font-bold text-foreground">Quiz Not Ready</h2>
+        <p className="text-muted-foreground mt-2">
+          This quiz currently has no questions assigned to it. Please check back later or contact your instructor.
+        </p>
+      </div>
+    );
+  }
+
   // ── Instructions ──
   if (examState === "instructions") {
     return <InstructionsScreen quiz={quiz} onStart={handleStart} isPending={isPending} />;

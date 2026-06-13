@@ -175,6 +175,8 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
             initiallyCompleted={existingProgress?.completed ?? false}
             initialProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
             initialMaxProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
+            videoStartTime={lesson.videoStartTime}
+            videoEndTime={lesson.videoEndTime}
           />
         ) : (
           <div className="space-y-6">
@@ -186,6 +188,8 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                 initiallyCompleted={existingProgress?.completed ?? false}
                 initialProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
                 initialMaxProgress={lesson.videoProgress?.[0]?.maxTimestamp || lesson.videoProgress?.[0]?.timestamp || 0}
+                videoStartTime={lesson.videoStartTime}
+                videoEndTime={lesson.videoEndTime}
               />
             )}
             {((lesson.type === "YOUTUBE" && lesson.videoUrl && !youtubeVideoId) || lesson.type === "LINK" || lessonFileUrl || lesson.content || lesson.assignment || lesson.quiz) && (

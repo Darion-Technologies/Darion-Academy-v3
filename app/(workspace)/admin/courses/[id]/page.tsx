@@ -1,4 +1,4 @@
-import { deleteCourseAction } from "@/app/actions/admin";
+import { deleteCourseAction, forceDeleteCourseAction } from "@/app/actions/admin";
 import { assignCourseTemplateAction } from "@/app/actions/certificates";
 import { CourseForm } from "@/components/admin/course-form";
 import { CurriculumBuilder } from "@/components/admin/curriculum-builder";
@@ -92,10 +92,16 @@ export default async function ManageCoursePage({ params }: { params: Promise<{ i
                 <p className="mb-4 text-sm text-muted-foreground">
                   Courses with learner history are archived. Empty courses are permanently deleted. This action cannot be undone.
                 </p>
-                <form action={deleteCourseAction}>
-                  <input type="hidden" name="courseId" value={course.id} />
-                  <SubmitButton variant="destructive" pendingText="Processing...">Delete Course</SubmitButton>
-                </form>
+                <div className="flex gap-4">
+                  <form action={deleteCourseAction}>
+                    <input type="hidden" name="courseId" value={course.id} />
+                    <SubmitButton variant="secondary" pendingText="Processing...">Smart Delete / Archive</SubmitButton>
+                  </form>
+                  <form action={forceDeleteCourseAction}>
+                    <input type="hidden" name="courseId" value={course.id} />
+                    <SubmitButton variant="destructive" pendingText="Deleting...">Force Permanent Delete</SubmitButton>
+                  </form>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

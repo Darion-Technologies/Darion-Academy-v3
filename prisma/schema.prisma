@@ -138,6 +138,8 @@ model Lesson {
   updatedAt          DateTime        @updatedAt
   transcriptUrl      String?
   videoDuration      Int?
+  videoStartTime     Int?
+  videoEndTime       Int?
   assignment         Assignment?
   module             Module          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   progress           Progress[]
@@ -263,9 +265,10 @@ model Quiz {
   title        String
   instructions String?
   passMark     Int           @default(70)
-  maxAttempts  Int?
-  isStrict     Boolean       @default(false)
-  timeLimit    Int?
+  maxAttempts              Int?
+  isStrict                 Boolean       @default(false)
+  requireShortAnswerReview Boolean       @default(false)
+  timeLimit                Int?
   questions    Question[]
   lesson       Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   attempts     QuizAttempt[]

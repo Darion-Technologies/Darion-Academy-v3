@@ -10,6 +10,8 @@ export function InteractiveVideoLayout({
   initiallyCompleted,
   initialProgress = 0,
   initialMaxProgress = 0,
+  videoStartTime,
+  videoEndTime,
 }: {
   lessonId: string;
   videoUrl: string;
@@ -17,6 +19,8 @@ export function InteractiveVideoLayout({
   initiallyCompleted: boolean;
   initialProgress?: number;
   initialMaxProgress?: number;
+  videoStartTime?: number | null;
+  videoEndTime?: number | null;
 }) {
   const [currentTime, setCurrentTime] = useState(initialProgress);
 
@@ -27,8 +31,10 @@ export function InteractiveVideoLayout({
           videoUrl={videoUrl}
           canComplete={canComplete}
           initiallyCompleted={initiallyCompleted}
-          initialProgress={initialProgress}
+        initialProgress={initialProgress}
         initialMaxProgress={initialMaxProgress}
+        videoStartTime={videoStartTime}
+        videoEndTime={videoEndTime}
         onProgress={setCurrentTime}
       />
     </div>

@@ -86,6 +86,8 @@ export function YouTubePlayer({
   initiallyCompleted,
   initialProgress = 0,
   initialMaxProgress = 0,
+  videoStartTime,
+  videoEndTime,
 }: {
   lessonId: string;
   videoId: string;
@@ -93,6 +95,8 @@ export function YouTubePlayer({
   initiallyCompleted: boolean;
   initialProgress?: number;
   initialMaxProgress?: number;
+  videoStartTime?: number | null;
+  videoEndTime?: number | null;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRoot = useRef<HTMLDivElement>(null);
@@ -103,8 +107,8 @@ export function YouTubePlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
-  const [progress, setProgress] = useState(initialProgress);
-  const [maxWatched, setMaxWatched] = useState(initialMaxProgress || initialProgress);
+  const [progress, setProgress] = useState(Math.max(initialProgress, videoStartTime || 0));
+  const [maxWatched, setMaxWatched] = useState(Math.max(initialMaxProgress || initialProgress, videoStartTime || 0));
   const progressRef = useRef(progress);
   const maxWatchedRef = useRef(maxWatched);
   useEffect(() => { progressRef.current = progress; }, [progress]);
@@ -141,14 +145,19 @@ export function YouTubePlayer({
           modestbranding: 1,
           playsinline: 1,
           rel: 0,
+          ...(videoStartTime ? { start: videoStartTime } : {}),
+          ...(videoEndTime ? { end: videoEndTime } : {}),
         },
         events: {
           onReady(event) {
             ytPlayerRef.current = event.target;
             setDuration(event.target.getDuration());
             setIsReady(true);
-            if (initialProgress > 0) {
+            if (initialProgress > 0 && (!videoStartTime || initialProgress > videoStartTime)) {
               event.target.seekTo(initialProgress, true);
+            } else if (videoStartTime) {
+              // the start param handles starting at the right time, but we update our state
+              setProgress(videoStartTime);
             }
           },
           onStateChange(event) {
@@ -255,11 +264,26 @@ export function YouTubePlayer({
     }
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newTime = parseFloat(e.target.value);
+  const effectiveStartTime = videoStartTime || 0;
+  const effectiveEndTime = videoEndTime || duration;
+  const effectiveDuration = Math.max(0, effectiveEndTime - effectiveStartTime);
+  const displayProgress = Math.max(0, progress - effectiveStartTime);
+
+  const handleSeekRelative = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newDisplayTime = parseFloat(e.target.value);
+    let newTime = newDisplayTime + effectiveStartTime;
+    
+    // Enforce bounds
     if (newTime > maxWatched) {
       newTime = maxWatched;
     }
+    if (videoStartTime && newTime < videoStartTime) {
+      newTime = videoStartTime;
+    }
+    if (videoEndTime && newTime > videoEndTime) {
+      newTime = videoEndTime;
+    }
+
     setProgress(newTime);
     if (ytPlayerRef.current) {
       ytPlayerRef.current.seekTo(newTime, true);
@@ -295,9 +319,9 @@ export function YouTubePlayer({
             <input
               type="range"
               min={0}
-              max={duration || 100}
-              value={progress}
-              onChange={handleSeek}
+              max={effectiveDuration || 100}
+              value={displayProgress}
+              onChange={handleSeekRelative}
               className="w-full h-1 bg-white/30 appearance-none cursor-pointer accent-blue-500 hover:h-2 transition-all"
             />
             
@@ -312,7 +336,7 @@ export function YouTubePlayer({
                     {isMuted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
                   </button>
                   <span className="font-mono text-xs">
-                    {formatTime(progress)} / {formatTime(duration)}
+                    {formatTime(displayProgress)} / {formatTime(effectiveDuration)}
                   </span>
                 </div>
               </div>

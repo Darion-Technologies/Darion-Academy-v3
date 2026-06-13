@@ -159,6 +159,10 @@ export function CurriculumBuilder({ course }: { course: any }) {
                                 <div><Label>External URL</Label><Input name="externalUrl" defaultValue={lesson.externalUrl ?? ""} /></div>
                               </div>
                               <div className="grid grid-cols-2 gap-4">
+                                <div><Label>Start Timestamp (sec)</Label><Input name="videoStartTime" type="number" min={0} defaultValue={lesson.videoStartTime ?? ""} placeholder="e.g. 120" /></div>
+                                <div><Label>End Timestamp (sec)</Label><Input name="videoEndTime" type="number" min={0} defaultValue={lesson.videoEndTime ?? ""} placeholder="e.g. 300" /></div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
                                 <div><Label>Order</Label><Input name="order" type="number" min={1} defaultValue={lesson.order} /></div>
                                 <div><Label>Estimated Minutes</Label><Input name="estimatedMinutes" type="number" min={1} defaultValue={lesson.estimatedMinutes} /></div>
                               </div>
@@ -210,6 +214,10 @@ export function CurriculumBuilder({ course }: { course: any }) {
                         <div className="grid grid-cols-2 gap-4">
                           <div><Label>YouTube URL</Label><Input name="videoUrl" placeholder="https://youtube.com/watch?v=..." /></div>
                           <div><Label>External URL</Label><Input name="externalUrl" placeholder="https://..." /></div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div><Label>Start Timestamp (sec)</Label><Input name="videoStartTime" type="number" min={0} placeholder="e.g. 120" /></div>
+                          <div><Label>End Timestamp (sec)</Label><Input name="videoEndTime" type="number" min={0} placeholder="e.g. 300" /></div>
                         </div>
                         <div><Label>Lesson File</Label><Input name="file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,image/*,video/*" /></div>
                         

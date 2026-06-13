@@ -18,6 +18,8 @@ export function NativeVideoPlayer({
   initiallyCompleted,
   initialProgress = 0,
   initialMaxProgress = 0,
+  videoStartTime,
+  videoEndTime,
   onProgress,
 }: {
   lessonId: string;
@@ -26,6 +28,8 @@ export function NativeVideoPlayer({
   initiallyCompleted: boolean;
   initialProgress?: number;
   initialMaxProgress?: number;
+  videoStartTime?: number | null;
+  videoEndTime?: number | null;
   onProgress?: (time: number) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,10 +53,16 @@ export function NativeVideoPlayer({
 
   // Auto-resume on mount
   useEffect(() => {
-    if (videoRef.current && initialProgress > 0) {
-      videoRef.current.currentTime = initialProgress;
+    if (videoRef.current) {
+      if (initialProgress > 0) {
+        videoRef.current.currentTime = initialProgress;
+      } else if (videoStartTime && videoStartTime > 0) {
+        videoRef.current.currentTime = videoStartTime;
+        setProgress(videoStartTime);
+        setMaxWatched(videoStartTime);
+      }
     }
-  }, [initialProgress]);
+  }, [initialProgress, videoStartTime]);
 
   useEffect(() => {
     registerSeekCallback((time) => {
@@ -75,6 +85,15 @@ export function NativeVideoPlayer({
   const handleTimeUpdate = () => {
     if (!videoRef.current) return;
     const current = videoRef.current.currentTime;
+    
+    // Check if we hit the custom end time
+    if (videoEndTime && current >= videoEndTime) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+      handleEnded();
+      return;
+    }
+
     setProgress(current);
     setCurrentTimestamp(current);
     setMaxWatched((prev: number) => Math.max(prev, current));
@@ -96,11 +115,27 @@ export function NativeVideoPlayer({
     return () => clearInterval(interval);
   }, [isPlaying, lessonId, canComplete, completed]);
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newTime = parseFloat(e.target.value);
+  const effectiveStartTime = videoStartTime || 0;
+  const effectiveEndTime = videoEndTime || duration;
+  const effectiveDuration = Math.max(0, effectiveEndTime - effectiveStartTime);
+  const displayProgress = Math.max(0, progress - effectiveStartTime);
+
+  const handleSeekRelative = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newDisplayTime = parseFloat(e.target.value);
+    let newTime = newDisplayTime + effectiveStartTime;
+
     if (newTime > maxWatched) {
       newTime = maxWatched; // Prevent seeking forward past what has been watched
     }
+    
+    // Enforce bounds
+    if (videoStartTime && newTime < videoStartTime) {
+      newTime = videoStartTime;
+    }
+    if (videoEndTime && newTime > videoEndTime) {
+      newTime = videoEndTime;
+    }
+
     setProgress(newTime);
     if (videoRef.current) videoRef.current.currentTime = newTime;
     if (onProgress) onProgress(newTime);
@@ -163,9 +198,9 @@ export function NativeVideoPlayer({
           <input
             type="range"
             min={0}
-            max={duration || 100}
-            value={progress}
-            onChange={handleSeek}
+            max={effectiveDuration || 100}
+            value={displayProgress}
+            onChange={handleSeekRelative}
             className="w-full h-1 bg-white/30 appearance-none cursor-pointer accent-blue-500 hover:h-2 transition-all"
           />
           
@@ -180,7 +215,7 @@ export function NativeVideoPlayer({
                   {isMuted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
                 </button>
                 <span className="font-mono text-xs">
-                  {formatTime(progress)} / {formatTime(duration)}
+                  {formatTime(displayProgress)} / {formatTime(effectiveDuration)}
                 </span>
               </div>
             </div>

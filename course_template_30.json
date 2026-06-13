@@ -1,0 +1,551 @@
+{
+  "title": "Core Professional Skills Program",
+  "description": "A mandatory onboarding program covering workplace communication, email writing, technical documentation, Microsoft 365, Git, prompt engineering, and API security basics.",
+  "category": "Core Skills",
+  "difficulty": "BEGINNER",
+  "estimatedMinutes": 1100,
+  "status": "PUBLISHED",
+  "modules": [
+    {
+      "title": "Module 1: Workplace Communication Basics",
+      "description": "Learn how to communicate clearly and professionally in the workplace.",
+      "lessons": [
+        {
+          "title": "Complete Communication Skills Course",
+          "type": "YOUTUBE",
+          "videoUrl": "https://www.youtube.com/watch?v=A0BMyN3Eofk",
+          "estimatedMinutes": 60,
+          "completionRequired": true
+        },
+        {
+          "title": "Communication Practice Submission",
+          "type": "ASSIGNMENT",
+          "estimatedMinutes": 20,
+          "completionRequired": true,
+          "assignment": {
+            "instructions": "Write a 5-line professional self-introduction including your name, role, current learning goal, one professional strength, and one area you want to improve."
+          }
+        },
+        {
+          "title": "Communication Knowledge Check",
+          "type": "QUIZ",
+          "estimatedMinutes": 10,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 80,
+            "questions": [
+              {
+                "prompt": "What is the main goal of professional communication?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "To share information clearly and respectfully",
+                "options": "To speak fast\nTo share information clearly and respectfully\nTo use difficult words\nTo avoid teamwork"
+              },
+              {
+                "prompt": "Professional communication should be clear, respectful, and purpose-driven.",
+                "type": "TRUE_FALSE",
+                "correctAnswer": "True"
+              },
+              {
+                "prompt": "Write one quality of good workplace communication.",
+                "type": "SHORT_ANSWER",
+                "correctAnswer": "Clarity"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Module 2: Professional Email Writing",
+      "description": "Learn how to write clear, polite, and professional workplace emails.",
+      "lessons": [
+        {
+          "title": "Write Professional Emails in English",
+          "type": "YOUTUBE",
+          "videoUrl": "https://www.youtube.com/watch?v=moIucWGgvMc",
+          "estimatedMinutes": 45,
+          "completionRequired": true
+        },
+        {
+          "title": "Email Writing Practice",
+          "type": "ASSIGNMENT",
+          "estimatedMinutes": 20,
+          "completionRequired": true,
+          "assignment": {
+            "instructions": "Draft one professional email to a team member asking for a project update. Include a clear subject, greeting, message body, call to action, and closing."
+          }
+        },
+        {
+          "title": "Email Writing Knowledge Check",
+          "type": "QUIZ",
+          "estimatedMinutes": 10,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 80,
+            "questions": [
+              {
+                "prompt": "What should a professional email subject be?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Short and clear",
+                "options": "Empty\nShort and clear\nVery long\nUnrelated to the message"
+              },
+              {
+                "prompt": "A professional email should include a greeting and closing.",
+                "type": "TRUE_FALSE",
+                "correctAnswer": "True"
+              },
+              {
+                "prompt": "What is one important part of a professional email?",
+                "type": "SHORT_ANSWER",
+                "correctAnswer": "Subject"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Module 3: Technical Documentation Basics",
+      "description": "Learn how to write simple and useful technical documentation.",
+      "lessons": [
+        {
+          "title": "Technical Writing Course for Beginners",
+          "type": "YOUTUBE",
+          "videoUrl": "https://www.youtube.com/watch?v=vT5pcc30Ffw",
+          "estimatedMinutes": 60,
+          "completionRequired": true
+        },
+        {
+          "title": "Feature Documentation Task",
+          "type": "ASSIGNMENT",
+          "estimatedMinutes": 30,
+          "completionRequired": true,
+          "assignment": {
+            "instructions": "Write simple documentation for one software feature. Include feature name, purpose, steps to use, expected result, and common issues."
+          }
+        },
+        {
+          "title": "Technical Writing Knowledge Check",
+          "type": "QUIZ",
+          "estimatedMinutes": 10,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 80,
+            "questions": [
+              {
+                "prompt": "What is the purpose of technical documentation?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "To explain how something works or how to use it",
+                "options": "To confuse users\nTo explain how something works or how to use it\nTo replace the product\nTo make content longer"
+              },
+              {
+                "prompt": "Good documentation should be clear and organized.",
+                "type": "TRUE_FALSE",
+                "correctAnswer": "True"
+              },
+              {
+                "prompt": "Name one section commonly found in technical documentation.",
+                "type": "SHORT_ANSWER",
+                "correctAnswer": "Steps to use"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Module 4: Microsoft 365 and SharePoint Basics",
+      "description": "Learn the basics of Microsoft 365 tools used in office workflows.",
+      "lessons": [
+        {
+          "title": "Microsoft 365 Basics Full Course Tutorial",
+          "type": "YOUTUBE",
+          "videoUrl": "https://www.youtube.com/watch?v=ySKjhmg9RRo",
+          "estimatedMinutes": 180,
+          "completionRequired": true
+        },
+        {
+          "title": "Microsoft 365 Practice Task",
+          "type": "ASSIGNMENT",
+          "estimatedMinutes": 30,
+          "completionRequired": true,
+          "assignment": {
+            "instructions": "Create one sample Word document, Excel tracker, or SharePoint folder and submit a screenshot or link."
+          }
+        },
+        {
+          "title": "Microsoft 365 Knowledge Check",
+          "type": "QUIZ",
+          "estimatedMinutes": 10,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 80,
+            "questions": [
+              {
+                "prompt": "Which Microsoft 365 tool is commonly used for spreadsheets?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Excel",
+                "options": "Word\nExcel\nPowerPoint\nTeams"
+              },
+              {
+                "prompt": "SharePoint can be used to store and organize company files.",
+                "type": "TRUE_FALSE",
+                "correctAnswer": "True"
+              },
+              {
+                "prompt": "Name one Microsoft 365 application.",
+                "type": "SHORT_ANSWER",
+                "correctAnswer": "Word"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Module 5: Git and GitHub Fundamentals",
+      "description": "Learn the basics of Git version control and GitHub collaboration.",
+      "lessons": [
+        {
+          "title": "Learn Git Full Course for Beginners",
+          "type": "YOUTUBE",
+          "videoUrl": "https://www.youtube.com/watch?v=zTjRZNkhiEU",
+          "estimatedMinutes": 240,
+          "completionRequired": true
+        },
+        {
+          "title": "GitHub Submission Task",
+          "type": "ASSIGNMENT",
+          "estimatedMinutes": 45,
+          "completionRequired": true,
+          "assignment": {
+            "instructions": "Create a sample GitHub repository, add a README file, make at least one commit, and submit the repository link."
+          }
+        },
+        {
+          "title": "Git Knowledge Check",
+          "type": "QUIZ",
+          "estimatedMinutes": 10,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 80,
+            "questions": [
+              {
+                "prompt": "What is Git used for?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Version control",
+                "options": "Video editing\nVersion control\nGraphic design\nEmail writing"
+              },
+              {
+                "prompt": "GitHub can be used to host repositories online.",
+                "type": "TRUE_FALSE",
+                "correctAnswer": "True"
+              },
+              {
+                "prompt": "Which command is commonly used to save changes in Git?",
+                "type": "SHORT_ANSWER",
+                "correctAnswer": "git commit"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Module 6: Prompt Engineering for Productivity",
+      "description": "Learn how to use prompts for daily work, learning, documentation, coding, and communication.",
+      "lessons": [
+        {
+          "title": "Prompt Engineering Full Course",
+          "type": "YOUTUBE",
+          "videoUrl": "https://www.youtube.com/watch?v=BUdwDOLQVWc",
+          "estimatedMinutes": 90,
+          "completionRequired": true
+        },
+        {
+          "title": "Prompt Writing Practice",
+          "type": "ASSIGNMENT",
+          "estimatedMinutes": 25,
+          "completionRequired": true,
+          "assignment": {
+            "instructions": "Create 5 useful prompts for daily work: one for email writing, one for documentation, one for coding help, one for learning, and one for task planning."
+          }
+        },
+        {
+          "title": "Prompt Engineering Knowledge Check",
+          "type": "QUIZ",
+          "estimatedMinutes": 10,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 80,
+            "questions": [
+              {
+                "prompt": "What makes a prompt more effective?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Clear context and clear task",
+                "options": "No context\nClear context and clear task\nRandom words\nVery short unclear request"
+              },
+              {
+                "prompt": "A good prompt can include role, task, context, and output format.",
+                "type": "TRUE_FALSE",
+                "correctAnswer": "True"
+              },
+              {
+                "prompt": "Name one element of a good prompt.",
+                "type": "SHORT_ANSWER",
+                "correctAnswer": "Context"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Module 7: API Security and OWASP Basics",
+      "description": "Learn basic API security risks and safe development practices.",
+      "lessons": [
+        {
+          "title": "OWASP API Security Top 10 Course",
+          "type": "YOUTUBE",
+          "videoUrl": "https://www.youtube.com/watch?v=YYe0FdfdgDU",
+          "estimatedMinutes": 90,
+          "completionRequired": true
+        },
+        {
+          "title": "API Security Knowledge Task",
+          "type": "ASSIGNMENT",
+          "estimatedMinutes": 30,
+          "completionRequired": true,
+          "assignment": {
+            "instructions": "List 10 common API security risks and explain each one in one line. Also mention one prevention method for each risk."
+          }
+        },
+        {
+          "title": "API Security Knowledge Check",
+          "type": "QUIZ",
+          "estimatedMinutes": 10,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 80,
+            "questions": [
+              {
+                "prompt": "What does OWASP focus on?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Application security risks",
+                "options": "Graphic design\nApplication security risks\nVideo editing\nOffice decoration"
+              },
+              {
+                "prompt": "APIs should have proper authentication and authorization.",
+                "type": "TRUE_FALSE",
+                "correctAnswer": "True"
+              },
+              {
+                "prompt": "Name one common API security risk.",
+                "type": "SHORT_ANSWER",
+                "correctAnswer": "Broken authentication"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Module 8: Final Assessment",
+      "description": "A comprehensive proctored exam testing knowledge across all modules.",
+      "lessons": [
+        {
+          "title": "Core Skills Final Exam",
+          "type": "QUIZ",
+          "estimatedMinutes": 60,
+          "completionRequired": true,
+          "quiz": {
+            "passMark": 85,
+            "isStrict": true,
+            "questions": [
+              {
+                "prompt": "What is active listening?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Fully concentrating on what is being said",
+                "options": "Ignoring the speaker\nFully concentrating on what is being said\nInterrupting frequently\nOnly hearing the words"
+              },
+              {
+                "prompt": "Which of the following is non-verbal communication?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Body language",
+                "options": "Speaking\nWriting an email\nBody language\nPhone call"
+              },
+              {
+                "prompt": "What is empathy in the workplace?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Understanding others' feelings",
+                "options": "Being strictly logical\nUnderstanding others' feelings\nWorking alone\nIgnoring emotions"
+              },
+              {
+                "prompt": "Why is clarity important in professional settings?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Prevents misunderstandings",
+                "options": "Makes you sound smart\nPrevents misunderstandings\nWastes time\nConfuses others"
+              },
+              {
+                "prompt": "What does 'CC' stand for in an email?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Carbon Copy",
+                "options": "Correct Copy\nCarbon Copy\nClear Communication\nCopy Content"
+              },
+              {
+                "prompt": "What does 'BCC' stand for in an email?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Blind Carbon Copy",
+                "options": "Best Carbon Copy\nBlind Carbon Copy\nBasic Copy\nBlank Copy"
+              },
+              {
+                "prompt": "When should you use 'Reply All'?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "When everyone needs the info",
+                "options": "Always\nNever\nWhen everyone needs the info\nWhen gossiping"
+              },
+              {
+                "prompt": "What is the primary purpose of an email signature?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Providing contact details",
+                "options": "Showing off\nProviding contact details\nWriting a quote\nDrawing art"
+              },
+              {
+                "prompt": "What is a README file?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Basic project documentation",
+                "options": "A novel\nBasic project documentation\nA code file\nA password"
+              },
+              {
+                "prompt": "Who is the primary audience for technical documentation?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Users and developers",
+                "options": "Nobody\nUsers and developers\nOnly computers\nOnly managers"
+              },
+              {
+                "prompt": "Why use formatting in technical documentation?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Improves readability",
+                "options": "Looks pretty\nImproves readability\nSaves space\nBreaks the text"
+              },
+              {
+                "prompt": "What is a prerequisite in software documentation?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Required beforehand",
+                "options": "Optional step\nRequired beforehand\nFinal step\nA type of code"
+              },
+              {
+                "prompt": "What is Microsoft OneDrive?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Cloud storage",
+                "options": "Local drive\nCloud storage\nA video game\nA physical disk"
+              },
+              {
+                "prompt": "What is Microsoft Teams primarily used for?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Chat and meetings",
+                "options": "Spreadsheets\nChat and meetings\nWriting books\nPhoto editing"
+              },
+              {
+                "prompt": "Which Microsoft 365 tool is best for creating presentations?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "PowerPoint",
+                "options": "Excel\nPowerPoint\nWord\nAccess"
+              },
+              {
+                "prompt": "What is Microsoft Excel primarily used for?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Spreadsheets and data",
+                "options": "Writing essays\nSpreadsheets and data\nEmailing\nWeb browsing"
+              },
+              {
+                "prompt": "What is a Git commit?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "A saved snapshot of code",
+                "options": "A promise\nA saved snapshot of code\nA deleted file\nA folder"
+              },
+              {
+                "prompt": "What does the command 'git push' do?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Uploads local commits",
+                "options": "Downloads code\nUploads local commits\nDeletes the repo\nMerges branches"
+              },
+              {
+                "prompt": "What is a Git branch?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "An independent line of development",
+                "options": "A tree part\nAn independent line of development\nA bug\nA server"
+              },
+              {
+                "prompt": "What does the command 'git pull' do?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Fetches and merges changes",
+                "options": "Pushes code\nFetches and merges changes\nCreates a file\nDeletes history"
+              },
+              {
+                "prompt": "What is a 'Zero-shot' prompt in AI engineering?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "A prompt with no examples",
+                "options": "A prompt with no text\nA prompt with no examples\nA prompt with 10 examples\nAn image prompt"
+              },
+              {
+                "prompt": "Why assign a 'Role' to an AI in a prompt?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Guides tone and expertise",
+                "options": "Confuses it\nGuides tone and expertise\nSaves money\nMakes it slow"
+              },
+              {
+                "prompt": "What is 'Few-shot' prompting?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Providing a few examples",
+                "options": "Providing a few examples\nShooting a target\nWriting short words\nIgnoring constraints"
+              },
+              {
+                "prompt": "What is an AI hallucination?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "AI making up false facts",
+                "options": "AI making up false facts\nA cool feature\nA fast response\nA true statement"
+              },
+              {
+                "prompt": "What is SQL Injection?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Inserting malicious SQL queries",
+                "options": "Inserting malicious SQL queries\nA database backup\nA fast query\nA medical term"
+              },
+              {
+                "prompt": "What is Phishing in cybersecurity?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Tricking users for credentials",
+                "options": "Catching fish\nTricking users for credentials\nEncrypting data\nDeleting files"
+              },
+              {
+                "prompt": "What does OWASP stand for?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Open Worldwide Application Security Project",
+                "options": "Open Web App Security\nOpen Worldwide Application Security Project\nOnline Web Access\nOver Web Security"
+              },
+              {
+                "prompt": "What is MFA in access security?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Multi-Factor Authentication",
+                "options": "Multi-Factor Authentication\nMore Fast Access\nMajor File Area\nMini Form App"
+              },
+              {
+                "prompt": "What is the best way to handle a workplace conflict?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Discussing it calmly",
+                "options": "Yelling\nDiscussing it calmly\nIgnoring it\nQuitting"
+              },
+              {
+                "prompt": "Why is continuous learning important for developers?",
+                "type": "MULTIPLE_CHOICE",
+                "correctAnswer": "Keeps skills relevant",
+                "options": "Wastes time\nKeeps skills relevant\nIs mandatory\nIs boring"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

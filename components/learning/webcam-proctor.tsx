@@ -21,10 +21,18 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
     async function initProctoring() {
       try {
         console.log("[Proctor] Requesting camera...");
+        
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error("Your browser blocks camera access on unsecure connections. Mobile Chrome requires HTTPS or 'localhost' to ask for permissions.");
+        }
+
         let stream: MediaStream;
         try {
           stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-        } catch (initialErr) {
+        } catch (initialErr: any) {
+          if (initialErr.name === 'NotAllowedError' || initialErr.name === 'PermissionDeniedError') {
+            throw new Error("Camera access was blocked. Please tap the lock icon in your URL bar, allow Camera permissions, and reload.");
+          }
           console.warn("[Proctor] Failed to get user-facing camera, falling back to default...", initialErr);
           stream = await navigator.mediaDevices.getUserMedia({ video: true });
         }

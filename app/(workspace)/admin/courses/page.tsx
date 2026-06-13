@@ -8,6 +8,7 @@ import { CoursesTable } from "./courses-table";
 import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NewCourseModal } from "@/components/admin/new-course-modal";
+import { BulkCourseModal } from "@/components/admin/bulk-course-modal";
 
 export default async function AdminCoursesPage() {
   await requireRole("ADMIN");
@@ -21,7 +22,12 @@ export default async function AdminCoursesPage() {
       <PageHeader 
         title="Courses" 
         description="Create and structure the academy catalog." 
-        action={<NewCourseModal />}
+        action={
+          <div className="flex items-center gap-2">
+            <BulkCourseModal />
+            <NewCourseModal />
+          </div>
+        }
       />
 
       <Card>

@@ -37,4 +37,6 @@ export const lessonSchema = z.object({
   order: z.coerce.number().int().min(1),
   estimatedMinutes: z.coerce.number().int().min(1).max(10000),
   completionRequired: z.coerce.boolean(),
+  videoStartTime: z.coerce.number().int().min(0).optional(),
+  videoEndTime: z.coerce.number().int().min(0).optional(),
 });

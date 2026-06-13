@@ -1,5 +1,7 @@
 "use server";
 
+import { z } from "zod";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -108,6 +110,15 @@ export async function deleteCourseAction(formData: FormData) {
   redirect("/admin/courses");
 }
 
+export async function forceDeleteCourseAction(formData: FormData) {
+  const admin = await requireRole("ADMIN");
+  const courseId = String(formData.get("courseId") ?? "");
+  await prisma.course.delete({ where: { id: courseId } });
+  await prisma.activityLog.create({ data: { actorId: admin.id, action: "Force deleted course", entityType: "Course", entityId: courseId } });
+  revalidatePath("/admin/courses");
+  redirect("/admin/courses");
+}
+
 export async function createModuleAction(formData: FormData) {
   const admin = await requireRole("ADMIN");
   const parsed = moduleSchema.safeParse(Object.fromEntries(formData));
@@ -169,6 +180,8 @@ export async function createLessonAction(formData: FormData) {
       order: resolveAvailableOrder(parsed.data.order, existing.map((item) => item.order)),
       videoUrl: parsed.data.videoUrl || null,
       externalUrl: parsed.data.externalUrl || null,
+      videoStartTime: parsed.data.videoStartTime || null,
+      videoEndTime: parsed.data.videoEndTime || null,
     },
   });
   const file = formData.get("file");
@@ -210,6 +223,8 @@ export async function updateLessonAction(formData: FormData) {
         order: parsed.data.order,
         estimatedMinutes: parsed.data.estimatedMinutes,
         completionRequired: parsed.data.completionRequired,
+        videoStartTime: parsed.data.videoStartTime || null,
+        videoEndTime: parsed.data.videoEndTime || null,
       },
     });
     if (parsed.data.type === "ASSIGNMENT") {
@@ -298,6 +313,7 @@ export async function updateQuizSettingsAction(formData: FormData) {
   const admin = await requireRole("ADMIN");
   const quizId = String(formData.get("quizId") ?? "");
   const isStrict = formData.get("isStrict") === "on";
+  const requireShortAnswerReview = formData.get("requireShortAnswerReview") === "on";
   const timeLimitRaw = formData.get("timeLimit");
   const timeLimit = timeLimitRaw ? parseInt(String(timeLimitRaw), 10) : null;
   const passMark = parseInt(String(formData.get("passMark") ?? "70"), 10);
@@ -306,7 +322,7 @@ export async function updateQuizSettingsAction(formData: FormData) {
 
   await prisma.quiz.update({
     where: { id: quizId },
-    data: { isStrict, timeLimit, passMark, maxAttempts }
+    data: { isStrict, requireShortAnswerReview, timeLimit, passMark, maxAttempts }
   });
   await prisma.activityLog.create({
     data: { actorId: admin.id, action: "Updated quiz settings", entityType: "Quiz", entityId: quizId },
@@ -321,4 +337,209 @@ export async function deleteQuestionAction(formData: FormData) {
   const question = await prisma.question.delete({ where: { id: questionId } });
   await prisma.activityLog.create({ data: { actorId: admin.id, action: "Deleted quiz question", entityType: "Question", entityId: questionId } });
   revalidatePath("/admin/quizzes");
+}
+
+export async function bulkImportQuestionsAction(formData: FormData) {
+  const admin = await requireRole("ADMIN");
+  const quizId = String(formData.get("quizId") ?? "");
+  const rawText = String(formData.get("rawText") ?? "");
+
+  if (!rawText.trim()) throw new Error("No text provided.");
+
+  const blocks = rawText.split(/\n\s*\n/);
+  const questionsToCreate = [];
+
+  for (const block of blocks) {
+    if (!block.trim()) continue;
+    const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
+
+    let prompt = "";
+    const options: string[] = [];
+    let correctAnswer = "";
+
+    for (const line of lines) {
+      if (/^ANSWER:\s*/i.test(line)) {
+        const ansVal = line.replace(/^ANSWER:\s*/i, "").trim();
+        // Check if ansVal is a single letter matching an option index (A=0, B=1)
+        if (options.length > 0 && /^[A-Z]$/i.test(ansVal)) {
+          const charCode = ansVal.toUpperCase().charCodeAt(0);
+          if (charCode >= 65 && charCode < 65 + options.length) {
+            correctAnswer = options[charCode - 65];
+          } else {
+            correctAnswer = ansVal;
+          }
+        } else {
+          correctAnswer = ansVal;
+        }
+      } else if (/^[A-Z][)\.]\s+/i.test(line) || /^[a-z][)\.]\s+/.test(line) || /^-\s+/.test(line)) {
+        // Line like "A) Option" or "a. Option" or "- Option"
+        options.push(line.replace(/^([A-Za-z][)\.]\s+|-\s+)/, "").trim());
+      } else {
+        if (!prompt) prompt = line;
+        else prompt += "\n" + line;
+      }
+    }
+
+    if (!prompt) continue;
+
+    let type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER" = "SHORT_ANSWER";
+    if (options.length > 0) type = "MULTIPLE_CHOICE";
+    else if (correctAnswer.toLowerCase() === "true" || correctAnswer.toLowerCase() === "false") type = "TRUE_FALSE";
+
+    questionsToCreate.push({
+      quizId,
+      type,
+      prompt,
+      correctAnswer: correctAnswer || "Needs Answer",
+      options: options.length > 0 ? options : undefined,
+      points: 1,
+    });
+  }
+
+  if (questionsToCreate.length === 0) throw new Error("Could not parse any valid questions. Please check the formatting.");
+
+  const existing = await prisma.question.findMany({ where: { quizId }, select: { order: true } });
+  let currentOrder = existing.length > 0 ? Math.max(...existing.map((q) => q.order)) + 1 : 1;
+
+  for (const q of questionsToCreate) {
+    await prisma.question.create({
+      data: { ...q, order: currentOrder++ },
+    });
+  }
+
+  await prisma.activityLog.create({
+    data: { actorId: admin.id, action: "Bulk imported quiz questions", entityType: "Quiz", entityId: quizId, metadata: { count: questionsToCreate.length } },
+  });
+
+  revalidatePath("/admin/quizzes");
+}
+
+const bulkCourseSchema = z.object({
+  title: z.string().min(1, "Course title is required"),
+  description: z.string().optional(),
+  category: z.string().default("General"),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
+  estimatedMinutes: z.number().default(60),
+  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).default("DRAFT"),
+  modules: z.array(z.object({
+    title: z.string().min(1, "Module title is required"),
+    description: z.string().optional(),
+    lessons: z.array(z.object({
+      title: z.string().min(1, "Lesson title is required"),
+      type: z.enum(["TEXT", "YOUTUBE", "VIDEO", "PDF", "LINK", "ASSIGNMENT", "QUIZ"]),
+      content: z.string().optional(),
+      videoUrl: z.string().optional(),
+      videoStartTime: z.number().int().min(0).optional(),
+      videoEndTime: z.number().int().min(0).optional(),
+      estimatedMinutes: z.number().default(10),
+      completionRequired: z.boolean().default(true),
+      assignment: z.object({
+        instructions: z.string()
+      }).optional(),
+      quiz: z.object({
+        passMark: z.number().default(70),
+        isStrict: z.boolean().default(false),
+        questions: z.array(z.object({
+          prompt: z.string(),
+          type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"]),
+          correctAnswer: z.string(),
+          options: z.string().optional()
+        })).optional()
+      }).optional()
+    })).optional()
+  })).optional()
+});
+
+export async function bulkImportCourseAction(formData: FormData) {
+  const admin = await requireRole("ADMIN");
+  const rawJson = String(formData.get("rawJson") ?? "");
+  
+  if (!rawJson.trim()) throw new Error("No JSON provided.");
+
+  let parsedJson;
+  try {
+    parsedJson = JSON.parse(rawJson);
+  } catch (err: any) {
+    throw new Error(`Invalid JSON format: ${err.message}`);
+  }
+
+  const result = bulkCourseSchema.safeParse(parsedJson);
+  if (!result.success) {
+    const errorMessages = result.error.errors.map(e => `${e.path.join(".")}: ${e.message}`).join(", ");
+    throw new Error(`Validation failed: ${errorMessages}`);
+  }
+
+  const courseData = result.data;
+
+  const createPayload: any = {
+    title: courseData.title,
+    slug: slugify(courseData.title) + "-" + Date.now().toString().slice(-4),
+    description: courseData.description,
+    category: courseData.category,
+    difficulty: courseData.difficulty,
+    estimatedMinutes: courseData.estimatedMinutes,
+    status: courseData.status,
+  };
+
+  if (courseData.modules && courseData.modules.length > 0) {
+    createPayload.modules = {
+      create: courseData.modules.map((m, mIndex) => {
+        const mod: any = {
+          title: m.title,
+          description: m.description,
+          order: mIndex + 1,
+        };
+
+        if (m.lessons && m.lessons.length > 0) {
+          mod.lessons = {
+            create: m.lessons.map((l, lIndex) => ({
+              title: l.title,
+              type: l.type,
+              content: l.content,
+              videoUrl: l.videoUrl,
+              videoStartTime: l.videoStartTime || null,
+              videoEndTime: l.videoEndTime || null,
+              estimatedMinutes: l.estimatedMinutes,
+              completionRequired: l.completionRequired,
+              order: lIndex + 1,
+              assignment: l.type === "ASSIGNMENT" ? {
+                create: {
+                  instructions: l.assignment?.instructions || l.content || "Complete the assigned task."
+                }
+              } : undefined,
+              quiz: l.type === "QUIZ" ? {
+                create: {
+                  title: l.title,
+                  passMark: l.quiz?.passMark || 70,
+                  isStrict: l.quiz?.isStrict || false,
+                  questions: l.quiz?.questions && l.quiz.questions.length > 0 ? {
+                    create: l.quiz.questions.map((q, qIndex) => ({
+                      prompt: q.prompt,
+                      type: q.type,
+                      correctAnswer: q.correctAnswer,
+                      options: q.options || undefined,
+                      order: qIndex + 1,
+                      points: 1
+                    }))
+                  } : undefined
+                }
+              } : undefined
+            }))
+          };
+        }
+        return mod;
+      })
+    };
+  }
+
+  const course = await prisma.course.create({
+    data: createPayload
+  });
+
+  await prisma.activityLog.create({
+    data: { actorId: admin.id, action: "Bulk imported course via JSON", entityType: "Course", entityId: course.id }
+  });
+
+  revalidatePath("/admin/courses");
+  return { success: true, courseId: course.id };
 }
