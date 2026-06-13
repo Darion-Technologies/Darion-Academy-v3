@@ -32,7 +32,7 @@ function SettingPanel({ title, description, children }: { title: string; descrip
 
 function LockedRow({ icon: Icon, label, sublabel }: { icon?: any; label: string; sublabel: string }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border bg-muted/60 p-4 opacity-80">
+    <div className="flex items-center justify-between border bg-muted/60 p-4 opacity-80">
       <div className="flex items-center gap-3">
         {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
         <div>
@@ -69,7 +69,7 @@ export default async function SettingsPage() {
       <div className="max-w-5xl space-y-4 pb-20">
         
         {/* Premium Corporate Hero Banner */}
-        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <div className="overflow-hidden border border-border bg-card shadow-sm">
           {/* Banner background */}
           <div className="h-20 bg-gradient-to-r from-slate-900 via-[#10202D] to-primary/80" />
           
@@ -89,7 +89,7 @@ export default async function SettingsPage() {
               </div>
               
               <div className="mt-3 flex flex-col justify-stretch gap-2 sm:flex-row sm:mt-0 sm:gap-3">
-                <div className="inline-flex items-center gap-2 rounded-md border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                <div className="inline-flex items-center gap-2 border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground">
                   <CalendarDays className="size-4" />
                   Joined {user.createdAt.getFullYear()}
                 </div>
@@ -168,8 +168,8 @@ export default async function SettingsPage() {
                   ))}
                 </div>
               ) : (
-                <div className="py-12 text-center border-2 border-dashed rounded-xl border-border bg-muted/10">
-                  <div className="inline-flex items-center justify-center p-4 rounded-full bg-muted mb-4">
+                <div className="py-12 text-center border-2 border-dashed border-border bg-muted/10">
+                  <div className="inline-flex items-center justify-center p-4 bg-muted mb-4">
                     <Trophy className="size-8 text-muted-foreground" />
                   </div>
                   <h3 className="text-lg font-semibold">No badges yet</h3>
@@ -245,8 +245,8 @@ export default async function SettingsPage() {
                 title="Account Security"
                 description="Update your password."
               >
-                <div className="mb-6 flex items-center gap-4 rounded-lg bg-muted p-4">
-                  <div className="rounded-full bg-primary/10 p-2">
+                <div className="mb-6 flex items-center gap-4 bg-muted p-4">
+                  <div className="bg-primary/10 p-2">
                     <KeyRound className="size-5 text-primary" />
                   </div>
                   <div>
@@ -265,7 +265,7 @@ export default async function SettingsPage() {
                   {sessions.map((item) => {
                     const current = item.sessionId === currentSessionId;
                     return (
-                      <div key={item.id} className="flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/30">
+                      <div key={item.id} className="flex items-start gap-4 border border-border bg-card p-4 transition-colors hover:bg-muted/30">
                         <MonitorSmartphone className="mt-0.5 h-6 w-6 shrink-0 text-muted-foreground" />
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold">{item.browser ?? "Browser"} on {item.operatingSystem ?? "Unknown OS"}</p>

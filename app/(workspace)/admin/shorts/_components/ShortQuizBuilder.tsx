@@ -70,7 +70,7 @@ export function ShortQuizBuilder({ shortId, existingQuizzes }: { shortId: string
       </div>
 
       {quizzes.length === 0 && !isAdding && (
-        <div className="text-center p-8 border rounded-lg bg-muted/30">
+        <div className="text-center p-8 border bg-muted/30">
           <p className="text-muted-foreground">No quizzes added yet.</p>
         </div>
       )}

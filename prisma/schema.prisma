@@ -9,164 +9,72 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum UserRole {
-  ADMIN
-  MENTOR
-  EMPLOYEE
-  INTERN
-}
-
-enum CourseStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-enum Difficulty {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
-
-enum LessonType {
-  TEXT
-  YOUTUBE
-  VIDEO
-  PDF
-  LINK
-  ASSIGNMENT
-  QUIZ
-}
-
-enum EnrollmentStatus {
-  ASSIGNED
-  IN_PROGRESS
-  AWAITING_APPROVAL
-  COMPLETED
-}
-
-enum SubmissionStatus {
-  PENDING
-  SUBMITTED
-  NEEDS_CORRECTION
-  APPROVED
-  REJECTED
-}
-
-enum QuestionType {
-  MULTIPLE_CHOICE
-  TRUE_FALSE
-  SHORT_ANSWER
-}
-
-enum AttemptStatus {
-  IN_PROGRESS
-  PASSED
-  FAILED
-  TIMEOUT
-  TERMINATED
-}
-
-enum CertificateStatus {
-  ELIGIBLE
-  ISSUING
-  GENERATED
-  FAILED
-  REVOKED
-}
-
-enum CertificateTemplateStatus {
-  ACTIVE
-  INACTIVE
-}
-
-enum NotificationType {
-  COURSE_ASSIGNED
-  SUBMISSION_REVIEWED
-  FEEDBACK_ADDED
-  CERTIFICATE_GENERATED
-  GENERAL
-}
-
-enum AppearanceTheme {
-  SYSTEM
-  LIGHT
-  DARK
-}
-
-enum BadgeType {
-  WEEKLY_STAR
-  MONTHLY_HERO
-  YEARLY_CHAMPION
-  ACHIEVEMENT
-}
-
 model User {
-  id                  String         @id @db.Uuid
-  email               String         @unique
-  employeeId          String?        @unique
+  id                  String              @id @db.Uuid
+  email               String              @unique
   name                String
-  role                UserRole       @default(EMPLOYEE)
+  role                UserRole            @default(EMPLOYEE)
   department          String?
   avatarUrl           String?
-  active              Boolean        @default(true)
+  active              Boolean             @default(true)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  employeeId          String?             @unique
   lastLoginAt         DateTime?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-  enrollments         Enrollment[]   @relation("LearnerEnrollments")
-  mentoredEnrollments Enrollment[]   @relation("EnrollmentMentor")
-  progress            Progress[]
-  videoProgress       VideoProgress[]
-  videoNotes          VideoNote[]
-  submissions         Submission[]   @relation("LearnerSubmissions")
-  reviewedSubmissions Submission[]   @relation("SubmissionReviewer")
-  quizAttempts        QuizAttempt[]
-  certificates        Certificate[]
-  certificatesIssued  Certificate[]  @relation("CertificateIssuer")
-  certificatesRevoked Certificate[]  @relation("CertificateRevoker")
-  feedbackAuthored    Feedback[]     @relation("FeedbackAuthor")
-  notifications       Notification[]
+  totalShortScore     Int                 @default(0)
   activity            ActivityLog[]
-  loginStreaks         LoginStreak[]
-  sessions             UserSession[]
-  preference           LearningPreference?
-  badges               UserBadge[]    @relation("UserBadges")
-  pushSubscriptions    PushSubscription[]
-  shortProgress        ShortProgress[]
-  shortBookmarks       ShortBookmark[]
-  shortComments        ShortComment[]
-  shortNotes           ShortNote[]
-  totalShortScore      Int            @default(0)
+  certificatesIssued  Certificate[]       @relation("CertificateIssuer")
+  certificatesRevoked Certificate[]       @relation("CertificateRevoker")
+  certificates        Certificate[]
+  enrollments         Enrollment[]        @relation("LearnerEnrollments")
+  mentoredEnrollments Enrollment[]        @relation("EnrollmentMentor")
+  feedbackAuthored    Feedback[]          @relation("FeedbackAuthor")
+  preference          LearningPreference?
+  loginStreaks        LoginStreak[]
+  notifications       Notification[]
+  progress            Progress[]
+  pushSubscriptions   PushSubscription[]
+  quizAttempts        QuizAttempt[]
+  shortBookmarks      ShortBookmark[]
+  shortComments       ShortComment[]
+  shortNotes          ShortNote[]
+  shortProgress       ShortProgress[]
+  submissions         Submission[]        @relation("LearnerSubmissions")
+  reviewedSubmissions Submission[]        @relation("SubmissionReviewer")
+  badges              UserBadge[]         @relation("UserBadges")
+  sessions            UserSession[]
+  videoNotes          VideoNote[]
+  videoProgress       VideoProgress[]
 }
 
 model UserSession {
-  id           String    @id @default(cuid())
-  userId       String    @db.Uuid
-  sessionId    String    @unique
-  device       String?
-  browser      String?
+  id              String    @id @default(cuid())
+  userId          String    @db.Uuid
+  sessionId       String    @unique
+  device          String?
+  browser         String?
   operatingSystem String?
-  ipHash       String?
-  createdAt    DateTime  @default(now())
-  lastSeenAt   DateTime  @updatedAt
-  revokedAt    DateTime?
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipHash          String?
+  createdAt       DateTime  @default(now())
+  lastSeenAt      DateTime  @updatedAt
+  revokedAt       DateTime?
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, revokedAt])
 }
 
 model LearningPreference {
-  id                String   @id @default(cuid())
-  userId            String   @unique @db.Uuid
-  resumeLastLesson  Boolean  @default(true)
-  defaultLessonView String   @default("STANDARD")
-  courseReminders   Boolean  @default(true)
-  reviewUpdates     Boolean  @default(true)
-  certificateAlerts Boolean  @default(true)
+  id                String          @id @default(cuid())
+  userId            String          @unique @db.Uuid
+  resumeLastLesson  Boolean         @default(true)
+  defaultLessonView String          @default("STANDARD")
+  courseReminders   Boolean         @default(true)
+  reviewUpdates     Boolean         @default(true)
+  certificateAlerts Boolean         @default(true)
+  updatedAt         DateTime        @updatedAt
   theme             AppearanceTheme @default(SYSTEM)
-  sidebarCollapsed  Boolean  @default(false)
-  updatedAt         DateTime @updatedAt
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sidebarCollapsed  Boolean         @default(false)
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LoginStreak {
@@ -191,11 +99,11 @@ model Course {
   status                CourseStatus         @default(DRAFT)
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
-  modules               Module[]
-  enrollments           Enrollment[]
-  certificates          Certificate[]
   certificateTemplateId String?
-  certificateTemplate   CertificateTemplate? @relation(fields: [certificateTemplateId], references: [id], onDelete: SetNull)
+  certificates          Certificate[]
+  certificateTemplate   CertificateTemplate? @relation(fields: [certificateTemplateId], references: [id])
+  enrollments           Enrollment[]
+  modules               Module[]
 }
 
 model Module {
@@ -206,34 +114,34 @@ model Module {
   order       Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons     Lesson[]
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, order])
 }
 
 model Lesson {
-  id                 String      @id @default(cuid())
+  id                 String          @id @default(cuid())
   moduleId           String
   title              String
   type               LessonType
   content            String?
   videoUrl           String?
-  videoDuration      Int?
-  transcriptUrl      String?
   fileUrl            String?
   externalUrl        String?
   order              Int
-  completionRequired Boolean     @default(true)
-  estimatedMinutes   Int         @default(10)
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
-  module             Module      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  progress           Progress[]
-  videoProgress      VideoProgress[]
-  videoNotes         VideoNote[]
+  completionRequired Boolean         @default(true)
+  estimatedMinutes   Int             @default(10)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  transcriptUrl      String?
+  videoDuration      Int?
   assignment         Assignment?
+  module             Module          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress           Progress[]
   quiz               Quiz?
+  videoNotes         VideoNote[]
+  videoProgress      VideoProgress[]
 
   @@unique([moduleId, order])
 }
@@ -249,10 +157,10 @@ model Enrollment {
   startedAt       DateTime?
   completedAt     DateTime?
   approvedAt      DateTime?
-  learner         User             @relation("LearnerEnrollments", fields: [learnerId], references: [id], onDelete: Cascade)
-  mentor          User?            @relation("EnrollmentMentor", fields: [mentorId], references: [id], onDelete: SetNull)
-  course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   certificates    Certificate[]
+  course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  learner         User             @relation("LearnerEnrollments", fields: [learnerId], references: [id], onDelete: Cascade)
+  mentor          User?            @relation("EnrollmentMentor", fields: [mentorId], references: [id])
 
   @@unique([learnerId, courseId])
   @@index([mentorId])
@@ -265,8 +173,8 @@ model Progress {
   completed   Boolean   @default(false)
   completedAt DateTime?
   updatedAt   DateTime  @updatedAt
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
@@ -276,11 +184,11 @@ model VideoProgress {
   userId       String   @db.Uuid
   lessonId     String
   timestamp    Int      @default(0)
-  maxTimestamp Int      @default(0)
   completed    Boolean  @default(false)
   updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  maxTimestamp Int      @default(0)
   lesson       Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
@@ -291,14 +199,14 @@ model VideoNote {
   lessonId    String
   timestamp   Int
   text        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   isDoubt     Boolean   @default(false)
   resolved    Boolean   @default(false)
   mentorReply String?
   repliedAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, lessonId])
 }
@@ -328,10 +236,10 @@ model Submission {
   reviewedAt   DateTime?
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
+  feedback     Feedback[]
   assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   learner      User             @relation("LearnerSubmissions", fields: [learnerId], references: [id], onDelete: Cascade)
-  reviewer     User?            @relation("SubmissionReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
-  feedback     Feedback[]
+  reviewer     User?            @relation("SubmissionReviewer", fields: [reviewerId], references: [id])
 
   @@unique([assignmentId, learnerId])
   @@index([learnerId])
@@ -343,8 +251,8 @@ model Feedback {
   authorId     String     @db.Uuid
   message      String
   createdAt    DateTime   @default(now())
-  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   author       User       @relation("FeedbackAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 }
 
 model Quiz {
@@ -356,8 +264,8 @@ model Quiz {
   maxAttempts  Int?
   isStrict     Boolean       @default(false)
   timeLimit    Int?
-  lesson       Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   questions    Question[]
+  lesson       Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   attempts     QuizAttempt[]
 }
 
@@ -384,12 +292,12 @@ model QuizAttempt {
   earnedPoints Int           @default(0)
   totalPoints  Int           @default(0)
   status       AttemptStatus @default(IN_PROGRESS)
-  warnings     Int           @default(0)
   startedAt    DateTime      @default(now())
   submittedAt  DateTime?
+  warnings     Int           @default(0)
+  answers      QuizAnswer[]
   quiz         Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  answers      QuizAnswer[]
 
   @@index([quizId, userId])
   @@index([userId])
@@ -414,28 +322,28 @@ model Certificate {
   enrollmentId     String
   userId           String               @db.Uuid
   courseId         String
+  status           CertificateStatus    @default(ELIGIBLE)
+  score            Int?
+  fileUrl          String?
+  issuedAt         DateTime?
+  createdAt        DateTime             @default(now())
   templateId       String?
   issuerId         String?              @db.Uuid
   revokedById      String?              @db.Uuid
   replacesId       String?
-  status           CertificateStatus    @default(ELIGIBLE)
-  score            Int?
-  fileUrl          String?
   templateSnapshot Json?
   failureReason    String?
   revokedReason    String?
   revokedAt        DateTime?
-  issuedAt         DateTime?
-  createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
-  enrollment       Enrollment           @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   course           Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  template         CertificateTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
-  issuer           User?                @relation("CertificateIssuer", fields: [issuerId], references: [id], onDelete: SetNull)
-  revokedBy        User?                @relation("CertificateRevoker", fields: [revokedById], references: [id], onDelete: SetNull)
-  replaces         Certificate?         @relation("CertificateReplacement", fields: [replacesId], references: [id], onDelete: SetNull)
+  enrollment       Enrollment           @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  issuer           User?                @relation("CertificateIssuer", fields: [issuerId], references: [id])
+  replaces         Certificate?         @relation("CertificateReplacement", fields: [replacesId], references: [id])
   replacements     Certificate[]        @relation("CertificateReplacement")
+  revokedBy        User?                @relation("CertificateRevoker", fields: [revokedById], references: [id])
+  template         CertificateTemplate? @relation(fields: [templateId], references: [id])
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([enrollmentId])
   @@index([status])
@@ -470,8 +378,8 @@ model CertificateTemplate {
   backgroundUrl      String?
   createdAt          DateTime                  @default(now())
   updatedAt          DateTime                  @updatedAt
-  courses            Course[]
   certificates       Certificate[]
+  courses            Course[]
 }
 
 model Notification {
@@ -496,7 +404,7 @@ model ActivityLog {
   entityId   String?
   metadata   Json?
   createdAt  DateTime @default(now())
-  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actor      User?    @relation(fields: [actorId], references: [id])
 
   @@index([createdAt])
 }
@@ -520,8 +428,8 @@ model UserBadge {
   period    String?
   metadata  Json?
   awardedAt DateTime @default(now())
-  user      User     @relation("UserBadges", fields: [userId], references: [id], onDelete: Cascade)
   badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserBadges", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -540,8 +448,8 @@ model PushSubscription {
 }
 
 model YouTubeShort {
-  id              String   @id @default(cuid())
-  youtubeVideoId  String   @unique
+  id              String          @id @default(cuid())
+  youtubeVideoId  String          @unique
   title           String
   description     String?
   channelName     String?
@@ -551,40 +459,37 @@ model YouTubeShort {
   sourceUrl       String
   category        String
   tags            String[]
-  shortScore      Int      @default(5)
-  approved        Boolean  @default(false)
-  rejected        Boolean  @default(false)
+  approved        Boolean         @default(false)
+  rejected        Boolean         @default(false)
   createdById     String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  progress        ShortProgress[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  shortScore      Int             @default(5)
   bookmarks       ShortBookmark[]
-  quizzes         ShortQuiz[]
   comments        ShortComment[]
   notes           ShortNote[]
+  progress        ShortProgress[]
+  quizzes         ShortQuiz[]
 }
 
 model ShortProgress {
-  id          String   @id @default(cuid())
-  userId      String   @db.Uuid
-  shortId     String
-  watched     Boolean  @default(false)
-  watchedAt   DateTime?
-  createdAt   DateTime @default(now())
-
-  short       YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String       @id @default(cuid())
+  userId    String       @db.Uuid
+  shortId   String
+  watched   Boolean      @default(false)
+  watchedAt DateTime?
+  createdAt DateTime     @default(now())
+  short     YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, shortId])
 }
 
 model ShortBookmark {
-  id        String   @id @default(cuid())
-  userId    String   @db.Uuid
+  id        String       @id @default(cuid())
+  userId    String       @db.Uuid
   shortId   String
-  createdAt DateTime @default(now())
-
+  createdAt DateTime     @default(now())
   short     YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -592,7 +497,7 @@ model ShortBookmark {
 }
 
 model ShortQuiz {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   shortId     String
   question    String
   optionA     String
@@ -601,19 +506,17 @@ model ShortQuiz {
   optionD     String
   answer      String
   explanation String?
-  createdAt   DateTime @default(now())
-
+  createdAt   DateTime     @default(now())
   short       YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
 }
 
 model ShortComment {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   shortId   String
-  userId    String   @db.Uuid
+  userId    String       @db.Uuid
   text      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
   short     YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -621,16 +524,106 @@ model ShortComment {
 }
 
 model ShortNote {
-  id        String   @id @default(cuid())
-  userId    String   @db.Uuid
+  id        String       @id @default(cuid())
+  userId    String       @db.Uuid
   shortId   String
   content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
   short     YouTubeShort @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, shortId])
 }
 
+enum UserRole {
+  ADMIN
+  MENTOR
+  EMPLOYEE
+  INTERN
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum LessonType {
+  TEXT
+  YOUTUBE
+  PDF
+  LINK
+  ASSIGNMENT
+  QUIZ
+  VIDEO
+}
+
+enum EnrollmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  AWAITING_APPROVAL
+  COMPLETED
+}
+
+enum SubmissionStatus {
+  PENDING
+  SUBMITTED
+  NEEDS_CORRECTION
+  APPROVED
+  REJECTED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  PASSED
+  FAILED
+  TIMEOUT
+  TERMINATED
+}
+
+enum CertificateStatus {
+  ELIGIBLE
+  GENERATED
+  REVOKED
+  ISSUING
+  FAILED
+}
+
+enum CertificateTemplateStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum NotificationType {
+  COURSE_ASSIGNED
+  SUBMISSION_REVIEWED
+  FEEDBACK_ADDED
+  CERTIFICATE_GENERATED
+  GENERAL
+}
+
+enum AppearanceTheme {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+enum BadgeType {
+  WEEKLY_STAR
+  MONTHLY_HERO
+  YEARLY_CHAMPION
+  ACHIEVEMENT
+}

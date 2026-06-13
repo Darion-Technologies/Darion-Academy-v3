@@ -1,6 +1,7 @@
 import { getTopDashboardData, getHeatmapData } from "@/lib/dashboard-data";
-import { ContributionHeatmap } from "@/components/dashboard/contribution-heatmap";
+import { DashboardCalendar } from "@/components/dashboard/dashboard-calendar";
 import { ToDoList } from "@/components/dashboard/to-do-list";
+import { MiniLeaderboard } from "@/components/dashboard/mini-leaderboard";
 
 export async function BottomRow({ userId }: { userId: string }) {
   // getTopDashboardData is cached, so this is just retrieving the already fetched data
@@ -11,12 +12,15 @@ export async function BottomRow({ userId }: { userId: string }) {
   ]);
 
   return (
-    <div className="grid grid-cols-1 items-stretch gap-2 sm:gap-3 xl:grid-cols-[1.8fr_1fr]">
-      <div className="min-h-[280px]">
-        <ContributionHeatmap heatmapDays={heatmapDays} />
+    <div className="grid grid-cols-1 items-stretch gap-1.5 sm:gap-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="min-h-[220px]">
+        <DashboardCalendar heatmapDays={heatmapDays} pendingActions={data.pendingActions} />
       </div>
-      <div className="min-h-[280px]">
+      <div className="min-h-[220px]">
         <ToDoList actions={data.pendingActions} />
+      </div>
+      <div className="min-h-[220px]">
+        <MiniLeaderboard />
       </div>
     </div>
   );

@@ -25,7 +25,7 @@ export default async function AdminQuizzesPage() {
             </CardHeader>
             <CardContent>
               {/* Settings Form */}
-              <form action={updateQuizSettingsAction} className="mb-8 grid gap-4 md:grid-cols-4 rounded-lg bg-muted/50 p-4 border border-border">
+              <form action={updateQuizSettingsAction} className="mb-8 grid gap-4 md:grid-cols-4 bg-muted/50 p-4 border border-border">
                 <input type="hidden" name="quizId" value={quiz.id} />
                 <div className="md:col-span-4 font-semibold text-sm border-b pb-2">Quiz Settings</div>
                 <div>
@@ -53,7 +53,7 @@ export default async function AdminQuizzesPage() {
               <div className="mb-5 space-y-2">
                 <div className="font-semibold text-sm border-b pb-2">Questions</div>
                 {quiz.questions.map((q) => (
-                  <div key={q.id} className="rounded-lg border p-3 text-sm">
+                  <div key={q.id} className="border p-3 text-sm">
                     <b>{q.order}. {q.prompt}</b>
                     <p className="mt-1 text-xs text-muted-foreground">{q.type} · {q.points} points · Answer: {q.correctAnswer}</p>
                     <form action={deleteQuestionAction} className="mt-2"><input type="hidden" name="questionId" value={q.id} /><SubmitButton variant="destructive" size="sm" pendingText="Deleting...">Delete</SubmitButton></form>
@@ -62,7 +62,7 @@ export default async function AdminQuizzesPage() {
               </div>
 
               {/* Add Question Form */}
-              <form action={addQuestionAction} className="grid gap-3 md:grid-cols-2 rounded-lg bg-muted/50 p-4 border border-border">
+              <form action={addQuestionAction} className="grid gap-3 md:grid-cols-2 bg-muted/50 p-4 border border-border">
                 <input type="hidden" name="quizId" value={quiz.id} />
                 <div className="md:col-span-2 font-semibold text-sm border-b pb-2">Add Question</div>
                 <div className="md:col-span-2">

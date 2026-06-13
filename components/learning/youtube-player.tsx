@@ -247,7 +247,7 @@ export function YouTubePlayer({
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1920px] bg-black overflow-hidden rounded-none border border-border flex flex-col" ref={containerRef}>
+    <div className="mx-auto w-full max-w-[1920px] bg-black overflow-hidden border border-border flex flex-col" ref={containerRef}>
       <div className="relative w-full aspect-video group bg-black">
         <div className="absolute inset-0 size-full border-0 pointer-events-none" ref={playerRoot} />
         
@@ -258,7 +258,7 @@ export function YouTubePlayer({
             onClick={togglePlay}
           >
             <div className="flex flex-col items-center gap-5 transform transition-transform duration-300 group-hover:scale-105">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-110 hover:bg-primary-hover">
+              <div className="flex h-20 w-20 items-center justify-center bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-110 hover:bg-primary-hover">
                 <Play className="h-8 w-8 ml-1 fill-white" />
               </div>
               <span className="text-white font-medium tracking-wide drop-shadow-md">
@@ -278,7 +278,7 @@ export function YouTubePlayer({
               max={duration || 100}
               value={progress}
               onChange={handleSeek}
-              className="w-full h-1 bg-white/30 rounded-full appearance-none cursor-pointer accent-blue-500 hover:h-2 transition-all"
+              className="w-full h-1 bg-white/30 appearance-none cursor-pointer accent-blue-500 hover:h-2 transition-all"
             />
             
             <div className="flex items-center justify-between text-white text-sm">

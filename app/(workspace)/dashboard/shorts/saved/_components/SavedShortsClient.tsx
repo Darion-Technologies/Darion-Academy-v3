@@ -54,10 +54,10 @@ export function SavedShortsClient({ initialShorts, userId }: { initialShorts: Yo
 
   if (initialShorts.length === 0) {
     return (
-      <div className="text-center py-16 bg-card border border-border rounded-none shadow-sm">
+      <div className="text-center py-16 bg-card border border-border shadow-sm">
         <h3 className="text-lg font-semibold mb-2 text-foreground">No saved shorts yet</h3>
         <p className="text-sm text-muted-foreground mb-6">Explore the Technical Shorts feed and bookmark videos to review later.</p>
-        <Button asChild className="rounded-none font-semibold">
+        <Button asChild className="font-semibold">
           <Link href="/dashboard/shorts">Go to Shorts Feed</Link>
         </Button>
       </div>
@@ -95,7 +95,7 @@ export function SavedShortsClient({ initialShorts, userId }: { initialShorts: Yo
               </div>
               
               <div className="flex justify-end mt-2">
-                <Button variant="outline" size="sm" className="h-7 text-xs rounded-none bg-transparent text-muted-foreground hover:text-foreground gap-1.5" onClick={() => handleOpenNotes(short)}>
+                <Button variant="outline" size="sm" className="h-7 text-xs bg-transparent text-muted-foreground hover:text-foreground gap-1.5" onClick={() => handleOpenNotes(short)}>
                   <PenLine className="w-3 h-3" /> My Notes
                 </Button>
               </div>
@@ -105,7 +105,7 @@ export function SavedShortsClient({ initialShorts, userId }: { initialShorts: Yo
       </div>
 
       <Dialog open={notesModalOpen} onOpenChange={setNotesModalOpen}>
-        <DialogContent className="sm:max-w-[650px] bg-card border-border text-foreground rounded-none p-0 overflow-hidden shadow-lg">
+        <DialogContent className="sm:max-w-[650px] bg-card border-border text-foreground p-0 overflow-hidden shadow-lg">
           <div className="border-b border-border bg-muted/50 p-4">
             <DialogTitle className="text-lg flex items-center gap-2 font-bold tracking-tight text-foreground">
               <PenLine className="w-4 h-4 text-primary" /> 
@@ -126,14 +126,14 @@ export function SavedShortsClient({ initialShorts, userId }: { initialShorts: Yo
                 placeholder="Document your technical takeaways here..."
                 value={currentNotes || ""}
                 onChange={(e) => setCurrentNotes(e.target.value)}
-                className="h-[350px] bg-background border-border rounded-none resize-none text-foreground placeholder:text-muted-foreground custom-scrollbar focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 text-sm shadow-inner"
+                className="h-[350px] bg-background border-border resize-none text-foreground placeholder:text-muted-foreground custom-scrollbar focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 text-sm shadow-inner"
               />
             )}
           </div>
           
           <div className="flex justify-between items-center p-4 border-t border-border bg-muted/50">
             {selectedShort && (
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground rounded-none text-xs font-semibold uppercase tracking-wider" asChild>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-xs font-semibold uppercase tracking-wider" asChild>
                 <a href={`https://youtube.com/shorts/${selectedShort.youtubeVideoId}`} target="_blank" rel="noreferrer">
                   <ExternalLink className="w-3 h-3 mr-1.5" /> Source
                 </a>
@@ -141,10 +141,10 @@ export function SavedShortsClient({ initialShorts, userId }: { initialShorts: Yo
             )}
             
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="rounded-none text-muted-foreground text-xs font-semibold uppercase tracking-wider" onClick={() => setNotesModalOpen(false)}>
+              <Button variant="outline" size="sm" className="text-muted-foreground text-xs font-semibold uppercase tracking-wider" onClick={() => setNotesModalOpen(false)}>
                 Cancel
               </Button>
-              <Button size="sm" className="rounded-none bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-semibold uppercase tracking-wider" onClick={handleSaveNotes} disabled={loadingNotes || isSaving}>
+              <Button size="sm" className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-semibold uppercase tracking-wider" onClick={handleSaveNotes} disabled={loadingNotes || isSaving}>
                 {isSaving ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : <Save className="w-3 h-3 mr-1.5" />}
                 Save Notes
               </Button>

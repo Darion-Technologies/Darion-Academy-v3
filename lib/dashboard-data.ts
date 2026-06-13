@@ -40,6 +40,7 @@ export type PendingAction = {
   assignmentId?: string;
   status: string;
   priority: "high" | "medium" | "low";
+  dueDate?: Date;
 };
 
 export type TopDashboardData = {
@@ -54,6 +55,7 @@ export type TopDashboardData = {
     avgQuizScore: number;
     certificatesEarned: number;
     currentStreak: number;
+    videoPlayedSeconds: number;
   };
   activeCourse: DashboardEnrollment | null;
 };
@@ -64,7 +66,7 @@ export type TopDashboardData = {
 
 export const getTopDashboardData = reactCache(async (userId: string): Promise<TopDashboardData> => {
   return unstable_cache(async () => {
-  const [user, enrollmentsRaw, progressRecords, submissions, quizAttempts, certificates, streaks] = await Promise.all([
+  const [user, enrollmentsRaw, progressRecords, submissions, quizAttempts, certificates, streaks, videoProgress] = await Promise.all([
     prisma.user.findUniqueOrThrow({
       where: { id: userId },
       select: { id: true, name: true, email: true, employeeId: true, department: true },
@@ -77,7 +79,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
             modules: {
               include: {
                 lessons: {
-                  include: { assignment: { select: { id: true } }, quiz: { select: { id: true } } },
+                  include: { assignment: { select: { id: true, dueDays: true } }, quiz: { select: { id: true } } },
                   orderBy: { order: "asc" },
                 },
               },
@@ -110,6 +112,10 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
       where: { userId, date: { gte: getStartOfWeek() } },
       select: { date: true },
       orderBy: { date: "asc" },
+    }),
+    prisma.videoProgress.aggregate({
+      where: { userId },
+      _sum: { maxTimestamp: true },
     }),
   ]);
 
@@ -233,6 +239,11 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
           } else if (firstPending.assignment) {
             const subStatus = submissionMap.get(firstPending.assignment.id);
             if (subStatus !== "APPROVED") {
+              let dueDate: Date | undefined;
+              if (firstPending.assignment.dueDays) {
+                dueDate = new Date(enrollment.assignedAt);
+                dueDate.setDate(dueDate.getDate() + firstPending.assignment.dueDays);
+              }
               pendingActions.push({
                 id: `assignment-${firstPending.assignment.id}`,
                 type: "assignment",
@@ -243,6 +254,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
                 assignmentId: firstPending.assignment.id,
                 status: subStatus === "SUBMITTED" ? "Waiting for approval" : subStatus === "NEEDS_CORRECTION" ? "Rework needed" : "Not submitted",
                 priority: subStatus === "NEEDS_CORRECTION" ? "high" : subStatus === "SUBMITTED" ? "low" : "medium",
+                dueDate,
               });
             }
           } else {
@@ -306,6 +318,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
       avgQuizScore: totalQuizScores.length > 0 ? Math.round(totalQuizScores.reduce((s, v) => s + v, 0) / totalQuizScores.length) : 0,
       certificatesEarned: certificates.filter((c) => c.status === "GENERATED").length,
       currentStreak,
+      videoPlayedSeconds: videoProgress._sum.maxTimestamp || 0,
     },
     activeCourse,
   };

@@ -103,10 +103,10 @@ export function AppShell({
     <div className="min-h-screen bg-background">
       <aside className={cn(
         "fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 lg:flex lg:flex-col",
-        collapsed ? "w-[64px]" : "w-[220px]",
+        collapsed ? "w-[64px]" : "w-[200px]",
       )}>
-        <div className={cn("flex h-12 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "px-4")}>
-          {!collapsed && <Brand inverse />}
+        <div className={cn("flex h-10 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "px-4")}>
+          {!collapsed && <Brand />}
         </div>
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {groups.map((group, index) => (
@@ -120,13 +120,13 @@ export function AppShell({
         </nav>
         <div className="border-t border-sidebar-border p-3">
           <Link href="/settings" className={cn(
-            "mb-2 flex items-center rounded-lg text-sidebar-foreground transition-colors hover:bg-white/6 hover:text-white",
+            "mb-2 flex items-center text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
             collapsed ? "justify-center p-2.5" : "gap-3 p-2.5",
           )}>
-            <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/10 text-xs font-bold text-white">
+            <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-none bg-sidebar-muted/20 text-xs font-bold text-sidebar-foreground">
               {user.avatarUrl ? <Image src={user.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" /> : initials(user.name)}
             </span>
-            {!collapsed && <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-white">{user.name}</span><span className="block truncate text-xs text-[var(--sidebar-muted)]">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</span></span>}
+            {!collapsed && <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-sidebar-foreground">{user.name}</span><span className="block truncate text-xs text-[var(--sidebar-muted)]">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</span></span>}
           </Link>
           <div className="flex flex-col gap-1">
             <Tooltip>
@@ -137,7 +137,7 @@ export function AppShell({
                   size={collapsed ? "icon-sm" : "sm"} 
                   onClick={toggleSidebar} 
                   aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} 
-                  className={cn("text-sidebar-foreground hover:bg-white/8 hover:text-white", !collapsed ? "w-full justify-start gap-2.5 px-2.5 h-8" : "mx-auto")}
+                  className={cn("text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", !collapsed ? "w-full justify-start gap-2.5 px-2.5 h-8" : "mx-auto")}
                 >
                   {collapsed ? <PanelLeftOpen className="size-4" /> : <><PanelLeftClose className="size-4 shrink-0" /><span className="text-sm font-medium">Collapse</span></>}
                 </Button>
@@ -150,7 +150,7 @@ export function AppShell({
                 size={collapsed ? "icon-sm" : "sm"} 
                 pendingText={collapsed ? "" : "Signing out..."} 
                 aria-label="Sign out" 
-                className={cn("text-sidebar-foreground hover:bg-white/8 hover:text-white", !collapsed ? "w-full justify-start gap-2.5 px-2.5 h-8" : "")}
+                className={cn("text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", !collapsed ? "w-full justify-start gap-2.5 px-2.5 h-8" : "")}
               >
                 {collapsed ? <LogOut className="size-4" /> : <><LogOut className="size-4 shrink-0" /><span className="text-sm font-medium">Sign out</span></>}
               </SubmitButton>
@@ -161,8 +161,8 @@ export function AppShell({
 
       {mobileOpen && <MobileDrawer groups={groups} user={user} pathname={pathname} close={() => setMobileOpen(false)} />}
 
-      <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[220px]")}>
-        <header className="sticky top-0 z-30 flex h-10 lg:h-12 items-center gap-2 lg:gap-4 border-b bg-card/90 px-3 lg:px-4 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:px-6">
+      <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[200px]")}>
+        <header className="sticky top-0 z-30 flex h-10 items-center gap-2 lg:gap-3 border-b bg-card/90 px-2 lg:px-4 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:px-4">
           <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden h-8 w-8" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-4" /></Button>
           <div className="lg:hidden"><Brand /></div>
           <div className="hidden min-w-0 max-w-xl flex-1 lg:block"><SearchBar /></div>
@@ -173,19 +173,19 @@ export function AppShell({
             <NotificationDropdown unreadCount={unreadCount} />
             <div className="ml-1 sm:ml-2 flex items-center gap-3 sm:border-l sm:pl-4">
               <div className="hidden text-right sm:block"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
-              <Link href="/settings" className="grid size-7 sm:size-9 place-items-center overflow-hidden rounded-md sm:rounded-lg bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0">
+              <Link href="/settings" className="grid size-7 sm:size-9 place-items-center overflow-hidden rounded-none sm:bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0">
                 {user.avatarUrl ? <Image src={user.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" /> : initials(user.name)}
               </Link>
             </div>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1440px] flex-1 p-2 pb-16 sm:p-4 lg:p-6">
+        <main className="mx-auto w-full max-w-[1440px] flex-1 p-1.5 pb-16 sm:p-2 lg:p-3">
           <div key={pathname} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
             {children}
           </div>
         </main>
         <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-1 backdrop-blur-xl lg:hidden pb-safe">
-          {mobileItems.map((item) => <Link key={item.href} href={item.href} className={cn("flex min-w-12 flex-col items-center gap-0.5 rounded-md px-1 py-1 text-[9px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-4" />{item.label}</Link>)}
+          {mobileItems.map((item) => <Link key={item.href} href={item.href} className={cn("flex min-w-12 flex-col items-center gap-0.5 rounded-none px-1 py-1 text-[9px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-4" />{item.label}</Link>)}
         </nav>
       </div>
     </div>
@@ -194,9 +194,9 @@ export function AppShell({
 
 function NavLink({ item, active, collapsed, onClick }: { item: NavItem; active: boolean; collapsed: boolean; onClick?: () => void }) {
   const link = <Link href={item.href} onClick={onClick} className={cn(
-    "relative flex h-8 items-center rounded-md text-sm font-medium transition-colors",
+    "relative flex h-8 items-center rounded-none text-sm font-medium transition-colors",
     collapsed ? "justify-center px-1" : "gap-2.5 px-2.5",
-    active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-white/6 hover:text-white",
+    active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
   )}>
     <item.icon className="size-4 shrink-0" />
     {!collapsed && <span>{item.label}</span>}
@@ -208,14 +208,14 @@ function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; u
   return <div className="fixed inset-0 z-50 lg:hidden">
     <button className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={close} aria-label="Close navigation" />
     <aside className="relative flex h-full w-[240px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl">
-      <div className="flex h-12 items-center justify-between border-b border-sidebar-border px-4"><Brand inverse /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-white/8 hover:text-white"><X /></Button></div>
+      <div className="flex h-10 items-center justify-between border-b border-sidebar-border px-4"><Brand /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><X /></Button></div>
       <nav className="flex-1 overflow-y-auto p-2">{groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} />)}</div></div>)}</nav>
       <div className="border-t border-sidebar-border p-3 flex items-center gap-2">
-        <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-md bg-white/10 text-[10px] font-bold text-white">
+        <div className="grid size-8 shrink-0 place-items-center overflow-hidden bg-sidebar-muted/20 text-[10px] font-bold text-sidebar-foreground">
           {user.avatarUrl ? <Image src={user.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" /> : initials(user.name)}
         </div>
         <div>
-          <p className="text-sm font-semibold text-white">{user.name}</p>
+          <p className="text-sm font-semibold text-sidebar-foreground">{user.name}</p>
           <p className="text-xs capitalize text-[var(--sidebar-muted)]">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p>
         </div>
       </div>

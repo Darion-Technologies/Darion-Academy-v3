@@ -54,7 +54,7 @@ export function CurriculumBuilder({ course }: { course: any }) {
   return (
     <div className="space-y-6">
       {modules.length === 0 ? (
-        <div className="text-center p-12 border border-dashed rounded-lg bg-card text-muted-foreground">
+        <div className="text-center p-12 border border-dashed bg-card text-muted-foreground">
           <p className="mb-4">No modules added yet.</p>
           <Button onClick={() => setIsAddModuleOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
@@ -67,7 +67,7 @@ export function CurriculumBuilder({ course }: { course: any }) {
             <Card key={courseModule.id} className="overflow-hidden border-border bg-card shadow-sm">
               <div className="bg-muted/50 p-4 border-b flex justify-between items-center group">
                 <div className="flex items-center gap-3">
-                  <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+                  <div className="bg-primary/10 text-primary w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">
                     {courseModule.order}
                   </div>
                   <div>

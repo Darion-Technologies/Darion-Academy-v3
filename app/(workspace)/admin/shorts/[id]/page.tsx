@@ -42,7 +42,7 @@ export default async function AdminShortDetailPage({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-4">
-          <div className="aspect-video bg-black rounded-lg overflow-hidden border">
+          <div className="aspect-video bg-black overflow-hidden border">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${short.youtubeVideoId}`}
               title={short.title}

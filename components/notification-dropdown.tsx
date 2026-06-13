@@ -57,7 +57,7 @@ export function NotificationDropdown({ unreadCount }: { unreadCount: number }) {
             </div>
           ) : (
             notifications.map((notif) => (
-              <DropdownMenuItem key={notif.id} className="flex flex-col items-start gap-1 p-4 cursor-default rounded-none border-b last:border-0 focus:bg-muted/50">
+              <DropdownMenuItem key={notif.id} className="flex flex-col items-start gap-1 p-4 cursor-default border-b last:border-0 focus:bg-muted/50">
                 <div className="flex w-full justify-between gap-2">
                   <span className={`text-sm font-medium ${!notif.read ? 'text-foreground' : 'text-muted-foreground'}`}>{notif.title}</span>
                   <span className="text-[10px] text-muted-foreground whitespace-nowrap">

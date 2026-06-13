@@ -69,7 +69,7 @@ export default async function CoursesPage() {
 
 function CourseCard({ course, progressPercent, status }: { course: any; progressPercent: number; status: string }) {
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-sm)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40">
+    <div className="group relative flex h-full flex-col overflow-hidden border bg-card shadow-[var(--shadow-sm)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40">
       <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       {/* Course header */}
       <div className="gradient-welcome relative min-h-36 overflow-hidden px-6 py-5 text-white">

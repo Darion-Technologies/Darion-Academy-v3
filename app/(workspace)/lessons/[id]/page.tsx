@@ -153,12 +153,12 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
           </div>
           <div className="flex items-center gap-2">
             {prevLessonUrl && (
-              <Button variant="outline" size="sm" className="rounded-none" asChild>
+              <Button variant="outline" size="sm" className="" asChild>
                 <Link href={prevLessonUrl}>Previous</Link>
               </Button>
             )}
             {nextLessonUrl && (
-              <Button size="sm" className="rounded-none" asChild>
+              <Button size="sm" className="" asChild>
                 <Link href={nextLessonUrl}>Next Lesson</Link>
               </Button>
             )}
@@ -194,18 +194,18 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                   {lesson.type === "YOUTUBE" && lesson.videoUrl && !youtubeVideoId && (
                     <div className="border border-amber-300 bg-amber-50 p-4">
                       <p className="text-sm text-amber-900">This saved URL cannot be embedded.</p>
-                      <Button className="mt-3 rounded-none" variant="outline" asChild>
+                      <Button className="mt-3" variant="outline" asChild>
                         <a href={lesson.videoUrl} target="_blank" rel="noreferrer">Open on YouTube</a>
                       </Button>
                     </div>
                   )}
                   {lesson.type === "LINK" && lesson.externalUrl && (
-                    <Button asChild className="rounded-none">
+                    <Button asChild className="">
                       <a href={lesson.externalUrl} target="_blank" rel="noreferrer">Open resource</a>
                     </Button>
                   )}
                   {lessonFileUrl && (
-                    <Button variant="outline" asChild className="rounded-none">
+                    <Button variant="outline" asChild className="">
                       <a href={lessonFileUrl} target="_blank" rel="noreferrer">Open lesson file</a>
                     </Button>
                   )}
@@ -227,7 +227,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                     </div>
                   )}
                   {lesson.quiz && (
-                    <Button className="rounded-none" asChild>
+                    <Button className="" asChild>
                       <Link href={`/quizzes/${lesson.quiz.id}`}>Take quiz</Link>
                     </Button>
                   )}
@@ -237,12 +237,12 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
             
             <div className="flex items-center justify-between pt-6 border-t border-border">
               {prevLessonUrl ? (
-                <Button variant="outline" className="rounded-none" asChild>
+                <Button variant="outline" className="" asChild>
                   <Link href={prevLessonUrl}>Previous Lesson</Link>
                 </Button>
               ) : <div />}
               {nextLessonUrl && (
-                <Button className="rounded-none" asChild>
+                <Button className="" asChild>
                   <Link href={nextLessonUrl}>Next Lesson</Link>
                 </Button>
               )}
@@ -261,7 +261,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                 const config = submissionStatusConfig[submission.status] ?? submissionStatusConfig.PENDING;
                 const StatusIcon = config.icon;
                 return (
-                  <div className={`flex items-center gap-3 rounded-xl p-3 ${
+                  <div className={`flex items-center gap-3 p-3 ${
                     config.variant === "success" ? "bg-emerald-50"
                       : config.variant === "warning" ? "bg-amber-50"
                       : config.variant === "error" ? "bg-red-50"
@@ -307,7 +307,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
               )}
 
               {existingProgress?.completed && !lesson.assignment && (
-                <div className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3">
+                <div className="flex items-center gap-2 bg-emerald-50 p-3">
                   <CheckCircle2 className="size-5 text-emerald-600" />
                   <span className="text-sm font-medium text-emerald-700">Lesson completed</span>
                 </div>
@@ -321,7 +321,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
               <CardHeader><CardTitle>Mentor Feedback</CardTitle></CardHeader>
               <CardContent className="space-y-3">
                 {submission.feedback.map((f) => (
-                  <div key={f.id} className="rounded-xl bg-muted/50 p-3">
+                  <div key={f.id} className="bg-muted/50 p-3">
                     <p className="text-sm">{f.message}</p>
                     <p className="mt-2 text-xs text-muted-foreground">{f.author.name}</p>
                   </div>

@@ -77,7 +77,7 @@ export function ShortWatchClient({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2 space-y-6">
-        <div className="aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-lg mx-auto max-w-[400px]">
+        <div className="aspect-[9/16] bg-black overflow-hidden shadow-lg mx-auto max-w-[400px]">
           <iframe 
             src={`https://www.youtube-nocookie.com/embed/${short.youtubeVideoId}?autoplay=0`} 
             title={short.title}
@@ -87,7 +87,7 @@ export function ShortWatchClient({
           />
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border rounded-lg bg-card">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border bg-card">
           <div>
             <h3 className="font-semibold">{short.channelName}</h3>
             <div className="flex gap-2 mt-1">
@@ -132,7 +132,7 @@ export function ShortWatchClient({
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <div className="flex items-center space-x-2 p-2 border rounded-md">
+                      <div className="flex items-center space-x-2 p-2 border">
                         <input 
                           type="radio" 
                           disabled={result === true}
@@ -145,7 +145,7 @@ export function ShortWatchClient({
                         />
                         <Label htmlFor={`q-${quiz.id}-A`} className="flex-1 cursor-pointer">{quiz.optionA}</Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-2 border rounded-md">
+                      <div className="flex items-center space-x-2 p-2 border">
                         <input 
                           type="radio" 
                           disabled={result === true}
@@ -158,7 +158,7 @@ export function ShortWatchClient({
                         />
                         <Label htmlFor={`q-${quiz.id}-B`} className="flex-1 cursor-pointer">{quiz.optionB}</Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-2 border rounded-md">
+                      <div className="flex items-center space-x-2 p-2 border">
                         <input 
                           type="radio" 
                           disabled={result === true}
@@ -171,7 +171,7 @@ export function ShortWatchClient({
                         />
                         <Label htmlFor={`q-${quiz.id}-C`} className="flex-1 cursor-pointer">{quiz.optionC}</Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-2 border rounded-md">
+                      <div className="flex items-center space-x-2 p-2 border">
                         <input 
                           type="radio" 
                           disabled={result === true}
@@ -193,12 +193,12 @@ export function ShortWatchClient({
                     )}
 
                     {result === true && (
-                      <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-md text-sm">
+                      <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-sm">
                         <strong>Correct!</strong> {quiz.explanation && <span>{quiz.explanation}</span>}
                       </div>
                     )}
                     {result === false && (
-                      <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-md text-sm">
+                      <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm">
                         Incorrect. Try again.
                       </div>
                     )}
@@ -217,7 +217,7 @@ export function ShortWatchClient({
         ) : (
           <div className="grid gap-4">
             {relatedShorts.map(rs => (
-              <Link key={rs.id} href={`/dashboard/shorts/${rs.id}`} className="group flex gap-3 p-2 rounded-lg hover:bg-muted transition-colors border">
+              <Link key={rs.id} href={`/dashboard/shorts/${rs.id}`} className="group flex gap-3 p-2 hover:bg-muted transition-colors border">
                 <div className="relative aspect-[9/16] w-16 bg-black rounded overflow-hidden flex-shrink-0">
                   {rs.thumbnailUrl && (
                     <img src={rs.thumbnailUrl} alt={rs.title} className="absolute inset-0 w-full h-full object-cover" />

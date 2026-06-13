@@ -66,23 +66,23 @@ export function CalculatorWidget() {
 
   return (
     <div className="relative">
-      <Button variant="outline" size="sm" onClick={() => setOpen(!open)} className="gap-2 rounded-none">
+      <Button variant="outline" size="sm" onClick={() => setOpen(!open)} className="gap-2">
         <CalculatorIcon className="size-4" /> Calculator
       </Button>
       {open && (
-        <Card className={cn("absolute right-0 top-full mt-2 z-50 shadow-xl rounded-none", isScientific ? "w-80" : "w-56")}>
+        <Card className={cn("absolute right-0 top-full mt-2 z-50 shadow-xl", isScientific ? "w-80" : "w-56")}>
           <CardContent className="p-3">
             <div className="mb-3 flex items-center justify-between">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsScientific(!isScientific)}
-                className="h-6 px-2 text-xs rounded-none text-muted-foreground hover:text-foreground"
+                className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
               >
                 {isScientific ? <><BasicCalcIcon className="mr-1 size-3" /> Basic</> : <><FlaskConical className="mr-1 size-3" /> Scientific</>}
               </Button>
             </div>
-            <div className="mb-3 rounded-none bg-muted p-2 text-right font-mono text-lg font-semibold tracking-wider text-foreground break-all min-h-[40px]">
+            <div className="mb-3 bg-muted p-2 text-right font-mono text-lg font-semibold tracking-wider text-foreground break-all min-h-[40px]">
               {input || "0"}
             </div>
             <div className={cn("grid gap-1.5", isScientific ? "grid-cols-5" : "grid-cols-4")}>
@@ -98,7 +98,7 @@ export function CalculatorWidget() {
                     variant={btn === "=" ? "default" : isSpecial ? "destructive" : isOp ? "secondary" : isFunc ? "outline" : "outline"} 
                     size="sm" 
                     className={cn(
-                      "h-9 px-0 rounded-none text-sm", 
+                      "h-9 px-0 text-sm", 
                       !isOp && !isSpecial && !isFunc && btn !== "=" && "bg-background hover:bg-muted"
                     )}
                     onClick={() => handleClick(btn)}

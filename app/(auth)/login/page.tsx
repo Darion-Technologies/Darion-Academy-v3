@@ -5,7 +5,7 @@ export default function LoginPage() {
   return (
     <main className="grid min-h-screen bg-background lg:grid-cols-[1.05fr_.95fr]">
       <section className="gradient-welcome relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="pointer-events-none absolute -right-24 top-1/4 size-96 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute -right-24 top-1/4 size-96 border border-white/10" />
         <Brand inverse />
         <div className="max-w-xl">
           <p className="mb-4 text-sm font-semibold uppercase tracking-[.16em] text-[#8fd9ee]">
@@ -21,7 +21,7 @@ export default function LoginPage() {
         <p className="text-sm text-white/55">Internal learning and development workspace</p>
       </section>
       <section className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-6 lg:min-h-screen lg:bg-card lg:p-6">
-        <div className="w-full max-w-[340px] lg:max-w-md lg:rounded-2xl lg:p-0">
+        <div className="w-full max-w-[340px] lg:max-w-md lg:lg:p-0">
           <div className="mb-6 flex justify-center lg:hidden"><Brand /></div>
           <h2 className="text-2xl font-semibold tracking-tight lg:text-3xl">Welcome back</h2>
           <p className="mb-5 mt-1 text-sm text-muted-foreground lg:mb-7 lg:mt-2 lg:text-base">

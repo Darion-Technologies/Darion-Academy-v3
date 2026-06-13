@@ -6,7 +6,7 @@ export default async function ResetPasswordPage() {
   await requireUser();
   return (
     <main className="grid min-h-screen place-items-center bg-background p-6">
-      <section className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-[var(--shadow-md)]">
+      <section className="w-full max-w-md border bg-card p-8 shadow-[var(--shadow-md)]">
         <Brand />
         <p className="mt-10 section-label text-primary">Secure access</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Choose a new password</h1>

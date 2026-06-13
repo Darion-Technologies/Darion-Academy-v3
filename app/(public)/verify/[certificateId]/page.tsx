@@ -16,7 +16,7 @@ export default async function VerifyCertificatePage({ params }: { params: Promis
     <main className="min-h-screen bg-muted p-4 sm:p-10">
       <div className="mx-auto max-w-3xl">
         <Brand />
-        <Card className="mt-6 sm:mt-10 rounded-none shadow-sm">
+        <Card className="mt-6 sm:mt-10 shadow-sm">
           <CardContent className="p-5 sm:p-10">
             <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
               <span
@@ -61,7 +61,7 @@ export default async function VerifyCertificatePage({ params }: { params: Promis
               <div className="mt-6 sm:mt-10 border-t border-border pt-6 sm:pt-8">
                 <div className="mb-5 sm:mb-6 flex items-center gap-3">
                   <Award className="size-5 sm:size-6 text-primary" />
-                  <Badge variant={valid ? "success" : "error"} className="rounded-none uppercase tracking-wider text-[10px] sm:text-xs">
+                  <Badge variant={valid ? "success" : "error"} className="uppercase tracking-wider text-[10px] sm:text-xs">
                     {certificate.status}
                   </Badge>
                 </div>
@@ -132,7 +132,7 @@ export default async function VerifyCertificatePage({ params }: { params: Promis
                 </dl>
 
                 {revoked && (
-                  <div className="mt-6 sm:mt-8 border border-red-200 bg-red-50 p-4 text-sm text-red-800 rounded-none">
+                  <div className="mt-6 sm:mt-8 border border-red-200 bg-red-50 p-4 text-sm text-red-800">
                     <b>Revocation reason:</b>{" "}
                     {certificate.revokedReason ?? "Administrative revocation."}
                     {certificate.replacements.length > 0 && (

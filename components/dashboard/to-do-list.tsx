@@ -17,7 +17,7 @@ export function ToDoList({ actions }: { actions: PendingAction[] }) {
         <CardTitle>
           Action Items
         </CardTitle>
-        <div className="rounded-md border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+        <div className="border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
           Priority
         </div>
       </CardHeader>
@@ -58,7 +58,7 @@ export function ToDoList({ actions }: { actions: PendingAction[] }) {
                 {/* Status indicator */}
                 {isWaiting ? (
                   <div className="flex size-4 shrink-0 items-center justify-center rounded border border-primary bg-primary">
-                    <div className="size-1.5 rounded-full bg-primary-foreground" />
+                    <div className="size-1.5 bg-primary-foreground" />
                   </div>
                 ) : (
                   <div className="size-4 shrink-0 rounded border-2 border-border bg-card" />

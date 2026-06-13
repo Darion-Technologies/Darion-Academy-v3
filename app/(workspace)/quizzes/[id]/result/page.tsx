@@ -60,7 +60,7 @@ export default async function QuizResultPage({
       <Card className={`overflow-hidden ${isPassed ? "border-emerald-200" : "border-red-200"}`}>
         <div className={`px-8 py-10 text-center ${isPassed ? "bg-gradient-to-b from-emerald-50 to-white" : "bg-gradient-to-b from-red-50 to-white"}`}>
           {/* Icon */}
-          <div className={`mx-auto mb-4 flex size-16 items-center justify-center rounded-full ${isPassed ? "bg-emerald-100" : "bg-red-100"}`}>
+          <div className={`mx-auto mb-4 flex size-16 items-center justify-center ${isPassed ? "bg-emerald-100" : "bg-red-100"}`}>
             {isPassed ? (
               <Trophy className="size-8 text-emerald-600" />
             ) : (
@@ -146,7 +146,7 @@ export default async function QuizResultPage({
             return (
               <div
                 key={question.id}
-                className={`rounded-xl border p-4 ${
+                className={`border p-4 ${
                   isCorrect ? "border-emerald-200 bg-emerald-50/50" : "border-red-200 bg-red-50/50"
                 }`}
               >

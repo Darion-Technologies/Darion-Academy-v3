@@ -52,17 +52,17 @@ export function AvatarUpload({
   }
 
   return (
-    <div className="relative group size-24 shrink-0 rounded-full border-4 border-background bg-muted shadow-lg transition-transform hover:scale-105">
+    <div className="relative group size-24 shrink-0 border-4 border-background bg-muted shadow-lg transition-transform hover:scale-105">
       {/* Avatar Image or Initials */}
       {preview ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={preview}
           alt={name}
-          className="size-full rounded-full object-cover"
+          className="size-full object-cover"
         />
       ) : (
-        <div className="flex size-full items-center justify-center rounded-full bg-primary/10 text-xl font-bold text-primary">
+        <div className="flex size-full items-center justify-center bg-primary/10 text-xl font-bold text-primary">
           {initials(name)}
         </div>
       )}
@@ -72,7 +72,7 @@ export function AvatarUpload({
         type="button"
         disabled={isPending}
         onClick={() => inputRef.current?.click()}
-        className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100"
+        className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100"
         aria-label="Upload profile picture"
       >
         {isPending ? (

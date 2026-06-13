@@ -145,7 +145,7 @@ export function ShortsAdminPanel({ adminId }: { adminId: string }) {
       )}
 
       {hasSearched && results.length === 0 && !loading && (
-        <div className="text-center p-12 border rounded-lg bg-muted/50">
+        <div className="text-center p-12 border bg-muted/50">
           <p className="text-muted-foreground">No new shorts found. They might already be in the database or the keyword returned no embeddable shorts under 60 seconds.</p>
         </div>
       )}

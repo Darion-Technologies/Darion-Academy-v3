@@ -104,7 +104,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <ChevronLeft className="size-3.5" />
           Back to Courses
         </Link>
-        <div className="overflow-hidden rounded-xl border bg-card">
+        <div className="overflow-hidden border bg-card">
           {course.thumbnailUrl && (
             <div className="relative aspect-[16/6] min-h-44">
               <Image

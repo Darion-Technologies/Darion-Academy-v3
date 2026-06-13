@@ -26,7 +26,7 @@ export default async function LeaderboardPage() {
     <div className="mx-auto max-w-4xl space-y-10 pb-20">
       {/* Header */}
       <div className="flex flex-col items-center text-center">
-        <div className="mb-3 sm:mb-4 inline-flex items-center justify-center rounded-full bg-primary/10 p-3 sm:p-4">
+        <div className="mb-3 sm:mb-4 inline-flex items-center justify-center bg-primary/10 p-3 sm:p-4">
           <Trophy className="size-6 sm:size-8 text-primary" />
         </div>
         <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">Academy Leaderboard</h1>
@@ -58,7 +58,7 @@ export default async function LeaderboardPage() {
                     <Trophy className="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 size-5 sm:size-7 text-yellow-500 drop-shadow-md" />
                   )}
                   <div
-                    className={`flex items-center justify-center rounded-full font-bold shadow-lg ${
+                    className={`flex items-center justify-center font-bold shadow-lg ${
                       isFirst
                         ? "size-14 sm:size-20 bg-gradient-to-br from-yellow-300 to-amber-500 text-yellow-950 text-base sm:text-xl border-4 border-yellow-200"
                         : isSecond
@@ -72,7 +72,7 @@ export default async function LeaderboardPage() {
                         alt={entry.name}
                         width={100}
                         height={100}
-                        className="size-full rounded-full object-cover"
+                        className="size-full object-cover"
                       />
                     ) : (
                       initials(entry.name)
@@ -80,7 +80,7 @@ export default async function LeaderboardPage() {
                   </div>
                   {/* Rank Badge */}
                   <div
-                    className={`absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 flex size-5 sm:size-7 items-center justify-center rounded-full border-2 border-background text-[10px] sm:text-xs font-bold text-white shadow-sm ${
+                    className={`absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 flex size-5 sm:size-7 items-center justify-center border-2 border-background text-[10px] sm:text-xs font-bold text-white shadow-sm ${
                       isFirst ? "bg-yellow-500" : isSecond ? "bg-slate-400" : "bg-orange-500"
                     }`}
                   >
@@ -104,7 +104,7 @@ export default async function LeaderboardPage() {
                 </div>
 
                 {/* Breakdown Stats */}
-                <div className="mt-2 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3 rounded-lg border border-border bg-card px-2 py-1 sm:px-3 sm:py-2 text-[10px] sm:text-xs text-muted-foreground shadow-sm">
+                <div className="mt-2 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3 border border-border bg-card px-2 py-1 sm:px-3 sm:py-2 text-[10px] sm:text-xs text-muted-foreground shadow-sm">
                   <div className="flex items-center gap-1" title="Certificates">
                     <Award className="size-3 sm:size-3.5 text-blue-500" />
                     <span className="font-semibold text-foreground">{entry.certificates}</span>
@@ -129,7 +129,7 @@ export default async function LeaderboardPage() {
       )}
 
       {/* Rankings List */}
-      <div className="mt-12 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="mt-12 overflow-hidden border border-border bg-card shadow-sm">
         <div className="border-b border-border bg-muted/40 px-4 sm:px-6 py-2.5 sm:py-4">
           <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground">All Rankings</h2>
         </div>
@@ -148,9 +148,9 @@ export default async function LeaderboardPage() {
                 </div>
 
                 {/* Avatar */}
-                <div className="flex size-6 sm:size-8 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] sm:text-xs font-bold text-foreground">
+                <div className="flex size-6 sm:size-8 shrink-0 items-center justify-center bg-muted text-[10px] sm:text-xs font-bold text-foreground">
                   {entry.avatarUrl ? (
-                    <Image src={entry.avatarUrl} alt={entry.name} width={40} height={40} className="size-full rounded-full object-cover" />
+                    <Image src={entry.avatarUrl} alt={entry.name} width={40} height={40} className="size-full object-cover" />
                   ) : (
                     initials(entry.name)
                   )}
@@ -211,7 +211,7 @@ export default async function LeaderboardPage() {
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-primary/20 bg-card/95 p-4 shadow-[0_-4px_24px_rgba(0,0,0,0.1)] backdrop-blur-xl lg:left-[248px]">
           <div className="mx-auto flex max-w-4xl items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+              <div className="flex size-10 shrink-0 items-center justify-center bg-primary text-sm font-bold text-primary-foreground">
                 #{currentUserRank.rank}
               </div>
               <div>

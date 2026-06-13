@@ -24,7 +24,7 @@ export function BadgeCard({ badge, userBadge, className }: { badge: any; userBad
       <TooltipTrigger asChild>
         <div 
           className={cn(
-            "relative flex flex-col items-center justify-center p-6 rounded-2xl border bg-card text-card-foreground shadow-sm transition-all hover:scale-105 hover:shadow-md cursor-default overflow-hidden group",
+            "relative flex flex-col items-center justify-center p-6 border bg-card text-card-foreground shadow-sm transition-all hover:scale-105 hover:shadow-md cursor-default overflow-hidden group",
             className
           )}
           style={{ borderColor: `${color}40` }}
@@ -36,7 +36,7 @@ export function BadgeCard({ badge, userBadge, className }: { badge: any; userBad
           />
           
           <div 
-            className="relative flex items-center justify-center size-16 rounded-full shadow-inner mb-4 bg-gradient-to-br from-background to-muted border"
+            className="relative flex items-center justify-center size-16 shadow-inner mb-4 bg-gradient-to-br from-background to-muted border"
             style={{ borderColor: `${color}60` }}
           >
             {badge.iconUrl && !badge.iconUrl.startsWith("/badges/") ? ( // Temporarily fallback to Lucide if the SVG isn't uploaded yet
@@ -46,7 +46,7 @@ export function BadgeCard({ badge, userBadge, className }: { badge: any; userBad
             )}
             
             {/* Glossy reflection effect */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent to-white/20 opacity-50 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/20 opacity-50 pointer-events-none" />
           </div>
 
           <h3 className="font-bold text-sm text-center leading-tight">{badge.name}</h3>

@@ -30,7 +30,7 @@ export default async function CertificatesPage() {
           {certificates.map((c) => (
             <div
               key={c.id}
-              className="flex items-stretch overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-sm)]"
+              className="flex items-stretch overflow-hidden border bg-card shadow-[var(--shadow-sm)]"
             >
               {/* Award icon panel */}
               <div className="bg-[var(--info-light)] border-r border-border flex items-center justify-center p-5 shrink-0">

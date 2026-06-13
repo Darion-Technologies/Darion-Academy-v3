@@ -104,7 +104,7 @@ export function PushSettings() {
 
   if (!isSupported) {
     return (
-      <div className="rounded-lg border bg-muted/50 p-4 text-sm text-muted-foreground">
+      <div className="border bg-muted/50 p-4 text-sm text-muted-foreground">
         Push notifications are not supported in this browser or device.
         <br />
         <span className="text-xs opacity-80">(On iOS, you must "Add to Home Screen" first)</span>
@@ -135,7 +135,7 @@ export function PushSettings() {
       </div>
 
       {isSubscribed && (
-        <div className="flex items-center justify-between rounded-lg border bg-card p-3">
+        <div className="flex items-center justify-between border bg-card p-3">
           <p className="text-sm font-medium">Test Connection</p>
           <Button variant="secondary" size="sm" onClick={sendTest}>
             Send Test Alert

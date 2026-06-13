@@ -74,7 +74,7 @@ export default async function NotificationsPage() {
 function NotificationCard({ item, index = 0 }: { item: any, index?: number }) {
   return (
     <div
-      className={`animate-slide-up-fade opacity-0 flex items-center gap-4 rounded-xl border bg-card p-5 shadow-[var(--shadow-sm)] ${
+      className={`animate-slide-up-fade opacity-0 flex items-center gap-4 border bg-card p-5 shadow-[var(--shadow-sm)] ${
         !item.read
           ? "border-primary/30 bg-accent/45 ring-1 ring-primary/20"
           : "border-border"
@@ -82,7 +82,7 @@ function NotificationCard({ item, index = 0 }: { item: any, index?: number }) {
       style={{ animationDelay: `${index * 40}ms` }}
     >
       {!item.read && (
-        <div className="size-2 shrink-0 rounded-full bg-primary" />
+        <div className="size-2 shrink-0 bg-primary" />
       )}
 
       <div className="flex-1">

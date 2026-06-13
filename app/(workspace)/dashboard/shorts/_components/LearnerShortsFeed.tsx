@@ -277,7 +277,7 @@ export function LearnerShortsFeed({
             <input 
               type="text"
               placeholder="Search shorts..." 
-              className="w-full bg-background border border-border text-foreground placeholder:text-muted-foreground rounded-full pl-9 pr-4 py-2 text-sm outline-none focus:border-primary transition-all shadow-sm"
+              className="w-full bg-background border border-border text-foreground placeholder:text-muted-foreground pl-9 pr-4 py-2 text-sm outline-none focus:border-primary transition-all shadow-sm"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -288,7 +288,7 @@ export function LearnerShortsFeed({
                 key={cat} 
                 onClick={() => setCategory(cat)}
                 className={cn(
-                  "snap-start shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all shadow-sm",
+                  "snap-start shrink-0 px-4 py-1.5 text-xs font-semibold transition-all shadow-sm",
                   category === cat 
                     ? "bg-primary text-primary-foreground" 
                     : "bg-background text-muted-foreground hover:bg-muted border border-border"
@@ -299,7 +299,7 @@ export function LearnerShortsFeed({
             ))}
           </div>
           
-          <Button asChild variant="outline" size="sm" className="shrink-0 bg-background hover:bg-muted border-border text-foreground rounded-full h-9 px-4 gap-2 shadow-sm">
+          <Button asChild variant="outline" size="sm" className="shrink-0 bg-background hover:bg-muted border-border text-foreground h-9 px-4 gap-2 shadow-sm">
             <Link href="/dashboard/shorts/saved">
               <Bookmark className="w-4 h-4 text-red-500 fill-red-500/20" />
               <span>Saved</span>
@@ -329,14 +329,14 @@ export function LearnerShortsFeed({
               <div className="space-y-4">
                 {comments.map((comment: any) => (
                   <div key={comment.id} className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
+                    <div className="w-8 h-8 bg-muted border border-border flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
                       {comment.user.avatarUrl ? (
-                        <img src={comment.user.avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />
+                        <img src={comment.user.avatarUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
                         comment.user.name.charAt(0)
                       )}
                     </div>
-                    <div className="flex-1 bg-card border border-border shadow-sm rounded-lg rounded-tl-none p-3 text-sm">
+                    <div className="flex-1 bg-card border border-border shadow-sm p-3 text-sm">
                       <div className="flex justify-between items-center mb-1">
                         <span className="font-semibold text-foreground text-xs">{comment.user.name}</span>
                         <span className="text-[10px] text-muted-foreground">
@@ -372,7 +372,7 @@ export function LearnerShortsFeed({
           ) : (
             <div 
               ref={containerRef}
-              className="w-full max-w-[400px] h-full sm:h-[90%] md:h-full sm:max-h-[850px] sm:aspect-[9/16] overflow-y-auto snap-y snap-mandatory scrollbar-none scroll-smooth rounded-2xl bg-black shadow-lg border border-border relative"
+              className="w-full max-w-[400px] h-full sm:h-[90%] md:h-full sm:max-h-[850px] sm:aspect-[9/16] overflow-y-auto snap-y snap-mandatory scrollbar-none scroll-smooth bg-black shadow-lg border border-border relative"
             >
             {filteredShorts.map((short, index) => {
               const isWatched = watchedSet.has(short.id);
@@ -431,7 +431,7 @@ export function LearnerShortsFeed({
                       onClick={() => handleToggleBookmark(short.id)}
                       className="flex flex-col items-center gap-1.5 group"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md rounded-full group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
                         {isBookmarked ? (
                           <Heart className="w-6 h-6 text-red-500 fill-red-500" />
                         ) : (
@@ -446,7 +446,7 @@ export function LearnerShortsFeed({
                       onClick={loadNotesMobile}
                       className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md rounded-full group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
                         <PenLine className="w-6 h-6 text-white fill-white/20" />
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Notes</span>
@@ -457,7 +457,7 @@ export function LearnerShortsFeed({
                       onClick={loadCommentsMobile}
                       className="flex lg:hidden flex-col items-center gap-1.5 group relative"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md rounded-full group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
                         <MessageSquare className="w-6 h-6 text-white fill-white/20" />
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Discuss</span>
@@ -468,7 +468,7 @@ export function LearnerShortsFeed({
                       onClick={() => handleManualMarkWatched(short.id)}
                       className="flex flex-col items-center gap-1.5 group"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md rounded-full group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
                         {isWatched ? (
                           <CheckCircle2 className="w-6 h-6 text-green-400 fill-green-400/20" />
                         ) : (
@@ -484,14 +484,14 @@ export function LearnerShortsFeed({
                         onClick={() => setQuizOpen(true)}
                         className="flex flex-col items-center gap-1.5 group relative mt-1"
                       >
-                        <div className="p-3 bg-primary/90 backdrop-blur-md rounded-full group-hover:bg-primary transition-all shadow-[0_0_20px_rgba(var(--primary),0.6)] group-active:scale-95">
+                        <div className="p-3 bg-primary/90 backdrop-blur-md group-hover:bg-primary transition-all shadow-[0_0_20px_rgba(var(--primary),0.6)] group-active:scale-95">
                           <FileQuestion className="w-6 h-6 text-primary-foreground fill-primary-foreground/20" />
                         </div>
                         <span className="text-[11px] text-white font-semibold drop-shadow-md">Quiz</span>
                         
                         {/* Bouncing notification dot if not watched yet */}
                         {!isWatched && (
-                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full animate-bounce border-2 border-black" />
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 animate-bounce border-2 border-black" />
                         )}
                       </button>
                     )}
@@ -503,7 +503,7 @@ export function LearnerShortsFeed({
                       rel="noreferrer"
                       className="flex flex-col items-center gap-1.5 group mt-3"
                     >
-                      <div className="p-2.5 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-all group-active:scale-95">
+                      <div className="p-2.5 bg-white/10 backdrop-blur-md group-hover:bg-white/20 transition-all group-active:scale-95">
                         <ExternalLink className="w-5 h-5 text-white" />
                       </div>
                     </a>
@@ -541,7 +541,7 @@ export function LearnerShortsFeed({
           </div>
           
           <div className="p-4 border-t border-border bg-card flex justify-end">
-            <Button size="sm" className="rounded-none bg-primary hover:bg-primary-hover text-primary-foreground font-semibold uppercase tracking-wider text-xs" onClick={handleSaveNotes} disabled={loadingNotes || isSavingNotes}>
+            <Button size="sm" className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold uppercase tracking-wider text-xs" onClick={handleSaveNotes} disabled={loadingNotes || isSavingNotes}>
               {isSavingNotes ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : <Save className="w-3 h-3 mr-1.5" />}
               Save Notes
             </Button>
@@ -568,7 +568,7 @@ export function LearnerShortsFeed({
               {activeShort.quizzes.map((quiz: any, qIndex: number) => {
                 const result = quizResults[quiz.id];
                 return (
-                  <div key={quiz.id} className="space-y-4 p-4 rounded-lg bg-zinc-900 border border-zinc-800">
+                  <div key={quiz.id} className="space-y-4 p-4 bg-zinc-900 border border-zinc-800">
                     <h4 className="font-medium text-sm leading-relaxed">
                       {qIndex + 1}. {quiz.question}
                     </h4>
@@ -587,7 +587,7 @@ export function LearnerShortsFeed({
                               setQuizAnswers(prev => ({...prev, [quiz.id]: optKey}));
                             }}
                             className={cn(
-                              "flex items-center space-x-3 p-3 border rounded-md transition-colors cursor-pointer text-sm",
+                              "flex items-center space-x-3 p-3 border transition-colors cursor-pointer text-sm",
                               result === true ? "cursor-not-allowed opacity-80" : "hover:bg-zinc-800",
                               isSelected ? "border-primary bg-primary/10" : "border-zinc-700",
                               isCorrectAnswer ? "border-green-500 bg-green-500/10" : "",
@@ -622,7 +622,7 @@ export function LearnerShortsFeed({
                       </Button>
                     )}
                     {result === true && quiz.explanation && (
-                      <div className="mt-3 text-xs bg-green-500/10 text-green-400 p-3 rounded-md border border-green-500/20">
+                      <div className="mt-3 text-xs bg-green-500/10 text-green-400 p-3 border border-green-500/20">
                         <span className="font-semibold block mb-1">Explanation:</span>
                         {quiz.explanation}
                       </div>
@@ -670,7 +670,7 @@ function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavin
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent side="bottom" className="w-full h-[80vh] bg-card border-border text-foreground p-0 flex flex-col rounded-t-2xl">
+      <SheetContent side="bottom" className="w-full h-[80vh] bg-card border-border text-foreground p-0 flex flex-col">
         <SheetHeader className="p-4 border-b border-border bg-card">
           <SheetTitle className="text-foreground flex items-center gap-2"><PenLine className="w-4 h-4 text-primary" /> My Notes</SheetTitle>
           <SheetDescription className="text-muted-foreground">Take study notes directly while watching.</SheetDescription>
@@ -692,7 +692,7 @@ function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavin
         </div>
         
         <div className="p-4 border-t border-border bg-card flex justify-end">
-          <Button size="sm" className="rounded-none bg-primary hover:bg-primary-hover text-primary-foreground font-semibold uppercase tracking-wider text-xs" onClick={() => {
+          <Button size="sm" className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold uppercase tracking-wider text-xs" onClick={() => {
             handleSaveNotes();
             setOpen(false);
           }} disabled={loadingNotes || isSavingNotes}>
@@ -717,7 +717,7 @@ function MobileCommentsSheet({ comments, commentsLoading, submitComment, comment
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent side="bottom" className="w-full h-[80vh] bg-card border-border text-foreground p-0 flex flex-col rounded-t-2xl">
+      <SheetContent side="bottom" className="w-full h-[80vh] bg-card border-border text-foreground p-0 flex flex-col">
         <SheetHeader className="p-4 border-b border-border bg-card">
           <SheetTitle className="text-foreground flex items-center gap-2"><MessageSquare className="w-4 h-4 text-primary" /> Discussion</SheetTitle>
           <SheetDescription className="text-muted-foreground">Join the conversation.</SheetDescription>
@@ -732,14 +732,14 @@ function MobileCommentsSheet({ comments, commentsLoading, submitComment, comment
             <div className="space-y-4">
               {comments.map((comment: any) => (
                 <div key={comment.id} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
+                  <div className="w-8 h-8 bg-muted border border-border flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
                     {comment.user.avatarUrl ? (
-                      <img src={comment.user.avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />
+                      <img src={comment.user.avatarUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                       comment.user.name.charAt(0)
                     )}
                   </div>
-                  <div className="flex-1 bg-card border border-border rounded-lg rounded-tl-none p-3 text-sm">
+                  <div className="flex-1 bg-card border border-border p-3 text-sm">
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-semibold text-foreground text-xs">{comment.user.name}</span>
                       <span className="text-[10px] text-muted-foreground">

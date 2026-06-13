@@ -31,7 +31,7 @@ export default async function ProgressPage() {
           const StatusIcon = config.icon;
 
           return (
-            <div key={e.id} className="rounded-xl border bg-card p-6 shadow-[var(--shadow-sm)]">
+            <div key={e.id} className="border bg-card p-6 shadow-[var(--shadow-sm)]">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <h2 className="font-bold text-foreground">{e.course.title}</h2>
                 <Badge variant={config.variant}>
@@ -47,7 +47,7 @@ export default async function ProgressPage() {
               </div>
               <Progress value={e.progressPercent} />
 
-              <div className="mt-4 flex items-center gap-2.5 rounded-lg border bg-muted/55 p-3">
+              <div className="mt-4 flex items-center gap-2.5 border bg-muted/55 p-3">
                 <StatusIcon
                   className={`size-4 shrink-0 ${
                     config.variant === "success" ? "text-[var(--success)]"

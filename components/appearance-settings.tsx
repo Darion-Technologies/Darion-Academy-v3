@@ -47,7 +47,7 @@ export function AppearanceSettings({
               type="button"
               onClick={() => save(value, collapsed)}
               className={cn(
-                "relative flex items-start gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-muted/50",
+                "relative flex items-start gap-3 border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-muted/50",
                 theme === value && "border-primary bg-accent/60",
               )}
             >
@@ -58,7 +58,7 @@ export function AppearanceSettings({
           ))}
         </div>
       </div>
-      <div className="flex flex-col gap-3 rounded-lg border bg-muted/40 p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 border bg-muted/40 p-4 sm:flex-row sm:items-center">
         <div className="flex flex-1 items-start gap-3">
           <PanelLeftClose className="mt-0.5 size-5 text-primary" />
           <div><p className="text-sm font-semibold">Start with compact sidebar</p><p className="text-xs text-muted-foreground">Use the icon rail when you sign in on desktop.</p></div>

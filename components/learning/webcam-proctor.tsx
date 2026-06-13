@@ -118,7 +118,7 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
   }, [onWarning, onModelLoaded, onCameraDenied]);
 
   return (
-    <div className="relative overflow-hidden rounded-md border border-border bg-slate-900 shadow-sm" style={{ width: 160, height: 120 }}>
+    <div className="relative overflow-hidden border border-border bg-slate-900 shadow-sm" style={{ width: 160, height: 120 }}>
       {modelLoading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 text-white z-10">
           <Loader2 className="size-5 animate-spin mb-1 text-blue-400" />
@@ -134,7 +134,7 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
         style={{ transform: "scaleX(-1)" }} // Mirror effect
       />
       <div className="absolute top-1.5 left-1.5 flex items-center gap-1.5 rounded bg-black/60 px-1.5 py-0.5 backdrop-blur-sm">
-        <div className="size-1.5 rounded-full bg-red-500 animate-pulse" />
+        <div className="size-1.5 bg-red-500 animate-pulse" />
         <span className="text-[9px] font-bold text-white tracking-widest uppercase">REC</span>
       </div>
     </div>

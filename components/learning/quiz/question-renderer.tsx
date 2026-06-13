@@ -18,16 +18,16 @@ export function QuestionRenderer({ question, answer, onAnswerChange }: QuestionR
           return (
             <label 
               key={option} 
-              className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 text-base transition-all
+              className={`flex cursor-pointer items-center gap-4 border p-4 text-base transition-all
                 ${isSelected 
                   ? "border-slate-800 bg-muted/50 shadow-sm ring-1 ring-slate-800" 
                   : "border-border hover:border-border hover:bg-muted/50/50"
                 }`}
             >
-              <div className={`flex items-center justify-center w-5 h-5 rounded-full border shrink-0 transition-colors
+              <div className={`flex items-center justify-center w-5 h-5 border shrink-0 transition-colors
                 ${isSelected ? "border-slate-800 bg-slate-800" : "border-border bg-card"}`}
               >
-                {isSelected && <div className="w-2 h-2 rounded-full bg-card" />}
+                {isSelected && <div className="w-2 h-2 bg-card" />}
               </div>
               <input 
                 type="radio" 
@@ -55,16 +55,16 @@ export function QuestionRenderer({ question, answer, onAnswerChange }: QuestionR
           return (
             <label 
               key={v} 
-              className={`flex flex-1 cursor-pointer items-center justify-center gap-3 rounded-xl border p-6 text-lg transition-all
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-3 border p-6 text-lg transition-all
                 ${isSelected 
                   ? "border-slate-800 bg-muted/50 shadow-sm ring-1 ring-slate-800 font-semibold text-foreground" 
                   : "border-border hover:border-border hover:bg-muted/50/50 text-foreground font-medium"
                 }`}
             >
-              <div className={`flex items-center justify-center w-5 h-5 rounded-full border shrink-0 transition-colors
+              <div className={`flex items-center justify-center w-5 h-5 border shrink-0 transition-colors
                 ${isSelected ? "border-slate-800 bg-slate-800" : "border-border bg-card"}`}
               >
-                {isSelected && <div className="w-2 h-2 rounded-full bg-card" />}
+                {isSelected && <div className="w-2 h-2 bg-card" />}
               </div>
               <input 
                 type="radio" 
@@ -94,7 +94,7 @@ export function QuestionRenderer({ question, answer, onAnswerChange }: QuestionR
         value={(answer as string) || ""}
         onChange={(e) => onAnswerChange(e.target.value)}
         placeholder="Enter your answer..."
-        className="min-h-[150px] resize-y text-base p-4 rounded-xl focus-visible:ring-slate-800 border-border"
+        className="min-h-[150px] resize-y text-base p-4 focus-visible:ring-slate-800 border-border"
         autoComplete="off" 
         autoCorrect="off" 
         autoCapitalize="off" 

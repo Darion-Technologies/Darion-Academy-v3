@@ -73,7 +73,7 @@ export function UsersTable({ users }: { users: User[] }) {
         </Button>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -96,7 +96,7 @@ export function UsersTable({ users }: { users: User[] }) {
                 <TableRow key={u.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-muted text-xs font-bold text-foreground">
+                      <div className="grid size-9 shrink-0 place-items-center overflow-hidden bg-muted text-xs font-bold text-foreground">
                         {u.avatarUrl ? (
                           <Image src={u.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" />
                         ) : (

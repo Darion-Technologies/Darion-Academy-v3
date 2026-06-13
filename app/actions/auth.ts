@@ -5,7 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { roleHome } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { recordSession, sessionIdFromToken } from "@/lib/session";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 type AuthState = { error?: string; success?: string };
 
@@ -25,6 +27,10 @@ async function recordLoginStreak(userId: string) {
 }
 
 export async function loginAction(_state: AuthState, formData: FormData): Promise<AuthState> {
+  const ip = (await headers()).get("x-forwarded-for") ?? "127.0.0.1";
+  const { success: rateLimitSuccess } = await enforceRateLimit(`login_${ip}`);
+  if (!rateLimitSuccess) return { error: "Too many login attempts. Please try again later." };
+
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Enter a valid email and password." };
   const supabase = await createClient();
@@ -41,6 +47,10 @@ export async function loginAction(_state: AuthState, formData: FormData): Promis
 }
 
 export async function loginWithEmployeeIdAction(_state: AuthState, formData: FormData): Promise<AuthState> {
+  const ip = (await headers()).get("x-forwarded-for") ?? "127.0.0.1";
+  const { success: rateLimitSuccess } = await enforceRateLimit(`login_${ip}`);
+  if (!rateLimitSuccess) return { error: "Too many login attempts. Please try again later." };
+
   const parsed = loginWithEmployeeIdSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Enter a valid Employee ID and password." };
 

@@ -67,7 +67,7 @@ export function CourseForm({ course }: { course?: CourseFormValue }) {
       <Label>Thumbnail</Label>
       <Input name="thumbnail" type="file" accept="image/png,image/jpeg,image/webp" />
       {(course?.thumbnailUrl || (state.courseId && thumbnailVersion > 0)) && (
-        <div className="relative mt-3 aspect-[16/9] overflow-hidden rounded-lg border bg-muted">
+        <div className="relative mt-3 aspect-[16/9] overflow-hidden border bg-muted">
           <Image
             key={thumbnailVersion}
             src={`/api/admin/courses/${state.courseId ?? course?.id}/thumbnail?v=${thumbnailVersion}`}

@@ -23,11 +23,11 @@ export function LoginForm() {
   return (
     <div>
       {/* Tab switcher */}
-      <div className="mb-5 flex rounded-lg bg-muted p-1 lg:mb-6">
+      <div className="mb-5 flex bg-muted p-1 lg:mb-6">
         <button
           type="button"
           onClick={() => setMethod("email")}
-          className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold transition-all lg:gap-2 lg:px-3 lg:py-2.5 ${
+          className={`flex flex-1 items-center justify-center gap-1.5 px-2.5 py-2 text-sm font-semibold transition-all lg:gap-2 lg:px-3 lg:py-2.5 ${
             method === "email"
               ? "bg-card text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -39,7 +39,7 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => setMethod("employeeId")}
-          className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold transition-all lg:gap-2 lg:px-3 lg:py-2.5 ${
+          className={`flex flex-1 items-center justify-center gap-1.5 px-2.5 py-2 text-sm font-semibold transition-all lg:gap-2 lg:px-3 lg:py-2.5 ${
             method === "employeeId"
               ? "bg-card text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -88,7 +88,7 @@ export function LoginForm() {
         </div>
 
         {state.error && (
-          <p className="rounded-lg bg-[var(--error-light)] p-3 text-sm text-[var(--error)]">{state.error}</p>
+          <p className="bg-[var(--error-light)] p-3 text-sm text-[var(--error)]">{state.error}</p>
         )}
 
         <Button className="w-full" disabled={pending}>

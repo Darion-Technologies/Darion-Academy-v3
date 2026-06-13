@@ -165,7 +165,7 @@ export function NativeVideoPlayer({
             max={duration || 100}
             value={progress}
             onChange={handleSeek}
-            className="w-full h-1 bg-white/30 rounded-full appearance-none cursor-pointer accent-blue-500 hover:h-2 transition-all"
+            className="w-full h-1 bg-white/30 appearance-none cursor-pointer accent-blue-500 hover:h-2 transition-all"
           />
           
           <div className="flex items-center justify-between text-white text-sm">

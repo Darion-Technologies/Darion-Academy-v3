@@ -28,7 +28,7 @@ export function DepartmentChart({ data }: { data: { name: string; progress: numb
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-xl border bg-popover/80 px-4 py-3 text-popover-foreground shadow-lg backdrop-blur-md">
+      <div className="border bg-popover/80 px-4 py-3 text-popover-foreground shadow-lg backdrop-blur-md">
         <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
         <p className="text-xl font-bold">{payload[0].value}%</p>
       </div>

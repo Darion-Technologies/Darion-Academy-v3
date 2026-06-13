@@ -89,7 +89,7 @@ export function ContributionHeatmap({ heatmapDays }: Props) {
       <CardHeader className="mb-1 flex flex-row items-center justify-between border-b pb-1.5 sm:pb-2">
         <CardTitle>Learning Activity</CardTitle>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="rounded-md border bg-muted px-2.5 py-1 font-medium text-foreground">
+          <span className="border bg-muted px-2.5 py-1 font-medium text-foreground">
             Past year
           </span>
           <span className="font-semibold text-foreground">
@@ -144,18 +144,18 @@ export function ContributionHeatmap({ heatmapDays }: Props) {
                       const isFuture = day > today;
 
                       const colorClass = isFuture
-                        ? "bg-muted/30"
+                        ? "bg-secondary/30"
                         : isActive
-                          ? "bg-[#008CBB] hover:bg-[#00a8e0]"
-                          : "bg-muted/60 hover:bg-muted";
+                          ? "bg-primary hover:opacity-80"
+                          : "bg-secondary hover:bg-border";
 
                       return (
                         <div
                           key={di}
                           role="gridcell"
                           tabIndex={0}
-                          // FIX 4: rounded-[2px] instead of rounded-sm for square cells
-                          className={cn("rounded-[2px] transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background", colorClass)}
+                          // FIX 4:] instead of for square cells
+                          className={cn("transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background", colorClass)}
                           style={{ width: "12px", height: "12px" }}
                           aria-label={`${formatLabel(day)}: ${isFuture ? "Future" : isActive ? "Active" : "No activity"}`}
                           onMouseEnter={(e) => {
@@ -191,8 +191,8 @@ export function ContributionHeatmap({ heatmapDays }: Props) {
             {/* Legend */}
             <div className="mt-2 flex items-center justify-end gap-1.5 text-[10px] text-muted-foreground">
               <span>Less</span>
-              <div className="rounded-[2px] bg-muted/60" style={{ width: "12px", height: "12px" }} />
-              <div className="rounded-[2px] bg-[#008CBB]" style={{ width: "12px", height: "12px" }} />
+              <div className="bg-secondary" style={{ width: "12px", height: "12px" }} />
+              <div className="bg-primary" style={{ width: "12px", height: "12px" }} />
               <span>More</span>
             </div>
 
@@ -203,7 +203,7 @@ export function ContributionHeatmap({ heatmapDays }: Props) {
       {/* Shared Floating Tooltip */}
       {mounted && hoveredCell && createPortal(
         <div
-          className="pointer-events-none fixed z-50 flex -translate-x-1/2 -translate-y-full flex-col items-center gap-1 rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md animate-in fade-in zoom-in-95"
+          className="pointer-events-none fixed z-50 flex -translate-x-1/2 -translate-y-full flex-col items-center gap-1 border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md animate-in fade-in zoom-in-95"
           style={{ left: hoveredCell.x, top: hoveredCell.y }}
         >
           <span className="font-semibold">

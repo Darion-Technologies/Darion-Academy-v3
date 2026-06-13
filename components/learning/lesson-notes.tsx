@@ -81,15 +81,15 @@ export function LessonNotes({
   };
 
   return (
-    <div className="flex flex-col h-full bg-muted/50 border border-border rounded-xl shadow-sm overflow-hidden mt-6">
+    <div className="flex flex-col h-full bg-muted/50 border border-border shadow-sm overflow-hidden mt-6">
       <div className="p-4 border-b bg-card flex items-center justify-between">
         <h3 className="font-bold text-foreground">{isMentor ? "Learner Notes & Doubts" : "My Notes"}</h3>
         {!isAdding && !isMentor && (
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => { setIsDoubt(false); setIsAdding(true); }} variant="outline" className="h-8 rounded-lg">
+            <Button size="sm" onClick={() => { setIsDoubt(false); setIsAdding(true); }} variant="outline" className="h-8">
               <Plus className="size-4 mr-1" /> Add Note
             </Button>
-            <Button size="sm" onClick={() => { setIsDoubt(true); setIsAdding(true); }} variant="default" className="h-8 rounded-lg bg-amber-600 hover:bg-amber-700 text-white">
+            <Button size="sm" onClick={() => { setIsDoubt(true); setIsAdding(true); }} variant="default" className="h-8 bg-amber-600 hover:bg-amber-700 text-white">
               <HelpCircle className="size-4 mr-1" /> Ask Mentor
             </Button>
           </div>
@@ -98,7 +98,7 @@ export function LessonNotes({
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {isAdding && (
-          <Card className="border-blue-200 shadow-sm rounded-lg">
+          <Card className="border-blue-200 shadow-sm">
             <CardContent className="p-3">
               <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-blue-600">
                 <Clock className="size-3" />
@@ -108,7 +108,7 @@ export function LessonNotes({
                 placeholder={isDoubt ? "What do you need help with from your mentor?" : "What did you learn here?"}
                 value={newNoteText}
                 onChange={(e) => setNewNoteText(e.target.value)}
-                className="min-h-[80px] text-sm resize-none rounded-lg"
+                className="min-h-[80px] text-sm resize-none"
                 autoFocus
               />
               <div className="flex items-center mt-3 mb-1">
@@ -123,8 +123,8 @@ export function LessonNotes({
                 </label>
               </div>
               <div className="flex gap-2 mt-3 justify-end">
-                <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)} className="rounded-lg">Cancel</Button>
-                <Button size="sm" onClick={handleAddNote} disabled={isPending || !newNoteText.trim()} className="rounded-lg">
+                <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)} className="">Cancel</Button>
+                <Button size="sm" onClick={handleAddNote} disabled={isPending || !newNoteText.trim()} className="">
                   {isPending ? <LoaderCircle className="size-4 animate-spin" /> : "Save"}
                 </Button>
               </div>
@@ -139,7 +139,7 @@ export function LessonNotes({
           </div>
         ) : (
           notes.sort((a, b) => a.timestamp - b.timestamp).map((note) => (
-            <Card key={note.id} className={`group relative transition-colors rounded-lg shadow-sm cursor-pointer ${note.isDoubt ? (note.resolved ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-300 bg-amber-50/50 hover:border-amber-400') : 'hover:border-blue-300'}`} onClick={() => seekTo(note.timestamp)}>
+            <Card key={note.id} className={`group relative transition-colors shadow-sm cursor-pointer ${note.isDoubt ? (note.resolved ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-300 bg-amber-50/50 hover:border-amber-400') : 'hover:border-blue-300'}`} onClick={() => seekTo(note.timestamp)}>
               <CardContent className="p-3 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex flex-wrap items-center gap-2">
@@ -167,7 +167,7 @@ export function LessonNotes({
                 <p className="text-sm text-foreground whitespace-pre-wrap">{note.text}</p>
                 
                 {note.mentorReply && (
-                  <div className="mt-2 pl-3 ml-1 border-l-2 border-emerald-300 bg-emerald-50/50 p-2 rounded-r-lg">
+                  <div className="mt-2 pl-3 ml-1 border-l-2 border-emerald-300 bg-emerald-50/50 p-2">
                     <p className="text-xs font-semibold text-emerald-800 mb-1 flex items-center gap-1">
                       <MessageSquareReply className="size-3" /> Mentor Reply
                     </p>
@@ -187,12 +187,12 @@ export function LessonNotes({
                       placeholder="Type your response..."
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
-                      className="min-h-[80px] text-sm resize-none rounded-lg bg-white"
+                      className="min-h-[80px] text-sm resize-none bg-white"
                       autoFocus
                     />
                     <div className="flex gap-2 mt-2 justify-end">
-                      <Button variant="ghost" size="sm" onClick={() => { setReplyingTo(null); setReplyText(""); }} className="h-7 text-xs rounded-lg">Cancel</Button>
-                      <Button size="sm" onClick={() => handleReply(note.id)} disabled={isPending || !replyText.trim()} className="h-7 text-xs rounded-lg">
+                      <Button variant="ghost" size="sm" onClick={() => { setReplyingTo(null); setReplyText(""); }} className="h-7 text-xs">Cancel</Button>
+                      <Button size="sm" onClick={() => handleReply(note.id)} disabled={isPending || !replyText.trim()} className="h-7 text-xs">
                         {isPending ? <LoaderCircle className="size-3 animate-spin" /> : "Send Reply"}
                       </Button>
                     </div>
