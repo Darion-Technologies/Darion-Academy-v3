@@ -96,11 +96,19 @@ export function UsersTable({ users }: { users: User[] }) {
                 <TableRow key={u.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="grid size-9 shrink-0 place-items-center overflow-hidden bg-muted text-xs font-bold text-foreground">
-                        {u.avatarUrl ? (
-                          <img src={u.avatarUrl} alt="" width={36} height={36} className="size-full object-cover" />
-                        ) : (
-                          u.name.charAt(0)
+                      <div className="relative grid size-9 shrink-0 place-items-center overflow-hidden bg-muted text-xs font-bold text-foreground">
+                        <span className="absolute inset-0 flex items-center justify-center">{u.name.charAt(0)}</span>
+                        {u.avatarUrl && (
+                          <img 
+                            src={u.avatarUrl} 
+                            alt="" 
+                            width={36} 
+                            height={36} 
+                            className="relative z-10 size-full object-cover" 
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
                         )}
                       </div>
                       <div>
