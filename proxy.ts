@@ -7,6 +7,7 @@ export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
   const path = request.nextUrl.pathname;
   const publicPath =
+    path === "/" ||
     authPaths.includes(path) ||
     path.startsWith("/auth/") ||
     path.startsWith("/verify/");
