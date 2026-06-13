@@ -1,14 +1,19 @@
 import { Brand } from "@/components/brand";
 import { LoginForm } from "@/components/auth/login-form";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function LoginPage() {
+  const randomImage = Math.floor(Math.random() * 3) + 1;
+
   return (
     <main className="grid min-h-screen bg-background lg:grid-cols-[1.05fr_.95fr]">
       <section 
-        className="relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between bg-cover bg-center"
-        style={{ backgroundImage: "url('/login-bg.jpg')" }}
+        className="relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between bg-cover bg-center transition-opacity duration-1000"
+        style={{ backgroundImage: `url('/login-bg-${randomImage}.jpg')` }}
       >
-        {/* Dark overlay to ensure the text remains readable against the bright crystal */}
+        {/* Dark overlay to ensure the text remains readable against the bright backgrounds */}
         <div className="absolute inset-0 bg-black/60" />
         
         <div className="pointer-events-none absolute -right-24 top-1/4 size-96 border border-white/10 z-10" />
