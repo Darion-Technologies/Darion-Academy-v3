@@ -4,23 +4,37 @@ import { LoginForm } from "@/components/auth/login-form";
 export default function LoginPage() {
   return (
     <main className="grid min-h-screen bg-background lg:grid-cols-[1.05fr_.95fr]">
-      <section className="gradient-welcome relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="pointer-events-none absolute -right-24 top-1/4 size-96 border border-white/10" />
-        <Brand inverse />
-        <div className="max-w-xl">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[.16em] text-[#8fd9ee]">
+      <section 
+        className="relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between bg-cover bg-center"
+        style={{ backgroundImage: "url('/login-bg.jpg')" }}
+      >
+        {/* Dark overlay to ensure the text remains readable against the bright crystal */}
+        <div className="absolute inset-0 bg-black/60" />
+        
+        <div className="pointer-events-none absolute -right-24 top-1/4 size-96 border border-white/10 z-10" />
+        
+        <div className="relative z-10">
+          <Brand inverse />
+        </div>
+        
+        <div className="max-w-xl relative z-10">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[.16em] text-[#8fd9ee] drop-shadow-md">
             Darion Technologies
           </p>
-          <h1 className="text-5xl font-semibold leading-tight tracking-tight">
+          <h1 className="text-5xl font-semibold leading-tight tracking-tight drop-shadow-lg">
             Build skills that move our work forward.
           </h1>
-          <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/72">
+          <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/90 drop-shadow-md">
             Courses, practical assignments, mentor feedback, and recognized completion in one focused workspace.
           </p>
         </div>
-        <p className="text-sm text-white/55">Internal learning and development workspace</p>
+        
+        <p className="text-sm text-white/70 relative z-10 drop-shadow-md">
+          Internal learning and development workspace
+        </p>
       </section>
-      <section className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-6 lg:min-h-screen lg:bg-card lg:p-6">
+      
+      <section className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-6 lg:min-h-screen lg:bg-card lg:p-6 z-20">
         <div className="w-full max-w-[340px] lg:max-w-md lg:lg:p-0">
           <div className="mb-6 flex justify-center lg:hidden"><Brand /></div>
           <h2 className="text-2xl font-semibold tracking-tight lg:text-3xl">Welcome back</h2>

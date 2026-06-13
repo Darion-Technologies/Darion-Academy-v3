@@ -22,7 +22,7 @@ export default async function LearnerDashboard() {
       </Suspense>
 
       {/* Analytics Metrics Ribbon */}
-      <Suspense fallback={<div className="h-[74px] animate-pulse bg-muted rounded-md border border-border" />}>
+      <Suspense fallback={<div className="h-[74px] animate-pulse bg-muted rounded-none border border-border" />}>
         <MetricsRibbonContainer userId={user.id} />
       </Suspense>
 

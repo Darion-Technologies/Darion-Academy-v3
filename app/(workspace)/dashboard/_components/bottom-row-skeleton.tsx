@@ -38,7 +38,7 @@ export function BottomRowSkeleton() {
         <div className="flex flex-1 flex-col px-3 pb-3 pt-2">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex items-center gap-3 border-b px-2 py-2 last:border-0">
-              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="size-4 shrink-0" />
               <div className="flex-1 space-y-1.5">
                 <Skeleton className="h-3.5 w-3/4" />
                 <Skeleton className="h-2.5 w-1/2" />

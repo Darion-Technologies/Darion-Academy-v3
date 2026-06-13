@@ -23,6 +23,9 @@ type YouTubePlayerInstance = {
   unMute: () => void;
   getPlaybackRate: () => number;
   setPlaybackRate: (rate: number) => void;
+  loadModule: (name: string) => void;
+  unloadModule: (name: string) => void;
+  setOption: (module: string, option: string, value: any) => void;
 };
 
 type YouTubePlayerEvent = {
@@ -228,6 +231,22 @@ export function YouTubePlayer({
     }
   };
 
+  const toggleCaptions = () => {
+    if (ytPlayerRef.current) {
+      try {
+        if (captionsEnabled) {
+          ytPlayerRef.current.unloadModule("captions");
+        } else {
+          ytPlayerRef.current.loadModule("captions");
+          ytPlayerRef.current.setOption("captions", "track", { languageCode: "en" });
+        }
+      } catch (e) {
+        console.error("Captions module not available", e);
+      }
+      setCaptionsEnabled(!captionsEnabled);
+    }
+  };
+
   const toggleFullscreen = () => {
     if (!document.fullscreenElement && containerRef.current) {
       containerRef.current.requestFullscreen();
@@ -300,7 +319,7 @@ export function YouTubePlayer({
 
               <div className="flex items-center gap-4 relative">
                 <button 
-                  onClick={() => setCaptionsEnabled(!captionsEnabled)} 
+                  onClick={toggleCaptions} 
                   className={`transition-colors ${captionsEnabled ? 'text-blue-400' : 'hover:text-blue-400'}`}
                   title="Toggle Captions"
                 >
