@@ -181,10 +181,28 @@ export function certificateHtml(input: {
 }
 
 export async function renderCertificatePdf(html: string) {
-  const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
-  const executablePath = process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath(
-    "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-  ));
+  let executablePath = process.env.CHROME_EXECUTABLE_PATH;
+  let isLocal = false;
+  
+  if (executablePath) {
+    try {
+      const fs = await import("fs");
+      if (fs.existsSync(executablePath)) {
+        isLocal = true;
+      } else {
+        executablePath = undefined; // Path is set but file doesn't exist (e.g. Vercel)
+      }
+    } catch (e) {
+      executablePath = undefined;
+    }
+  }
+
+  if (!executablePath) {
+    executablePath = await chromium.executablePath(
+      "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+    );
+  }
+
   const browser = await puppeteer.launch({
     args: isLocal ? [
       "--no-sandbox",
