@@ -5,10 +5,11 @@ import { markShortWatchedAction, toggleShortBookmarkAction } from "@/actions/sho
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
+import { Share2, CheckCircle2, Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
+import { ShareShortDialog } from "@/components/shorts/share-short-dialog";
 
 export function ShortWatchClient({ 
   short, 
@@ -27,6 +28,7 @@ export function ShortWatchClient({
   const [isBookmarked, setIsBookmarked] = useState(isBookmarkedInitially);
   const [loadingWatch, setLoadingWatch] = useState(false);
   const [loadingBookmark, setLoadingBookmark] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   // Quiz state
   const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>({});
@@ -96,6 +98,14 @@ export function ShortWatchClient({
             </div>
           </div>
           <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsShareDialogOpen(true)}
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              Share
+            </Button>
             <Button 
               variant={isBookmarked ? "default" : "outline"} 
               size="sm" 
@@ -233,6 +243,13 @@ export function ShortWatchClient({
           </div>
         )}
       </div>
+
+      <ShareShortDialog 
+        open={isShareDialogOpen} 
+        onOpenChange={setIsShareDialogOpen} 
+        shortId={short.id} 
+        shortTitle={short.title} 
+      />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save } from "lucide-react";
+import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save, Share2 } from "lucide-react";
 import { markShortWatchedAction, toggleShortBookmarkAction, getShortCommentsAction, postShortCommentAction, getShortNoteAction, saveShortNoteAction } from "@/actions/shorts";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ShareShortDialog } from "@/components/shorts/share-short-dialog";
 
 const CATEGORIES = ["All", "Python", "JavaScript", "TypeScript", "React", "Next.js", "Node.js", "Git", "Docker", "Linux", "Database", "AI", "DevOps", "Cybersecurity", "Other"];
 
@@ -47,6 +48,10 @@ export function LearnerShortsFeed({
   const [currentNotes, setCurrentNotes] = useState("");
   const [loadingNotes, setLoadingNotes] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+
+  // Share state
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareShortData, setShareShortData] = useState<{id: string, title: string} | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -405,24 +410,6 @@ export function LearnerShortsFeed({
                     </div>
                   )}
 
-                  {/* Bottom Info Overlay */}
-                  <div className="absolute bottom-0 left-0 right-16 p-5 pt-24 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none">
-                    <div className="pointer-events-auto flex flex-col gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-white drop-shadow-md">@{short.channelName}</span>
-                        <Badge variant="neutral" className="bg-white/20 text-white hover:bg-white/30 border-0 text-[10px] backdrop-blur-md px-2 py-0.5">
-                          {short.category}
-                        </Badge>
-                      </div>
-                      <p className="text-white text-[15px] font-medium leading-snug line-clamp-2 drop-shadow-lg">{short.title}</p>
-                      <div className="flex flex-wrap gap-1.5 mt-1">
-                        {short.tags.slice(0, 3).map((tag: string) => (
-                          <span key={tag} className="text-xs font-medium text-blue-300 drop-shadow-md">#{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Right Action Bar Overlay */}
                   <div className="absolute right-3 bottom-8 sm:bottom-12 flex flex-col items-center gap-5 pointer-events-auto z-10">
                     
@@ -439,6 +426,20 @@ export function LearnerShortsFeed({
                         )}
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Save</span>
+                    </button>
+
+                    {/* Share Button */}
+                    <button 
+                      onClick={() => {
+                        setShareShortData({ id: short.id, title: short.title });
+                        setIsShareDialogOpen(true);
+                      }}
+                      className="flex flex-col items-center gap-1.5 group mt-1"
+                    >
+                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                        <Share2 className="w-6 h-6 text-white fill-white/20" />
+                      </div>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Share</span>
                     </button>
 
                     {/* Notes (Mobile Only) */}
@@ -653,6 +654,15 @@ export function LearnerShortsFeed({
         isSavingNotes={isSavingNotes}
         handleSaveNotes={handleSaveNotes}
       />
+
+      {shareShortData && (
+        <ShareShortDialog 
+          open={isShareDialogOpen} 
+          onOpenChange={setIsShareDialogOpen} 
+          shortId={shareShortData.id} 
+          shortTitle={shareShortData.title} 
+        />
+      )}
 
     </div>
   );

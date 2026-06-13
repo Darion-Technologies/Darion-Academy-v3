@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, LoaderCircle, Play, Pause, Volume2, VolumeX, Maximize, Settings } from "lucide-react";
+import { CheckCircle2, LoaderCircle, Play, Pause, Volume2, VolumeX, Maximize, Settings, Subtitles } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { completeLessonAction, saveVideoProgressAction } from "@/app/actions/learning";
 import { useLesson } from "./lesson-context";
@@ -111,6 +111,7 @@ export function YouTubePlayer({
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
+  const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const { setCurrentTimestamp, registerSeekCallback } = useLesson();
 
   useEffect(() => {
@@ -298,6 +299,13 @@ export function YouTubePlayer({
               </div>
 
               <div className="flex items-center gap-4 relative">
+                <button 
+                  onClick={() => setCaptionsEnabled(!captionsEnabled)} 
+                  className={`transition-colors ${captionsEnabled ? 'text-blue-400' : 'hover:text-blue-400'}`}
+                  title="Toggle Captions"
+                >
+                  <Subtitles className="size-4" />
+                </button>
                 <div className="relative">
                   <button onClick={() => setShowSettings(!showSettings)} className="hover:text-blue-400 transition-colors flex items-center gap-1">
                     <span className="text-xs font-semibold">{playbackRate}x</span>

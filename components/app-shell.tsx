@@ -3,7 +3,7 @@
 import {
   Award, BarChart3, Bell, BookOpen, ClipboardCheck,
   FileQuestion, GraduationCap, LayoutDashboard, LayoutTemplate, LogOut, Menu,
-  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare
+  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare, MessageSquare
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -32,6 +32,7 @@ const learnerItems: NavItem[] = [
   { href: "/certificates", label: "Certificates", icon: Award },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/dashboard/shorts", label: "Tech Shorts", icon: PlaySquare },
+  { href: "/chat", label: "Messages", icon: MessageSquare },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];
 const adminItems: NavItem[] = [
@@ -44,11 +45,13 @@ const adminItems: NavItem[] = [
   { href: "/admin/shorts", label: "Shorts", icon: PlaySquare },
   { href: "/admin/certificate-templates", label: "Templates", icon: LayoutTemplate },
   { href: "/admin/certificates", label: "Credentials", icon: Award },
+  { href: "/chat", label: "Messages", icon: MessageSquare },
 ];
 const mentorItems: NavItem[] = [
   { href: "/mentor", label: "Overview", icon: LayoutDashboard },
   { href: "/mentor/learners", label: "Learners", icon: Users },
   { href: "/mentor/submissions", label: "Reviews", icon: ClipboardCheck },
+  { href: "/chat", label: "Messages", icon: MessageSquare },
 ];
 
 export function AppShell({
