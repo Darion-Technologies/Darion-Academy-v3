@@ -93,7 +93,7 @@ export async function markConversationAsReadAction(conversationId: string, messa
     }
   });
 
-  revalidatePath("/chat");
+  // revalidatePath("/chat");
   return { success: true };
 }
 
@@ -197,8 +197,9 @@ export async function sendMessageAction(conversationId: string, content: string,
   });
 
   // Revalidate to trigger server component updates
-  revalidatePath("/chat");
-  revalidatePath(`/chat/${conversationId}`);
+  // Removed to prevent UI lag/reloading during active chatting
+  // revalidatePath("/chat");
+  // revalidatePath(`/chat/${conversationId}`);
 
   return message;
 }

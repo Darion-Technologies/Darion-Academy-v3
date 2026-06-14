@@ -114,8 +114,11 @@ export function ChatWindow({
             return [...prev, fullMessage];
           });
           
-          // Silently trigger delivery receipt
-          if (newMsg.senderId !== currentUserId) {
+          if (newMsg.senderId === currentUserId) {
+            // Clear the oldest optimistic message since this confirmed insert matches one of ours
+            setOptimisticMessages(prev => prev.slice(1));
+          } else {
+            // Silently trigger delivery receipt for other's messages
             markConversationAsDeliveredAction(conversationId).catch(() => {});
           }
         }
