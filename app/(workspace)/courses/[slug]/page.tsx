@@ -12,24 +12,33 @@ import { prisma } from "@/lib/prisma";
 import { cn, formatDuration } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
+
+const getCachedCourse = unstable_cache(
+  async (slug: string) => {
+    return prisma.course.findUnique({
+      where: { slug },
+      include: {
+        modules: {
+          include: {
+            lessons: {
+              include: { assignment: { select: { id: true } }, quiz: { select: { id: true } } },
+              orderBy: { order: "asc" },
+            },
+          },
+          orderBy: { order: "asc" },
+        },
+      },
+    });
+  },
+  ["course-syllabus"],
+  { revalidate: 3600 }
+);
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const user = await requireUser();
   const { slug } = await params;
-  const course = await prisma.course.findUnique({
-    where: { slug },
-    include: {
-      modules: {
-        include: {
-          lessons: {
-            include: { assignment: { select: { id: true } }, quiz: { select: { id: true } } },
-            orderBy: { order: "asc" },
-          },
-        },
-        orderBy: { order: "asc" },
-      },
-    },
-  });
+  const course = await getCachedCourse(slug);
   if (!course) notFound();
 
   const enrollment = await prisma.enrollment.findUnique({

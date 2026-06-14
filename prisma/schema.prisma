@@ -672,6 +672,8 @@ model Message {
   conversationId String
   senderId       String       @db.Uuid
   content        String
+  attachmentUrl  String?
+  attachmentType String?
   createdAt      DateTime     @default(now())
   
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)

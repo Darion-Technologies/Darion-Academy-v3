@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { ConversationType } from "@/generated/prisma";
+import { uploadPrivateFile } from "@/lib/storage";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // Get all conversations for the current user
 export async function getConversationsAction() {
@@ -33,7 +35,73 @@ export async function getConversationsAction() {
     },
   });
 
-  return conversations;
+  // Calculate unread count for each conversation
+  const conversationsWithUnread = await Promise.all(
+    conversations.map(async (conv) => {
+      const myParticipant = conv.participants.find((p) => p.userId === user.id);
+      let unreadCount = 0;
+      
+      if (myParticipant && conv.messages.length > 0) {
+        if (!myParticipant.lastReadMessageId) {
+          // If no last read message, all messages might be unread. 
+          // We can count all messages not sent by the user.
+          unreadCount = await prisma.message.count({
+            where: {
+              conversationId: conv.id,
+              senderId: { not: user.id }
+            }
+          });
+        } else {
+          // Find the last read message to get its createdAt
+          const lastReadMessage = await prisma.message.findUnique({
+            where: { id: myParticipant.lastReadMessageId },
+            select: { createdAt: true }
+          });
+          
+          if (lastReadMessage) {
+            unreadCount = await prisma.message.count({
+              where: {
+                conversationId: conv.id,
+                createdAt: { gt: lastReadMessage.createdAt },
+                senderId: { not: user.id }
+              }
+            });
+          }
+        }
+      }
+      
+      return {
+        ...conv,
+        unreadCount
+      };
+    })
+  );
+
+  return conversationsWithUnread;
+}
+
+// Mark conversation as read
+export async function markConversationAsReadAction(conversationId: string, messageId: string) {
+  const user = await requireUser();
+
+  await prisma.conversationParticipant.update({
+    where: { conversationId_userId: { conversationId, userId: user.id } },
+    data: { lastReadMessageId: messageId }
+  });
+
+  revalidatePath("/chat");
+  return { success: true };
+}
+
+// Get total unread conversations count
+export async function getUnreadChatCountAction() {
+  try {
+    const user = await requireUser();
+    const conversations = await getConversationsAction();
+    return conversations.filter((c) => c.unreadCount && c.unreadCount > 0).length;
+  } catch (err) {
+    return 0;
+  }
 }
 
 // Get messages for a specific conversation
@@ -57,14 +125,26 @@ export async function getMessagesAction(conversationId: string) {
     orderBy: { createdAt: "asc" },
   });
 
+  // Automatically mark as read if there are messages
+  if (messages.length > 0) {
+    const lastMessage = messages[messages.length - 1];
+    if (participant.lastReadMessageId !== lastMessage.id) {
+      await prisma.conversationParticipant.update({
+        where: { id: participant.id },
+        data: { lastReadMessageId: lastMessage.id },
+      });
+      // We don't block the return on revalidation
+    }
+  }
+
   return messages;
 }
 
 // Send a new message
-export async function sendMessageAction(conversationId: string, content: string) {
+export async function sendMessageAction(conversationId: string, content: string, attachmentUrl?: string, attachmentType?: string) {
   const user = await requireUser();
 
-  if (!content.trim()) {
+  if (!content.trim() && !attachmentUrl) {
     throw new Error("Message content cannot be empty.");
   }
 
@@ -82,6 +162,8 @@ export async function sendMessageAction(conversationId: string, content: string)
       conversationId,
       senderId: user.id,
       content,
+      attachmentUrl,
+      attachmentType,
     },
     include: {
       sender: { select: { id: true, name: true, avatarUrl: true } },
@@ -99,6 +181,39 @@ export async function sendMessageAction(conversationId: string, content: string)
   revalidatePath(`/chat/${conversationId}`);
 
   return message;
+}
+
+// Upload an attachment for a chat message
+export async function uploadChatAttachmentAction(formData: FormData) {
+  try {
+    const user = await requireUser();
+    const file = formData.get("file") as File | null;
+    
+    if (!file || file.size === 0) {
+      return { error: "No file uploaded." };
+    }
+    if (!file.type.startsWith("image/")) {
+      return { error: "Only image attachments are currently supported." };
+    }
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      return { error: "Attachment must be under 10MB." };
+    }
+
+    const extension = file.type.split("/")[1] || "png";
+    const filename = `chat-${user.id}-${Date.now()}.${extension}`;
+    
+    // Upload to Supabase (using profile-images as the fallback reliable bucket)
+    const safePath = await uploadPrivateFile("profile-images", filename, file);
+    
+    // Get public URL
+    const supabase = createAdminClient();
+    const { data: publicData } = supabase.storage.from("profile-images").getPublicUrl(safePath);
+    
+    return { success: true, attachmentUrl: publicData.publicUrl, attachmentType: "image" };
+  } catch (error: any) {
+    console.error("UPLOAD ERROR:", error);
+    return { error: error.message || "Upload failed due to a server error." };
+  }
 }
 
 // Create a new conversation

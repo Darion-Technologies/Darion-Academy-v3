@@ -21,7 +21,7 @@ export default async function ConversationPage(props: { params: Promise<{ conver
         initialMessages={messages}
         currentUserId={user.id}
       />
-      <ChatInput conversationId={conversationId} />
+      <ChatInput conversationId={conversationId} currentUserId={user.id} currentUserName={user.name} />
     </div>
   );
 }

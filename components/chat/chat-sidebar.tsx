@@ -5,8 +5,9 @@ import { useParams } from "next/navigation";
 import { Users, User, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NewChatDialog } from "@/components/chat/new-chat-dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 type Conversation = {
   id: string;
@@ -15,11 +16,41 @@ type Conversation = {
   updatedAt: Date;
   messages: Array<{ content: string; createdAt: Date }>;
   participants: Array<{ user: { id: string; name: string; avatarUrl: string | null } }>;
+  unreadCount?: number;
 };
 
-export function ChatSidebar({ initialConversations }: { initialConversations: Conversation[] }) {
+export function ChatSidebar({ initialConversations, currentUserId }: { initialConversations: Conversation[], currentUserId: string }) {
   const { conversationId } = useParams();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const supabase = createClient();
+
+  useEffect(() => {
+    // In Darion Academy, we might have a global presence channel, 
+    // but here we can just create a "global_chat_presence" channel.
+    const channel = supabase.channel("global_chat_presence", {
+      config: { presence: { key: currentUserId } },
+    });
+
+    channel
+      .on("presence", { event: "sync" }, () => {
+        const state = channel.presenceState();
+        const users = new Set<string>();
+        for (const id of Object.keys(state)) {
+          users.add(id);
+        }
+        setOnlineUsers(users);
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await channel.track({ online_at: new Date().toISOString() });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUserId, supabase]);
 
   return (
     <div className="flex w-full flex-col border-r border-border bg-muted/20 sm:w-80 shrink-0">
@@ -57,13 +88,25 @@ export function ChatSidebar({ initialConversations }: { initialConversations: Co
                     isActive && "bg-muted"
                   )}
                 >
-                  <div className="flex size-10 shrink-0 items-center justify-center bg-secondary text-secondary-foreground border border-border rounded-none">
+                  <div className="relative flex size-10 shrink-0 items-center justify-center bg-secondary text-secondary-foreground border border-border rounded-none">
                     {isGroup ? <Users className="size-5" /> : <User className="size-5" />}
+                    {!isGroup && onlineUsers.has(otherP.id) && (
+                      <span className="absolute -bottom-1 -right-1 block size-3 rounded-full bg-green-500 border-2 border-card"></span>
+                    )}
                   </div>
                   <div className="flex flex-1 flex-col overflow-hidden">
-                    <span className="truncate text-sm font-semibold">{displayName}</span>
-                    <span className="truncate text-xs text-muted-foreground">{lastMessage}</span>
+                    <span className={cn("truncate text-sm", conv.unreadCount ? "font-bold text-foreground" : "font-semibold")}>
+                      {displayName}
+                    </span>
+                    <span className={cn("truncate text-xs", conv.unreadCount ? "font-bold text-foreground" : "text-muted-foreground")}>
+                      {lastMessage}
+                    </span>
                   </div>
+                  {conv.unreadCount ? (
+                    <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                      {conv.unreadCount > 99 ? "99+" : conv.unreadCount}
+                    </div>
+                  ) : null}
                 </Link>
               );
             })}

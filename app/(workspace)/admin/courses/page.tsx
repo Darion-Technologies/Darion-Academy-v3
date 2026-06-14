@@ -9,13 +9,22 @@ import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NewCourseModal } from "@/components/admin/new-course-modal";
 import { BulkCourseModal } from "@/components/admin/bulk-course-modal";
+import { unstable_cache } from "next/cache";
+
+const getCachedAdminCourses = unstable_cache(
+  async () => {
+    return prisma.course.findMany({ 
+      include: { _count: { select: { modules: true, enrollments: true } } }, 
+      orderBy: { updatedAt: "desc" } 
+    });
+  },
+  ["admin-courses-list"],
+  { revalidate: 60 }
+);
 
 export default async function AdminCoursesPage() {
   await requireRole("ADMIN");
-  const courses = await prisma.course.findMany({ 
-    include: { _count: { select: { modules: true, enrollments: true } } }, 
-    orderBy: { updatedAt: "desc" } 
-  });
+  const courses = await getCachedAdminCourses();
 
   return (
     <>

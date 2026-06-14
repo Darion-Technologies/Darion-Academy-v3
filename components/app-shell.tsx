@@ -57,6 +57,7 @@ const mentorItems: NavItem[] = [
 export function AppShell({
   user,
   unreadCount = 0,
+  unreadChatCount = 0,
   hasEnrollment = false,
   initialSidebarCollapsed = false,
   initialTheme = "SYSTEM",
@@ -64,6 +65,7 @@ export function AppShell({
 }: {
   user: { name: string; email: string; role: UserRole; employeeId?: string | null; avatarUrl?: string | null };
   unreadCount?: number;
+  unreadChatCount?: number;
   hasEnrollment?: boolean;
   initialSidebarCollapsed?: boolean;
   initialTheme?: AppearanceTheme;
@@ -116,7 +118,7 @@ export function AppShell({
             <div key={group.label} className={cn(index > 0 && "mt-6")}>
               {!collapsed && <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--sidebar-muted)]">{group.label}</p>}
               <div className="space-y-1">
-                {group.items.map((item) => <NavLink key={item.href} item={item} active={isActive(item.href)} collapsed={collapsed} />)}
+                {group.items.map((item) => <NavLink key={item.href} item={item} active={isActive(item.href)} collapsed={collapsed} unreadChatCount={unreadChatCount} />)}
               </div>
             </div>
           ))}
@@ -163,7 +165,7 @@ export function AppShell({
         </div>
       </aside>
 
-      {mobileOpen && <MobileDrawer groups={groups} user={user} pathname={pathname} close={() => setMobileOpen(false)} />}
+      {mobileOpen && <MobileDrawer groups={groups} user={user} pathname={pathname} close={() => setMobileOpen(false)} unreadCount={unreadCount} unreadChatCount={unreadChatCount} />}
 
       <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[200px]")}>
         <header className="sticky top-0 z-30 flex h-10 items-center gap-2 lg:gap-3 border-b bg-card/90 px-2 lg:px-4 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:px-4">
@@ -197,24 +199,41 @@ export function AppShell({
   );
 }
 
-function NavLink({ item, active, collapsed, onClick }: { item: NavItem; active: boolean; collapsed: boolean; onClick?: () => void }) {
+function NavLink({ item, active, collapsed, onClick, unreadChatCount }: { item: NavItem; active: boolean; collapsed: boolean; onClick?: () => void; unreadChatCount?: number }) {
+  const isChat = item.href === "/chat";
+  const hasUnreadChat = isChat && unreadChatCount && unreadChatCount > 0;
+  
   const link = <Link href={item.href} onClick={onClick} className={cn(
     "relative flex h-8 items-center rounded-none text-sm font-medium transition-colors",
     collapsed ? "justify-center px-1" : "gap-2.5 px-2.5",
     active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
   )}>
-    <item.icon className="size-4 shrink-0" />
-    {!collapsed && <span>{item.label}</span>}
+    <div className="relative">
+      <item.icon className="size-4 shrink-0" />
+      {hasUnreadChat && collapsed && (
+        <span className="absolute -top-1 -right-1 flex size-2.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground"></span>
+      )}
+    </div>
+    {!collapsed && (
+      <div className="flex flex-1 items-center justify-between">
+        <span>{item.label}</span>
+        {hasUnreadChat && (
+          <span className="flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+            {unreadChatCount}
+          </span>
+        )}
+      </div>
+    )}
   </Link>;
   return collapsed ? <Tooltip><TooltipTrigger asChild>{link}</TooltipTrigger><TooltipContent side="right">{item.label}</TooltipContent></Tooltip> : link;
 }
 
-function MobileDrawer({ groups, user, close, pathname }: { groups: NavGroup[]; user: { name: string; role: UserRole; avatarUrl?: string | null; employeeId?: string | null }; close: () => void; pathname: string }) {
+function MobileDrawer({ groups, user, close, pathname, unreadCount, unreadChatCount }: { groups: NavGroup[]; user: { name: string; role: UserRole; avatarUrl?: string | null; employeeId?: string | null }; close: () => void; pathname: string; unreadCount?: number; unreadChatCount?: number }) {
   return <div className="fixed inset-0 z-50 lg:hidden">
     <button className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={close} aria-label="Close navigation" />
     <aside className="relative flex h-full w-[240px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl">
       <div className="flex h-10 items-center justify-between border-b border-sidebar-border px-4"><Brand /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><X /></Button></div>
-      <nav className="flex-1 overflow-y-auto p-2">{groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} />)}</div></div>)}</nav>
+      <nav className="flex-1 overflow-y-auto p-2">{groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} unreadChatCount={unreadChatCount} />)}</div></div>)}</nav>
       <div className="border-t border-sidebar-border p-3 flex items-center gap-2">
         <div className="relative grid size-8 shrink-0 place-items-center overflow-hidden bg-sidebar-muted/20 text-[10px] font-bold text-sidebar-foreground">
           <span className="absolute inset-0 flex items-center justify-center">{initials(user.name)}</span>

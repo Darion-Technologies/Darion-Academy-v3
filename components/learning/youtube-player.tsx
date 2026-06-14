@@ -295,8 +295,8 @@ export function YouTubePlayer({
       <div className="relative w-full aspect-video group bg-black">
         <div className="absolute inset-0 size-full border-0 pointer-events-none" ref={playerRoot} />
         
-        {/* Custom Overlay */}
-        {!isPlaying && (
+        {/* Custom Overlay (Play state) */}
+        {!isPlaying ? (
           <div 
             className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md cursor-pointer transition-all hover:bg-black/50"
             onClick={togglePlay}
@@ -310,6 +310,11 @@ export function YouTubePlayer({
               </span>
             </div>
           </div>
+        ) : (
+          <div 
+            className="absolute inset-0 z-10 cursor-pointer" 
+            onClick={togglePlay} 
+          />
         )}
 
         {/* Custom Controls (Active when playing or ready) */}
