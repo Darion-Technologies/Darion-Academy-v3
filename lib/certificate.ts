@@ -102,11 +102,11 @@ export async function ensureDefaultCertificateTemplate() {
   });
 }
 
-async function resolveAssetUrl(path: string | null) {
+export async function resolveAssetUrl(path: string | null) {
   if (!path) return null;
   const supabase = createAdminClient();
-  const { data, error } = await supabase.storage.from("certificates").createSignedUrl(path, 600);
-  return error ? null : data.signedUrl;
+  const { data } = supabase.storage.from("certificates").getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export async function calculateCertificateScore(userId: string, courseId: string) {

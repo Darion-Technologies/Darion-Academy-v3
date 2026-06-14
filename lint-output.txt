@@ -1,0 +1,254 @@
+
+> darion-academy@0.1.0 lint
+> eslint
+
+
+/home/pavan/DT/darion-academy/actions/shorts.ts
+  5:26  warning  'revalidateTag' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(auth)/login/page.tsx
+  8:34  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/pavan/DT/darion-academy/app/(auth)/login/page.tsx:8:34
+   6 |
+   7 | export default function LoginPage() {
+>  8 |   const randomImage = Math.floor(Math.random() * 3) + 1;
+     |                                  ^^^^^^^^^^^^^ Cannot call impure function
+   9 |
+  10 |   return (
+  11 |     <main className="grid min-h-screen bg-background lg:grid-cols-[1.05fr_.95fr]">  react-hooks/purity
+
+/home/pavan/DT/darion-academy/app/(workspace)/admin/courses/page.tsx
+  1:8   warning  'Link' is defined but never used    @typescript-eslint/no-unused-vars
+  2:8   warning  'Image' is defined but never used   @typescript-eslint/no-unused-vars
+  4:10  warning  'Badge' is defined but never used   @typescript-eslint/no-unused-vars
+  5:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/admin/shorts/[id]/page.tsx
+  11:42  warning  'params' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/admin/shorts/_components/ShortQuizBuilder.tsx
+  8:52  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/admin/shorts/_components/ShortsAdminPanel.tsx
+  13:8  warning  'Image' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/courses/[slug]/loading.tsx
+  3:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/courses/[slug]/page.tsx
+  12:10  warning  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/dashboard/_components/daily-short-widget.tsx
+   1:22  warning  'CheckCircle2' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  23:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/app/(workspace)/dashboard/shorts/[id]/page.tsx
+   4:20  warning  'redirect' is defined but never used  @typescript-eslint/no-unused-vars
+  10:42  warning  'params' is defined but never used    @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/dashboard/shorts/_components/LearnerShortsFeed.tsx
+    3:39  warning  'useCallback' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+    4:10  warning  'Badge' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+    7:48  warning  'BookmarkCheck' is defined but never used                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  105:18  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  187:14  warning  'e' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  202:14  warning  'e' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  240:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  339:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  405:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  747:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/app/(workspace)/dashboard/shorts/_components/ShortWatchClient.tsx
+   44:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   57:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  153:38  warning  'e' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  166:38  warning  'e' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  179:38  warning  'e' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  192:38  warning  'e' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  233:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/app/(workspace)/dashboard/shorts/page.tsx
+  2:10  warning  'getApprovedShortsAction' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/dashboard/shorts/saved/_components/SavedShortsClient.tsx
+   5:10  warning  'Card' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   5:16  warning  'CardContent' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   5:29  warning  'CardFooter' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   6:10  warning  'Badge' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   8:33  warning  'DialogHeader' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  34:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  74:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/app/(workspace)/leaderboard/page.tsx
+   2:18  warning  'Medal' is defined but never used             @typescript-eslint/no-unused-vars
+   2:53  warning  'ChevronUp' is defined but never used         @typescript-eslint/no-unused-vars
+  41:31  warning  'idx' is defined but never used               @typescript-eslint/no-unused-vars
+  46:19  warning  'isThird' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/lessons/[id]/loading.tsx
+  3:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/quizzes/[id]/page.tsx
+   2:10  warning  'Card' is defined but never used         @typescript-eslint/no-unused-vars
+   2:16  warning  'CardContent' is defined but never used  @typescript-eslint/no-unused-vars
+   2:29  warning  'CardHeader' is defined but never used   @typescript-eslint/no-unused-vars
+   2:41  warning  'CardTitle' is defined but never used    @typescript-eslint/no-unused-vars
+   3:10  warning  'Input' is defined but never used        @typescript-eslint/no-unused-vars
+   4:10  warning  'Label' is defined but never used        @typescript-eslint/no-unused-vars
+  10:21  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/(workspace)/settings/page.tsx
+  9:24  warning  'Laptop' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/actions/account.ts
+  79:13  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/actions/admin.ts
+  337:9  warning  'question' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/actions/chat.ts
+  115:11  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  118:12  warning  'err' is defined but never used            @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/api/admin/reports/export/route.ts
+  5:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/app/page.tsx
+   22:34  error    Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/pavan/DT/darion-academy/app/page.tsx:22:34
+  20 |   const ctaLink = "/login";
+  21 |   const ctaText = "Sign In to Academy";
+> 22 |   const randomImage = Math.floor(Math.random() * 3) + 1;
+     |                                  ^^^^^^^^^^^^^ Cannot call impure function
+  23 |
+  24 |   return (
+  25 |     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30">  react-hooks/purity
+   73:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @next/next/no-img-element
+   89:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @next/next/no-img-element
+  105:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/admin/curriculum-builder.tsx
+  13:16  warning  'CardContent' is defined but never used  @typescript-eslint/no-unused-vars
+  13:29  warning  'CardHeader' is defined but never used   @typescript-eslint/no-unused-vars
+  13:41  warning  'CardTitle' is defined but never used    @typescript-eslint/no-unused-vars
+  20:22  warning  'Trash2' is defined but never used       @typescript-eslint/no-unused-vars
+  25:6   warning  'LessonType' is defined but never used   @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/admin/users-table.tsx
+  102:27  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/app-shell.tsx
+  133:34  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  184:36  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  231:56  warning  'unreadCount' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  240:30  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/chat/chat-app.tsx
+  22:9  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/chat/chat-input.tsx
+   15:23  warning  'startUpload' is assigned a value but never used                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  143:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/chat/chat-sidebar.tsx
+    3:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+    4:10  warning  'useParams' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+    5:17  warning  'User' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  103:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/chat/chat-window.tsx
+    7:40  warning  'markConversationAsDeliveredAction' is defined but never used                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   26:3   warning  'participantMap' is defined but never used                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   28:3   warning  'onUpdateCache' is defined but never used                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   99:6   warning  React Hook useEffect has missing dependencies: 'allMessages' and 'isAtBottom'. Either include them or remove the dependency array                                                                                                                                                        react-hooks/exhaustive-deps
+  129:6   warning  React Hook useEffect has a missing dependency: 'currentUserId'. Either include it or remove the dependency array                                                                                                                                                                         react-hooks/exhaustive-deps
+  190:27  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/chat/new-chat-dialog.tsx
+    5:18  warning  'Users' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+    5:25  warning  'User' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  133:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/dashboard/contribution-heatmap.tsx
+  4:29  warning  'useRef' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/dashboard/mini-leaderboard.tsx
+  7:10  warning  'initials' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/dashboard/welcome-card.tsx
+  4:10  warning  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/learning/interactive-video-layout.tsx
+  25:10  warning  'currentTime' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/learning/native-video-player.tsx
+  124:9  error  'newDisplayTime' is never reassigned. Use 'const' instead  prefer-const
+
+/home/pavan/DT/darion-academy/components/learning/quiz-client.tsx
+  189:6  warning  React Hook useEffect has a missing dependency: 'handleNavigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/pavan/DT/darion-academy/components/learning/quiz/question-renderer.tsx
+  1:10  warning  'Input' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/learning/use-proctoring.ts
+  5:6  warning  'ProctoringState' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/components/learning/webcam-proctor.tsx
+  122:33  warning  The ref value 'videoRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'videoRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+/home/pavan/DT/darion-academy/components/learning/youtube-player.tsx
+  188:6  warning  React Hook useEffect has missing dependencies: 'videoEndTime' and 'videoStartTime'. Either include them or remove the dependency array. If 'setProgress' needs the current value of 'videoStartTime', you can also switch to useReducer instead of useState and read 'videoStartTime' in the reducer  react-hooks/exhaustive-deps
+  202:6  warning  React Hook useEffect has a missing dependency: 'setCurrentTimestamp'. Either include it or remove the dependency array                                                                                                                                                                                react-hooks/exhaustive-deps
+  273:9  error    'newDisplayTime' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                             prefer-const
+
+/home/pavan/DT/darion-academy/components/shorts/share-short-dialog.tsx
+  138:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/components/ui/data-table.tsx
+  41:17  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/pavan/DT/darion-academy/components/ui/data-table.tsx:41:17
+  39 |   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  40 |
+> 41 |   const table = useReactTable({
+     |                 ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  42 |     data,
+  43 |     columns,
+  44 |     getCoreRowModel: getCoreRowModel(),  react-hooks/incompatible-library
+
+/home/pavan/DT/darion-academy/components/ui/password-input.tsx
+  8:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/home/pavan/DT/darion-academy/components/user-avatar.tsx
+  18:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pavan/DT/darion-academy/enable_realtime.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/home/pavan/DT/darion-academy/fix_replica.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/home/pavan/DT/darion-academy/lib/certificate.ts
+  195:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/test-puppeteer.js
+  1:19  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/home/pavan/DT/darion-academy/test-script.ts
+  1:10  warning  'prisma' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pavan/DT/darion-academy/test_badges.js
+  1:32  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:23  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+✖ 111 problems (10 errors, 101 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+

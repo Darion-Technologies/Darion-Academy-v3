@@ -27,7 +27,6 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: certificate.failureReason ?? "Certificate is not ready." }, { status: 409 });
   }
   const supabase = createAdminClient();
-  const { data, error } = await supabase.storage.from("certificates").createSignedUrl(certificate.fileUrl, 3600);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ url: data.signedUrl });
+  const { data } = supabase.storage.from("certificates").getPublicUrl(certificate.fileUrl);
+  return NextResponse.json({ url: data.publicUrl });
 }

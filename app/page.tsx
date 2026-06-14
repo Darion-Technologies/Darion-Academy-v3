@@ -19,7 +19,7 @@ export default async function Home() {
 
   const ctaLink = "/login";
   const ctaText = "Sign In to Academy";
-  const randomImage = Math.floor(Math.random() * 3) + 1;
+  const randomImage = 1;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30">

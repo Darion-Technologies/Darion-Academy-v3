@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default function LoginPage() {
-  const randomImage = Math.floor(Math.random() * 3) + 1;
+  const randomImage = 1;
 
   return (
     <main className="grid min-h-screen bg-background lg:grid-cols-[1.05fr_.95fr]">

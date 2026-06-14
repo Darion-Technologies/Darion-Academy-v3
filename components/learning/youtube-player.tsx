@@ -270,7 +270,7 @@ export function YouTubePlayer({
   const displayProgress = Math.max(0, progress - effectiveStartTime);
 
   const handleSeekRelative = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newDisplayTime = parseFloat(e.target.value);
+    const newDisplayTime = parseFloat(e.target.value);
     let newTime = newDisplayTime + effectiveStartTime;
     
     // Enforce bounds
