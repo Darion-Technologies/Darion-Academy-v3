@@ -163,7 +163,7 @@ export function certificateHtml(input: {
   .company{margin-top:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:12px}.title{font-family:${safeCssValue(template.headingFontFamily)},Georgia,serif;font-size:45px;margin:18px 0 8px}
   .sub{font-size:15px;color:${safeCssValue(template.textColor)};opacity:.72}.name{font-family:${safeCssValue(template.headingFontFamily)},Georgia,serif;font-size:37px;color:${safeCssValue(template.accentColor)};margin:16px 0;border-bottom:1px solid ${safeCssValue(template.primaryColor)};padding:0 36px 8px}
   .course{font-size:24px;font-weight:700;margin:11px}.footer{display:flex;align-items:flex-end;gap:38px;margin-top:28px}.meta{display:flex;gap:38px;font-size:11px}.meta b{display:block;font-size:13px;margin-bottom:5px}
-  .signature{width:190px;border-top:1px solid ${safeCssValue(template.textColor)};padding-top:6px;font-size:11px}.signature img{display:block;max-width:150px;max-height:42px;margin:0 auto 4px}
+  .signature{width:190px;font-size:11px}.signature img{display:block;max-width:150px;max-height:42px;margin:0 auto 4px}.signature-line{border-top:1px solid ${safeCssValue(template.textColor)};padding-top:6px}
   .qr{width:72px;height:72px}.verify{font-size:8px;max-width:110px;overflow-wrap:anywhere}
   </style></head><body><div class="page"><div class="frame"><div class="inner">
   ${input.logoUrl ? `<img class="logo" src="${escapeHtml(input.logoUrl)}">` : `<div class="mark">D</div><div class="company">Darion Technologies</div>`}
@@ -175,7 +175,7 @@ export function certificateHtml(input: {
   <div><b>${escapeHtml(input.issueDate)}</b>Issue date</div>
   ${template.showCertificateId ? `<div><b>${escapeHtml(input.certificateId)}</b>Certificate ID</div>` : ""}
   </div>
-  ${(template.signerName || input.signatureUrl) ? `<div class="signature">${input.signatureUrl ? `<img src="${escapeHtml(input.signatureUrl)}">` : ""}<b>${escapeHtml(template.signerName ?? input.issuer)}</b><br>${escapeHtml(template.signerTitle ?? "Authorized issuer")}</div>` : ""}
+  ${(template.signerName || input.signatureUrl) ? `<div class="signature">${input.signatureUrl ? `<img src="${escapeHtml(input.signatureUrl)}">` : ""}<div class="signature-line"><b>${escapeHtml(template.signerName ?? input.issuer)}</b><br>${escapeHtml(template.signerTitle ?? "Authorized issuer")}</div></div>` : ""}
   ${template.showQrCode && input.qrDataUrl ? `<div><img class="qr" src="${input.qrDataUrl}"><div class="verify">${escapeHtml(input.verificationUrl)}</div></div>` : ""}
   </div></div></div></div></body></html>`;
 }
