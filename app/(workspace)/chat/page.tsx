@@ -1,15 +1,26 @@
-import { MessageSquare } from "lucide-react";
+import { getConversationsAction } from "@/app/actions/chat";
+import { requireUser } from "@/lib/auth";
+import { ChatApp } from "@/components/chat/chat-app";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
-export default function ChatPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ChatPage() {
+  const user = await requireUser();
+  const conversations = await getConversationsAction();
+
   return (
-    <div className="flex h-full flex-col items-center justify-center text-muted-foreground p-8">
-      <div className="flex size-16 items-center justify-center rounded-none bg-muted mb-4 border border-border">
-        <MessageSquare className="size-8 text-foreground" />
+    <Suspense fallback={
+      <div className="flex h-full w-full items-center justify-center bg-card">
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
-      <h3 className="text-lg font-bold text-foreground">Your Messages</h3>
-      <p className="text-sm mt-2 text-center max-w-sm">
-        Select a conversation from the sidebar to start chatting or create a new one.
-      </p>
-    </div>
+    }>
+      <ChatApp 
+        initialConversations={conversations} 
+        currentUserId={user.id} 
+        currentUserName={user.name} 
+      />
+    </Suspense>
   );
 }

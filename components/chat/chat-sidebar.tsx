@@ -19,8 +19,17 @@ type Conversation = {
   unreadCount?: number;
 };
 
-export function ChatSidebar({ initialConversations, currentUserId }: { initialConversations: Conversation[], currentUserId: string }) {
-  const { conversationId } = useParams();
+export function ChatSidebar({ 
+  initialConversations, 
+  currentUserId,
+  activeConversationId,
+  onSelectConversation
+}: { 
+  initialConversations: Conversation[];
+  currentUserId: string;
+  activeConversationId: string | null;
+  onSelectConversation: (id: string) => void;
+}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const supabase = createClient();
@@ -74,15 +83,15 @@ export function ChatSidebar({ initialConversations, currentUserId }: { initialCo
               const otherP = conv.participants.find(p => p.user.id !== currentUserId)?.user || conv.participants[0].user;
               
               const displayName = isGroup ? (conv.name || "Group Chat") : otherP.name;
-              const isActive = conversationId === conv.id;
+              const isActive = activeConversationId === conv.id;
               const lastMessage = conv.messages[0]?.content || "No messages yet";
 
               return (
-                <Link
+                <button
                   key={conv.id}
-                  href={`/chat/${conv.id}`}
+                  onClick={() => onSelectConversation(conv.id)}
                   className={cn(
-                    "flex items-center gap-3 border-b border-border p-3 transition-colors hover:bg-muted/50",
+                    "flex items-center gap-3 border-b border-border p-3 transition-colors hover:bg-muted/50 w-full text-left",
                     isActive && "bg-muted"
                   )}
                 >
@@ -118,14 +127,18 @@ export function ChatSidebar({ initialConversations, currentUserId }: { initialCo
                       {conv.unreadCount > 99 ? "99+" : conv.unreadCount}
                     </div>
                   ) : null}
-                </Link>
+                </button>
               );
             })}
           </div>
         )}
       </div>
 
-      <NewChatDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <NewChatDialog 
+        open={dialogOpen} 
+        onOpenChange={setDialogOpen} 
+        onSelectConversation={onSelectConversation}
+      />
     </div>
   );
 }

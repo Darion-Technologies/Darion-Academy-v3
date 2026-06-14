@@ -16,7 +16,15 @@ type AvailableUser = {
   role: string;
 };
 
-export function NewChatDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function NewChatDialog({ 
+  open, 
+  onOpenChange,
+  onSelectConversation 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void;
+  onSelectConversation?: (id: string) => void;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState<AvailableUser[]>([]);
@@ -55,7 +63,12 @@ export function NewChatDialog({ open, onOpenChange }: { open: boolean; onOpenCha
       onOpenChange(false);
       setSelectedUsers([]);
       setQuery("");
-      router.push(`/chat/${conversationId}`);
+      
+      if (onSelectConversation) {
+        onSelectConversation(conversationId);
+      } else {
+        router.push(`/chat?id=${conversationId}`);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to create conversation");
     }
