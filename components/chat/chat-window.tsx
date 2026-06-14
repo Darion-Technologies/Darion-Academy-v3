@@ -62,6 +62,12 @@ export function ChatWindow({
     setOptimisticMessages([]);
   }, [initialMessages]);
 
+  useEffect(() => {
+    if (initialRecipientStatus) {
+      setRecipientStatus(initialRecipientStatus);
+    }
+  }, [initialRecipientStatus]);
+
   const allMessages = [...liveMessages, ...optimisticMessages];
 
   const scrollToBottom = () => {
@@ -93,54 +99,8 @@ export function ChatWindow({
   }, [liveMessages, conversationId, currentUserId]);
 
   useEffect(() => {
-    const channel = supabase
-      .channel(`chat_${conversationId}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "Message", filter: `conversationId=eq.${conversationId}` },
-        (payload) => {
-          const newMsg = payload.new as any;
-          // Build full message from payload
-          const fullMessage: Message = {
-            id: newMsg.id,
-            senderId: newMsg.senderId,
-            content: newMsg.content,
-            attachmentUrl: newMsg.attachmentUrl,
-            attachmentType: newMsg.attachmentType,
-            createdAt: new Date(newMsg.createdAt),
-            sender: participantMap[newMsg.senderId] || { id: newMsg.senderId, name: "Unknown", avatarUrl: null },
-          };
-          
-          setLiveMessages(prev => {
-            if (prev.find(m => m.id === fullMessage.id)) return prev; // Avoid duplicates
-            const next = [...prev, fullMessage];
-            if (onUpdateCache) onUpdateCache(next);
-            return next;
-          });
-          
-          if (newMsg.senderId === currentUserId) {
-            // Clear the oldest optimistic message since this confirmed insert matches one of ours
-            setOptimisticMessages(prev => prev.slice(1));
-          } else {
-            // Silently trigger delivery receipt for other's messages
-            markConversationAsDeliveredAction(conversationId).catch(() => {});
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "ConversationParticipant", filter: `conversationId=eq.${conversationId}` },
-        (payload) => {
-          const updatedParticipant = payload.new as any;
-          if (updatedParticipant.userId !== currentUserId) {
-            setRecipientStatus({
-              lastReadAt: updatedParticipant.lastReadAt ? new Date(updatedParticipant.lastReadAt) : null,
-              lastDeliveredAt: updatedParticipant.lastDeliveredAt ? new Date(updatedParticipant.lastDeliveredAt) : null,
-            });
-          }
-        }
-      )
-      .subscribe();
+    // postgres_changes for Messages and ConversationParticipant are now handled globally in ChatApp.
+    // We only need to listen for typing indicators here.
 
     const typingChannel = supabase.channel(`typing_${conversationId}`)
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
@@ -164,7 +124,6 @@ export function ChatWindow({
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
       supabase.removeChannel(typingChannel);
     };
   }, [conversationId, supabase, router]);
