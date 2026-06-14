@@ -86,10 +86,23 @@ export function ChatSidebar({ initialConversations, currentUserId }: { initialCo
                     isActive && "bg-muted"
                   )}
                 >
-                  <div className="relative flex size-10 shrink-0 items-center justify-center bg-secondary text-secondary-foreground border border-border rounded-none">
-                    {isGroup ? <Users className="size-5" /> : <User className="size-5" />}
-                    {!isGroup && onlineUsers.has(otherP.id) && (
-                      <span className="absolute -bottom-1 -right-1 block size-3 rounded-full bg-green-500 border-2 border-card"></span>
+                  <div className="relative size-10 shrink-0">
+                    <div className="flex size-full items-center justify-center bg-secondary text-secondary-foreground border border-border rounded-none overflow-hidden">
+                      {isGroup ? (
+                        <Users className="size-5" />
+                      ) : otherP?.avatarUrl ? (
+                        <img 
+                          src={otherP.avatarUrl} 
+                          alt={otherP.name} 
+                          className="size-full object-cover" 
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }} 
+                        />
+                      ) : (
+                        <span className="text-xs font-bold">{otherP?.name?.substring(0, 2).toUpperCase()}</span>
+                      )}
+                    </div>
+                    {!isGroup && otherP && onlineUsers.has(otherP.id) && (
+                      <span className="absolute -bottom-1 -right-1 block size-3 rounded-full bg-green-500 border-2 border-card z-10"></span>
                     )}
                   </div>
                   <div className="flex flex-1 flex-col overflow-hidden">
