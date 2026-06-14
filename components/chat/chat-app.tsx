@@ -135,6 +135,13 @@ export function ChatApp({
               currentUserId={currentUserId}
               participantMap={participantMap}
               initialRecipientStatus={initialRecipientStatus}
+              onUpdateCache={(updater) => {
+                setMessagesCache(prev => {
+                  const current = prev[activeConversationId] || [];
+                  const updated = typeof updater === 'function' ? updater(current) : updater;
+                  return { ...prev, [activeConversationId]: updated };
+                });
+              }}
             />
             
             <ChatInput 

@@ -25,12 +25,14 @@ export function ChatWindow({
   currentUserId,
   participantMap,
   initialRecipientStatus,
+  onUpdateCache,
 }: {
   conversationId: string;
   initialMessages: Message[];
   currentUserId: string;
   participantMap: Record<string, { id: string; name: string; avatarUrl: string | null }>;
   initialRecipientStatus?: { lastReadAt: Date | null; lastDeliveredAt: Date | null } | null;
+  onUpdateCache?: (updater: Message[] | ((prev: Message[]) => Message[])) => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -111,7 +113,9 @@ export function ChatWindow({
           
           setLiveMessages(prev => {
             if (prev.find(m => m.id === fullMessage.id)) return prev; // Avoid duplicates
-            return [...prev, fullMessage];
+            const next = [...prev, fullMessage];
+            if (onUpdateCache) onUpdateCache(next);
+            return next;
           });
           
           if (newMsg.senderId === currentUserId) {
