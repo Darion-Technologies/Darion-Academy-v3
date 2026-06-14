@@ -70,10 +70,8 @@ export function ChatSidebar({ initialConversations, currentUserId }: { initialCo
           <div className="flex flex-col">
             {initialConversations.map((conv) => {
               const isGroup = conv.type === "GROUP";
-              // If direct, the other user's name
-              const otherParticipant = conv.participants.find((p) => true); // In a real app we filter out the current user, but here we just take the first for simplicity or wait, we should filter!
-              // Wait, since this is a server fetched object, we can filter out the current user if we know the user.id, but we don't have it here. Let's just use the first participant or the second.
-              const otherP = conv.participants.length > 1 ? conv.participants[1].user : conv.participants[0].user;
+              // Filter out the current user to find the other participant
+              const otherP = conv.participants.find(p => p.user.id !== currentUserId)?.user || conv.participants[0].user;
               
               const displayName = isGroup ? (conv.name || "Group Chat") : otherP.name;
               const isActive = conversationId === conv.id;

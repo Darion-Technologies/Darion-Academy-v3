@@ -201,7 +201,7 @@ export function AppShell({
 
 function NavLink({ item, active, collapsed, onClick, unreadChatCount }: { item: NavItem; active: boolean; collapsed: boolean; onClick?: () => void; unreadChatCount?: number }) {
   const isChat = item.href === "/chat";
-  const hasUnreadChat = isChat && unreadChatCount && unreadChatCount > 0;
+  const hasUnreadChat = isChat && typeof unreadChatCount === 'number' && unreadChatCount > 0;
   
   const link = <Link href={item.href} onClick={onClick} className={cn(
     "relative flex h-8 items-center rounded-none text-sm font-medium transition-colors",
