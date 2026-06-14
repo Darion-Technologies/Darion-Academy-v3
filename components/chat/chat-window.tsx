@@ -34,6 +34,20 @@ export function ChatWindow({
   const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showNewMessageIndicator, setShowNewMessageIndicator] = useState(false);
+  const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const handleOptimisticMsg = (e: Event) => {
+      const customEvent = e as CustomEvent<Message>;
+      if (customEvent.detail) {
+        setOptimisticMessages((prev) => [...prev, customEvent.detail]);
+      }
+    };
+    window.addEventListener("optimistic_chat_message", handleOptimisticMsg);
+    return () => window.removeEventListener("optimistic_chat_message", handleOptimisticMsg);
+  }, []);
+
+  const allMessages = [...initialMessages, ...optimisticMessages];
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -42,19 +56,22 @@ export function ChatWindow({
   };
 
   useEffect(() => {
+    // Clear optimistic messages when the real messages update from the server
+    setOptimisticMessages([]);
+    
     if (isAtBottom) {
       scrollToBottom();
-    } else if (initialMessages.length > 0) {
-      const lastMsg = initialMessages[initialMessages.length - 1];
+    } else if (allMessages.length > 0) {
+      const lastMsg = allMessages[allMessages.length - 1];
       if (lastMsg.senderId !== currentUserId) {
         setShowNewMessageIndicator(true);
       }
     }
     
     // Mark as read when we view new messages
-    if (initialMessages.length > 0) {
-      const lastMsg = initialMessages[initialMessages.length - 1];
-      if (lastMsg.senderId !== currentUserId) {
+    if (allMessages.length > 0) {
+      const lastMsg = allMessages[allMessages.length - 1];
+      if (lastMsg.senderId !== currentUserId && !lastMsg.id.startsWith("opt-")) {
         markConversationAsReadAction(conversationId, lastMsg.id).catch(() => {});
       }
     }
@@ -115,18 +132,20 @@ export function ChatWindow({
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 relative" ref={scrollRef} onScroll={handleScroll}>
-      {initialMessages.length === 0 ? (
+      {allMessages.length === 0 ? (
         <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
           No messages here yet. Say hello!
         </div>
       ) : (
-        initialMessages.map((msg, index) => {
+        allMessages.map((msg, index) => {
           const isMe = msg.senderId === currentUserId;
-          const prevMsg = index > 0 ? initialMessages[index - 1] : null;
+          const prevMsg = index > 0 ? allMessages[index - 1] : null;
           
           const timeDiff = prevMsg ? new Date(msg.createdAt).getTime() - new Date(prevMsg.createdAt).getTime() : 0;
           const showTimestamp = !prevMsg || timeDiff > 5 * 60 * 1000; // 5 minutes
           const showAvatar = !isMe && (!prevMsg || prevMsg.senderId !== msg.senderId || showTimestamp);
+
+          const isOptimistic = msg.id.startsWith("opt-");
 
           return (
             <div key={msg.id} className="flex flex-col w-full">
@@ -168,7 +187,8 @@ export function ChatWindow({
                     "flex flex-col gap-2 px-4 py-3 text-sm border rounded-none max-w-full",
                     isMe
                       ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-muted text-foreground border-border"
+                      : "bg-muted text-foreground border-border",
+                    isOptimistic && "opacity-70"
                   )}
                 >
                   {msg.attachmentUrl && msg.attachmentType === "image" && (

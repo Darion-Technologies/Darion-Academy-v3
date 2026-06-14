@@ -49,30 +49,57 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
   async function handleSend() {
     if ((!content.trim() && !attachmentFile) || isPending || isUploading) return;
     
+    // Dispatch optimistic message
+    const optimisticMsg = {
+      id: `opt-${Date.now()}`,
+      senderId: currentUserId,
+      content: content.trim(),
+      attachmentUrl: attachmentPreview,
+      attachmentType: attachmentFile ? 'image' : null,
+      createdAt: new Date(),
+      sender: { id: currentUserId, name: currentUserName, avatarUrl: null }
+    };
+    
+    window.dispatchEvent(new CustomEvent("optimistic_chat_message", { detail: optimisticMsg }));
+    
+    // Clear input immediately for better UX
+    const savedContent = content;
+    const savedFile = attachmentFile;
+    const savedPreview = attachmentPreview;
+    
+    setContent("");
+    setAttachmentFile(null);
+    setAttachmentPreview(null);
     setIsPending(true);
+    
     try {
       let attachmentUrl = undefined;
       let attachmentType = undefined;
       
-      if (attachmentFile) {
+      if (savedFile) {
         const formData = new FormData();
-        formData.set("file", attachmentFile);
+        formData.set("file", savedFile);
         const result = await uploadChatAttachmentAction(formData);
         if (result.error) {
           toast.error(result.error);
           setIsPending(false);
+          // Revert optimistic update by restoring input
+          setContent(savedContent);
+          setAttachmentFile(savedFile);
+          setAttachmentPreview(savedPreview);
           return;
         }
         attachmentUrl = result.attachmentUrl;
         attachmentType = result.attachmentType;
       }
       
-      await sendMessageAction(conversationId, content, attachmentUrl, attachmentType);
-      setContent("");
-      setAttachmentFile(null);
-      setAttachmentPreview(null);
+      await sendMessageAction(conversationId, savedContent, attachmentUrl, attachmentType);
     } catch (err: any) {
       toast.error(err.message || "Failed to send message");
+      // Revert optimistic update by restoring input
+      setContent(savedContent);
+      setAttachmentFile(savedFile);
+      setAttachmentPreview(savedPreview);
     } finally {
       setIsPending(false);
     }
