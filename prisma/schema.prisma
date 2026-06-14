@@ -659,6 +659,8 @@ model ConversationParticipant {
   userId            String          @db.Uuid
   role              ParticipantRole @default(MEMBER)
   lastReadMessageId String?
+  lastReadAt        DateTime?
+  lastDeliveredAt   DateTime?
   joinedAt          DateTime        @default(now())
   
   conversation      Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)

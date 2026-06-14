@@ -86,10 +86,26 @@ export async function markConversationAsReadAction(conversationId: string, messa
 
   await prisma.conversationParticipant.update({
     where: { conversationId_userId: { conversationId, userId: user.id } },
-    data: { lastReadMessageId: messageId }
+    data: { 
+      lastReadMessageId: messageId,
+      lastReadAt: new Date(),
+      lastDeliveredAt: new Date() // If read, it's also delivered
+    }
   });
 
   revalidatePath("/chat");
+  return { success: true };
+}
+
+// Mark conversation as delivered
+export async function markConversationAsDeliveredAction(conversationId: string) {
+  const user = await requireUser();
+
+  await prisma.conversationParticipant.update({
+    where: { conversationId_userId: { conversationId, userId: user.id } },
+    data: { lastDeliveredAt: new Date() }
+  });
+
   return { success: true };
 }
 
@@ -128,10 +144,14 @@ export async function getMessagesAction(conversationId: string) {
   // Automatically mark as read if there are messages
   if (messages.length > 0) {
     const lastMessage = messages[messages.length - 1];
-    if (participant.lastReadMessageId !== lastMessage.id) {
+    if (participant.lastReadMessageId !== lastMessage.id || !participant.lastReadAt) {
       await prisma.conversationParticipant.update({
         where: { id: participant.id },
-        data: { lastReadMessageId: lastMessage.id },
+        data: { 
+          lastReadMessageId: lastMessage.id,
+          lastReadAt: new Date(),
+          lastDeliveredAt: new Date()
+        },
       });
       // We don't block the return on revalidation
     }

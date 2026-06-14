@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import { markConversationAsReadAction } from "@/app/actions/chat";
+import { markConversationAsReadAction, markConversationAsDeliveredAction } from "@/app/actions/chat";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { format } from "date-fns";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Check, CheckCheck } from "lucide-react";
 
 type Message = {
   id: string;
@@ -23,10 +23,14 @@ export function ChatWindow({
   conversationId,
   initialMessages,
   currentUserId,
+  participantMap,
+  initialRecipientStatus,
 }: {
   conversationId: string;
   initialMessages: Message[];
   currentUserId: string;
+  participantMap: Record<string, { id: string; name: string; avatarUrl: string | null }>;
+  initialRecipientStatus?: { lastReadAt: Date | null; lastDeliveredAt: Date | null } | null;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -34,7 +38,9 @@ export function ChatWindow({
   const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showNewMessageIndicator, setShowNewMessageIndicator] = useState(false);
+  const [liveMessages, setLiveMessages] = useState<Message[]>(initialMessages);
   const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([]);
+  const [recipientStatus, setRecipientStatus] = useState(initialRecipientStatus || { lastReadAt: null, lastDeliveredAt: null });
 
   useEffect(() => {
     const handleOptimisticMsg = (e: Event) => {
@@ -47,7 +53,14 @@ export function ChatWindow({
     return () => window.removeEventListener("optimistic_chat_message", handleOptimisticMsg);
   }, []);
 
-  const allMessages = [...initialMessages, ...optimisticMessages];
+  useEffect(() => {
+    // Sync liveMessages when initialMessages change (e.g. from server action revalidation)
+    setLiveMessages(initialMessages);
+    // Clear optimistic messages when the real messages update from the server
+    setOptimisticMessages([]);
+  }, [initialMessages]);
+
+  const allMessages = [...liveMessages, ...optimisticMessages];
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -68,28 +81,56 @@ export function ChatWindow({
       }
     }
     
-    // Mark as read when we view new messages
+    // Mark as read and delivered when we view new messages
     if (allMessages.length > 0) {
       const lastMsg = allMessages[allMessages.length - 1];
       if (lastMsg.senderId !== currentUserId && !lastMsg.id.startsWith("opt-")) {
         markConversationAsReadAction(conversationId, lastMsg.id).catch(() => {});
       }
     }
-  }, [initialMessages, conversationId, currentUserId]);
+  }, [liveMessages, conversationId, currentUserId]);
 
   useEffect(() => {
     const channel = supabase
       .channel(`chat_${conversationId}`)
       .on(
         "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "Message",
-          filter: `conversationId=eq.${conversationId}`,
-        },
-        () => {
-          router.refresh(); // Refresh the page data from server
+        { event: "INSERT", schema: "public", table: "Message", filter: `conversationId=eq.${conversationId}` },
+        (payload) => {
+          const newMsg = payload.new as any;
+          // Build full message from payload
+          const fullMessage: Message = {
+            id: newMsg.id,
+            senderId: newMsg.senderId,
+            content: newMsg.content,
+            attachmentUrl: newMsg.attachmentUrl,
+            attachmentType: newMsg.attachmentType,
+            createdAt: new Date(newMsg.createdAt),
+            sender: participantMap[newMsg.senderId] || { id: newMsg.senderId, name: "Unknown", avatarUrl: null },
+          };
+          
+          setLiveMessages(prev => {
+            if (prev.find(m => m.id === fullMessage.id)) return prev; // Avoid duplicates
+            return [...prev, fullMessage];
+          });
+          
+          // Silently trigger delivery receipt
+          if (newMsg.senderId !== currentUserId) {
+            markConversationAsDeliveredAction(conversationId).catch(() => {});
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "ConversationParticipant", filter: `conversationId=eq.${conversationId}` },
+        (payload) => {
+          const updatedParticipant = payload.new as any;
+          if (updatedParticipant.userId !== currentUserId) {
+            setRecipientStatus({
+              lastReadAt: updatedParticipant.lastReadAt ? new Date(updatedParticipant.lastReadAt) : null,
+              lastDeliveredAt: updatedParticipant.lastDeliveredAt ? new Date(updatedParticipant.lastDeliveredAt) : null,
+            });
+          }
         }
       )
       .subscribe();
@@ -146,6 +187,20 @@ export function ChatWindow({
           const showAvatar = !isMe && (!prevMsg || prevMsg.senderId !== msg.senderId || showTimestamp);
 
           const isOptimistic = msg.id.startsWith("opt-");
+          
+          // Determine ticks
+          let tickIcon = null;
+          if (isMe) {
+            if (isOptimistic) {
+              tickIcon = <Check className="size-3 text-muted-foreground opacity-50" />;
+            } else if (recipientStatus.lastReadAt && new Date(msg.createdAt) <= recipientStatus.lastReadAt) {
+              tickIcon = <CheckCheck className="size-3 text-blue-500" />;
+            } else if (recipientStatus.lastDeliveredAt && new Date(msg.createdAt) <= recipientStatus.lastDeliveredAt) {
+              tickIcon = <CheckCheck className="size-3 text-muted-foreground" />;
+            } else {
+              tickIcon = <Check className="size-3 text-muted-foreground" />;
+            }
+          }
 
           return (
             <div key={msg.id} className="flex flex-col w-full">
@@ -182,15 +237,16 @@ export function ChatWindow({
                   </div>
                 )}
 
-                <div
-                  className={cn(
-                    "flex flex-col gap-2 px-4 py-3 text-sm border rounded-none max-w-full",
-                    isMe
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-muted text-foreground border-border",
-                    isOptimistic && "opacity-70"
-                  )}
-                >
+                <div className="flex flex-col gap-1 items-end max-w-full">
+                  <div
+                    className={cn(
+                      "flex flex-col gap-2 px-4 py-3 text-sm border rounded-none w-full",
+                      isMe
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted text-foreground border-border",
+                      isOptimistic && "opacity-70"
+                    )}
+                  >
                   {msg.attachmentUrl && msg.attachmentType === "image" && (
                     <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block max-w-sm cursor-zoom-in">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -205,6 +261,10 @@ export function ChatWindow({
                     <div className={cn("prose prose-sm max-w-none dark:prose-invert", isMe && "prose-invert")}>
                       <MarkdownRenderer content={msg.content} />
                     </div>
+                  )}
+                  </div>
+                  {isMe && tickIcon && (
+                    <div className="mt-0.5 px-1">{tickIcon}</div>
                   )}
                 </div>
               </div>
