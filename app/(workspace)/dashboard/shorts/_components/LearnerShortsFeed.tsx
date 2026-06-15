@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save, Share2, Trash2 } from "lucide-react";
-import { markShortWatchedAction, toggleShortBookmarkAction, getShortCommentsAction, postShortCommentAction, getShortNoteAction, saveShortNoteAction, deleteShortCommentAction } from "@/actions/shorts";
+import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save, Share2, Trash2, AlignLeft } from "lucide-react";
+import { markShortWatchedAction, toggleShortBookmarkAction, getShortCommentsAction, postShortCommentAction, getShortNoteAction, saveShortNoteAction, deleteShortCommentAction, fetchAutoTranscriptAction } from "@/actions/shorts";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ShareShortDialog } from "@/components/shorts/share-short-dialog";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const CATEGORIES = ["All", "Python", "JavaScript", "TypeScript", "React", "Next.js", "Node.js", "Git", "Docker", "Linux", "Database", "AI", "DevOps", "Cybersecurity", "Other"];
 
@@ -55,15 +58,21 @@ export function LearnerShortsFeed({
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareShortData, setShareShortData] = useState<{id: string, title: string} | null>(null);
 
+  // Auto-transcript state
+  const [autoTranscript, setAutoTranscript] = useState("");
+  const [loadingTranscript, setLoadingTranscript] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  const filteredShorts = initialShorts.filter(short => {
-    const matchesSearch = short.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          short.tags.some((t: string) => t.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = category === "All" || short.category === category;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredShorts = useMemo(() => {
+    return initialShorts.filter(short => {
+      const matchesSearch = short.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            short.tags.some((t: string) => t.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesCategory = category === "All" || short.category === category;
+      return matchesSearch && matchesCategory;
+    });
+  }, [initialShorts, searchTerm, category]);
 
   // Intersection Observer for scroll snapping detection
   useEffect(() => {
@@ -122,26 +131,41 @@ export function LearnerShortsFeed({
     let isMounted = true;
     setCommentsLoading(true);
     setLoadingNotes(true);
+    setAutoTranscript("");
     
-    Promise.all([
+    const shortToLoad = filteredShorts.find(s => s.id === currentShortId);
+    
+    const promises: Promise<any>[] = [
       getShortCommentsAction(currentShortId),
       getShortNoteAction(currentShortId, userId)
-    ]).then(([commentsData, noteData]) => {
+    ];
+
+    if (shortToLoad && !shortToLoad.transcript) {
+      setLoadingTranscript(true);
+      promises.push(fetchAutoTranscriptAction(shortToLoad.id, shortToLoad.youtubeVideoId));
+    }
+
+    Promise.all(promises).then(([commentsData, noteData, autoData]) => {
       if (isMounted) {
         setComments(commentsData);
         setCommentsLoading(false);
         setCurrentNotes(noteData?.content || "");
         setLoadingNotes(false);
+        if (autoData) {
+          setAutoTranscript(autoData.success ? autoData.text : `*${autoData.error}*`);
+          setLoadingTranscript(false);
+        }
       }
     }).catch(() => {
       if (isMounted) {
         setCommentsLoading(false);
         setLoadingNotes(false);
+        setLoadingTranscript(false);
       }
     });
 
     return () => { isMounted = false; };
-  }, [currentShortId, userId]);
+  }, [currentShortId, userId, filteredShorts]);
 
   // Keyboard Navigation
   useEffect(() => {
@@ -230,6 +254,11 @@ export function LearnerShortsFeed({
 
   const loadNotesMobile = () => {
     const event = new CustomEvent('open-mobile-notes');
+    document.dispatchEvent(event);
+  };
+
+  const loadTranscriptMobile = () => {
+    const event = new CustomEvent('open-mobile-transcript');
     document.dispatchEvent(event);
   };
 
@@ -328,69 +357,104 @@ export function LearnerShortsFeed({
       {/* Main Content Area: 3-Column Split View */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Left Side: Comments Panel (Desktop) */}
+        {/* Left Side: Info & Discussion Panel (Desktop) */}
         <div className="hidden lg:flex w-[320px] xl:w-[400px] border-r border-border bg-card flex-col h-full shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
-          <div className="p-4 border-b border-border bg-card">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-primary" /> Discussion
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">Join the conversation about this short.</p>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-background/50">
-            {commentsLoading ? (
-              <div className="flex justify-center p-8"><Loader2 className="animate-spin text-muted-foreground w-6 h-6" /></div>
-            ) : comments.length === 0 ? (
-              <div className="text-center text-muted-foreground mt-10 text-sm">No comments yet. Be the first!</div>
-            ) : (
-              <div className="space-y-4">
-                {comments.map((comment: any) => (
-                  <div key={comment.id} className="flex gap-3">
-                    <div className="w-8 h-8 bg-muted border border-border flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
-                      {comment.user.avatarUrl ? (
-                        <img src={comment.user.avatarUrl} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        comment.user.name.charAt(0)
-                      )}
-                    </div>
-                    <div className="flex-1 bg-card border border-border shadow-sm p-3 text-sm relative group/comment">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold text-foreground text-xs">{comment.user.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-muted-foreground">
-                            {new Date(comment.createdAt).toLocaleDateString()}
-                          </span>
-                          {(comment.userId === userId || userRole === "ADMIN") && (
-                            <button 
-                              onClick={() => deleteComment(comment.id)}
-                              className="opacity-0 group-hover/comment:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
-                              title="Delete comment"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+          <Tabs defaultValue="discussion" className="flex-1 flex flex-col overflow-hidden h-full">
+            <div className="p-4 border-b border-border bg-card pb-0 shrink-0">
+              <TabsList className="w-full bg-muted/50 mb-4">
+                <TabsTrigger value="discussion" className="flex-1 text-xs">Discussion</TabsTrigger>
+                <TabsTrigger value="notes" className="flex-1 text-xs">Description & Notes</TabsTrigger>
+              </TabsList>
+            </div>
+            
+            <TabsContent value="discussion" className="flex-1 flex flex-col m-0 overflow-hidden h-full">
+              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-background/50">
+                {commentsLoading ? (
+                  <div className="flex justify-center p-8"><Loader2 className="animate-spin text-muted-foreground w-6 h-6" /></div>
+                ) : comments.length === 0 ? (
+                  <div className="text-center text-muted-foreground mt-10 text-sm">No comments yet. Be the first!</div>
+                ) : (
+                  <div className="space-y-4">
+                    {comments.map((comment: any) => (
+                      <div key={comment.id} className="flex gap-3">
+                        <div className="w-8 h-8 bg-muted border border-border flex items-center justify-center text-xs font-bold shrink-0 text-foreground">
+                          {comment.user.avatarUrl ? (
+                            <img src={comment.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            comment.user.name.charAt(0)
                           )}
                         </div>
+                        <div className="flex-1 bg-card border border-border shadow-sm p-3 text-sm relative group/comment">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-semibold text-foreground text-xs">{comment.user.name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-muted-foreground">
+                                {new Date(comment.createdAt).toLocaleDateString()}
+                              </span>
+                              {(comment.userId === userId || userRole === "ADMIN") && (
+                                <button 
+                                  onClick={() => deleteComment(comment.id)}
+                                  className="opacity-0 group-hover/comment:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
+                                  title="Delete comment"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-card-foreground break-words text-[13px] leading-relaxed pr-6">{comment.text}</p>
+                        </div>
                       </div>
-                      <p className="text-card-foreground break-words text-[13px] leading-relaxed pr-6">{comment.text}</p>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            )}
-          </div>
-
-          <form onSubmit={submitComment} className="p-4 border-t border-border bg-card flex gap-2">
-            <Input 
-              placeholder="Add your thoughts..." 
-              value={commentText}
-              onChange={e => setCommentText(e.target.value)}
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary shadow-inner"
-              disabled={commentSubmitting}
-            />
-            <Button type="submit" size="icon" disabled={!commentText.trim() || commentSubmitting} className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
-              {commentSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            </Button>
-          </form>
+              <form onSubmit={submitComment} className="p-4 border-t border-border bg-card flex gap-2 shrink-0">
+                <Input 
+                  placeholder="Add your thoughts..." 
+                  value={commentText}
+                  onChange={e => setCommentText(e.target.value)}
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary shadow-inner"
+                  disabled={commentSubmitting}
+                />
+                <Button type="submit" size="icon" disabled={!commentText.trim() || commentSubmitting} className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+                  {commentSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </Button>
+              </form>
+            </TabsContent>
+            
+            <TabsContent value="notes" className="flex-1 flex flex-col m-0 overflow-hidden h-full">
+              <div className="p-4 border-b border-border bg-muted/30 shrink-0">
+                <h3 className="font-semibold text-sm mb-2 text-foreground">About this Short</h3>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{activeShort?.description || "No description provided."}</p>
+              </div>
+              
+              <div className="flex-1 p-4 bg-background/50 relative flex flex-col overflow-hidden">
+                <div className="flex items-center gap-2 mb-2 shrink-0">
+                  <PenLine className="w-4 h-4 text-primary" />
+                  <span className="font-semibold text-sm">My Notes</span>
+                </div>
+                {loadingNotes ? (
+                  <div className="h-full flex items-center justify-center border border-border bg-muted/30">
+                    <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+                  </div>
+                ) : (
+                  <textarea 
+                    placeholder="Document your technical takeaways here..."
+                    value={currentNotes || ""}
+                    onChange={(e) => setCurrentNotes(e.target.value)}
+                    className="flex-1 w-full bg-background border border-border resize-none p-3 text-foreground placeholder:text-muted-foreground custom-scrollbar focus:outline-none focus:ring-1 focus:ring-primary text-sm shadow-inner"
+                  />
+                )}
+              </div>
+              <div className="p-4 border-t border-border bg-card flex justify-end shrink-0">
+                <Button size="sm" className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold uppercase tracking-wider text-xs" onClick={handleSaveNotes} disabled={loadingNotes || isSavingNotes}>
+                  {isSavingNotes ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : <Save className="w-3 h-3 mr-1.5" />}
+                  Save Notes
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Center Side: Video Feed */}
@@ -463,6 +527,17 @@ export function LearnerShortsFeed({
                         <Share2 className="w-6 h-6 text-white fill-white/20" />
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Share</span>
+                    </button>
+
+                    {/* Transcript (Mobile Only) */}
+                    <button 
+                      onClick={loadTranscriptMobile}
+                      className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
+                    >
+                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                        <AlignLeft className="w-6 h-6 text-white fill-white/20" />
+                      </div>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Transcript</span>
                     </button>
 
                     {/* Notes (Mobile Only) */}
@@ -540,35 +615,37 @@ export function LearnerShortsFeed({
         )}
         </div>
 
-        {/* Right Side: Notes Panel (Desktop) */}
+        {/* Right Side: Captions/Transcript Panel (Desktop) */}
         <div className="hidden lg:flex w-[320px] xl:w-[400px] border-l border-border bg-card flex-col h-full shadow-[-4px_0_24px_rgba(0,0,0,0.02)] z-10">
-          <div className="p-4 border-b border-border bg-card">
+          <div className="p-4 border-b border-border bg-card shrink-0">
             <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <PenLine className="w-5 h-5 text-primary" /> My Notes
+              <AlignLeft className="w-5 h-5 text-primary" /> Transcript & Code
             </h2>
-            <p className="text-xs text-muted-foreground mt-1">Take study notes directly while watching.</p>
+            <p className="text-xs text-muted-foreground mt-1">Follow along and copy code snippets.</p>
           </div>
           
-          <div className="flex-1 p-4 bg-background/50 relative">
-            {loadingNotes ? (
-              <div className="h-full flex items-center justify-center border border-border bg-muted/30">
+          <div className="flex-1 p-4 overflow-y-auto bg-background/50 custom-scrollbar">
+            {activeShort?.transcript ? (
+              <div className="prose prose-sm dark:prose-invert max-w-none text-[13px] leading-relaxed">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {activeShort.transcript}
+                </ReactMarkdown>
+              </div>
+            ) : loadingTranscript ? (
+              <div className="h-full flex items-center justify-center">
                 <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
               </div>
+            ) : autoTranscript ? (
+              <div className="prose prose-sm dark:prose-invert max-w-none text-[13px] leading-relaxed">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {autoTranscript}
+                </ReactMarkdown>
+              </div>
             ) : (
-              <textarea 
-                placeholder="Document your technical takeaways here..."
-                value={currentNotes || ""}
-                onChange={(e) => setCurrentNotes(e.target.value)}
-                className="w-full h-full bg-background border border-border resize-none p-3 text-foreground placeholder:text-muted-foreground custom-scrollbar focus:outline-none focus:ring-1 focus:ring-primary text-sm shadow-inner"
-              />
+              <div className="h-full flex items-center justify-center text-center p-4">
+                <p className="text-muted-foreground text-sm">No transcript available for this short.</p>
+              </div>
             )}
-          </div>
-          
-          <div className="p-4 border-t border-border bg-card flex justify-end">
-            <Button size="sm" className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold uppercase tracking-wider text-xs" onClick={handleSaveNotes} disabled={loadingNotes || isSavingNotes}>
-              {isSavingNotes ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : <Save className="w-3 h-3 mr-1.5" />}
-              Save Notes
-            </Button>
           </div>
         </div>
 
@@ -679,6 +756,13 @@ export function LearnerShortsFeed({
         loadingNotes={loadingNotes}
         isSavingNotes={isSavingNotes}
         handleSaveNotes={handleSaveNotes}
+        description={activeShort?.description}
+      />
+
+      <MobileTranscriptSheet 
+        transcript={activeShort?.transcript} 
+        autoTranscript={autoTranscript}
+        loadingTranscript={loadingTranscript}
       />
 
       {shareShortData && (
@@ -695,7 +779,7 @@ export function LearnerShortsFeed({
 }
 
 // Separate component for mobile notes sheet
-function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavingNotes, handleSaveNotes }: any) {
+function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavingNotes, handleSaveNotes, description }: any) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -708,11 +792,18 @@ function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavin
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent side="bottom" className="w-full h-[80vh] bg-card border-border text-foreground p-0 flex flex-col">
         <SheetHeader className="p-4 border-b border-border bg-card">
-          <SheetTitle className="text-foreground flex items-center gap-2"><PenLine className="w-4 h-4 text-primary" /> My Notes</SheetTitle>
-          <SheetDescription className="text-muted-foreground">Take study notes directly while watching.</SheetDescription>
+          <SheetTitle className="text-foreground flex items-center gap-2"><PenLine className="w-4 h-4 text-primary" /> Description & Notes</SheetTitle>
         </SheetHeader>
         
-        <div className="flex-1 p-4 bg-background relative">
+        <div className="p-4 border-b border-border bg-muted/30 shrink-0">
+          <h3 className="font-semibold text-sm mb-2 text-foreground">About this Short</h3>
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{description || "No description provided."}</p>
+        </div>
+
+        <div className="flex-1 p-4 bg-background relative flex flex-col">
+          <div className="flex items-center gap-2 mb-2 shrink-0">
+            <span className="font-semibold text-sm">My Notes</span>
+          </div>
           {loadingNotes ? (
             <div className="h-full flex items-center justify-center border border-border bg-muted/30">
               <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
@@ -722,12 +813,12 @@ function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavin
               placeholder="Document your technical takeaways here..."
               value={currentNotes || ""}
               onChange={(e) => setCurrentNotes(e.target.value)}
-              className="w-full h-full bg-card border border-border resize-none p-3 text-foreground placeholder:text-muted-foreground custom-scrollbar focus:outline-none focus:ring-1 focus:ring-primary text-sm shadow-inner"
+              className="flex-1 w-full h-full bg-card border border-border resize-none p-3 text-foreground placeholder:text-muted-foreground custom-scrollbar focus:outline-none focus:ring-1 focus:ring-primary text-sm shadow-inner"
             />
           )}
         </div>
         
-        <div className="p-4 border-t border-border bg-card flex justify-end">
+        <div className="p-4 border-t border-border bg-card flex justify-end shrink-0">
           <Button size="sm" className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold uppercase tracking-wider text-xs" onClick={() => {
             handleSaveNotes();
             setOpen(false);
@@ -735,6 +826,51 @@ function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavin
             {isSavingNotes ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : <Save className="w-3 h-3 mr-1.5" />}
             Save & Close
           </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function MobileTranscriptSheet({ transcript, autoTranscript, loadingTranscript }: any) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpen = () => setOpen(true);
+    document.addEventListener('open-mobile-transcript', handleOpen);
+    return () => document.removeEventListener('open-mobile-transcript', handleOpen);
+  }, []);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetContent side="bottom" className="w-full h-[80vh] bg-card border-border text-foreground p-0 flex flex-col">
+        <SheetHeader className="p-4 border-b border-border bg-card">
+          <SheetTitle className="text-foreground flex items-center gap-2"><AlignLeft className="w-4 h-4 text-primary" /> Transcript & Code</SheetTitle>
+          <SheetDescription className="text-muted-foreground">Follow along and copy code snippets.</SheetDescription>
+        </SheetHeader>
+        
+        <div className="flex-1 p-4 overflow-y-auto bg-background/50 custom-scrollbar">
+          {transcript ? (
+            <div className="prose prose-sm dark:prose-invert max-w-none text-[13px] leading-relaxed">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {transcript}
+              </ReactMarkdown>
+            </div>
+          ) : loadingTranscript ? (
+            <div className="h-full flex items-center justify-center">
+              <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+            </div>
+          ) : autoTranscript ? (
+            <div className="prose prose-sm dark:prose-invert max-w-none text-[13px] leading-relaxed">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {autoTranscript}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center text-center p-4">
+              <p className="text-muted-foreground text-sm">No transcript available for this short.</p>
+            </div>
+          )}
         </div>
       </SheetContent>
     </Sheet>

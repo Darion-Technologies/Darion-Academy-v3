@@ -145,6 +145,67 @@ export async function getShortByIdAction(id: string) {
   }
 }
 
+import { YoutubeTranscript } from 'youtube-transcript';
+import OpenAI from 'openai';
+
+export async function fetchAutoTranscriptAction(shortId: string, videoId: string) {
+  try {
+    const transcriptArray = await YoutubeTranscript.fetchTranscript(videoId);
+    const rawText = transcriptArray.map(t => t.text).join(' ');
+
+    if (!process.env.DEEPSEEK_API_KEY) {
+      // Fallback if no API key
+      await prisma.youTubeShort.update({ where: { id: shortId }, data: { transcript: rawText }});
+      return { success: true, text: rawText };
+    }
+
+    const openai = new OpenAI({
+      baseURL: 'https://api.deepseek.com',
+      apiKey: process.env.DEEPSEEK_API_KEY,
+    });
+
+    const completion = await openai.chat.completions.create({
+      messages: [
+        { 
+          role: "system", 
+          content: "You are an expert technical writer. Format this raw video transcript into a highly readable, structured Markdown study guide. Fix grammar, add headings, and organize with paragraphs. CRITICAL: Whenever programming code or syntax is discussed or implied, you MUST reconstruct the code and wrap it in proper fenced Markdown code blocks (e.g., ```javascript). Do not output any preamble, just return the final markdown content." 
+        },
+        { role: "user", content: rawText }
+      ],
+      model: "deepseek-chat",
+    });
+
+    const formattedText = completion.choices[0].message.content || rawText;
+
+    // Save to database so it's only processed once
+    await prisma.youTubeShort.update({
+      where: { id: shortId },
+      data: { transcript: formattedText }
+    });
+
+    return { success: true, text: formattedText };
+  } catch (error: any) {
+    console.error("Error fetching auto transcript:", error);
+    return { success: false, error: "Transcript is disabled or unavailable for this video." };
+  }
+}
+
+export async function updateShortDetailsAction(id: string, data: { description?: string; transcript?: string }) {
+  try {
+    const short = await prisma.youTubeShort.update({
+      where: { id },
+      data,
+    });
+    revalidatePath(`/admin/shorts/${id}`);
+    revalidatePath(`/dashboard/shorts/${id}`);
+    revalidatePath(`/dashboard/shorts`);
+    return { success: true, short };
+  } catch (error: any) {
+    console.error("Error updating short details:", error);
+    throw new Error("Failed to update short details");
+  }
+}
+
 export async function markShortWatchedAction(shortId: string, userId: string) {
   try {
     const existing = await prisma.shortProgress.findUnique({

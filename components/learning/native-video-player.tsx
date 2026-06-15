@@ -66,12 +66,16 @@ export function NativeVideoPlayer({
 
   useEffect(() => {
     registerSeekCallback((time) => {
-      setProgress(time);
+      let newTime = time;
+      if (!completed && newTime > maxWatchedRef.current) {
+        newTime = maxWatchedRef.current;
+      }
+      setProgress(newTime);
       if (videoRef.current) {
-        videoRef.current.currentTime = time;
+        videoRef.current.currentTime = newTime;
       }
     });
-  }, [registerSeekCallback]);
+  }, [registerSeekCallback, completed]);
 
   // Handle Play/Pause
   const togglePlay = () => {
@@ -130,6 +134,11 @@ export function NativeVideoPlayer({
     }
     if (videoEndTime && newTime > videoEndTime) {
       newTime = videoEndTime;
+    }
+
+    // Prevent skipping ahead of what has been watched
+    if (!completed && newTime > maxWatched) {
+      newTime = maxWatched;
     }
 
     setProgress(newTime);
@@ -205,6 +214,11 @@ export function NativeVideoPlayer({
           e.stopPropagation();
           let newTime = videoRef.current.currentTime + 10;
           if (videoEndTime && newTime > videoEndTime) newTime = videoEndTime;
+          
+          if (!completed && newTime > maxWatchedRef.current) {
+            newTime = maxWatchedRef.current;
+          }
+          
           videoRef.current.currentTime = newTime;
           setProgress(newTime);
           if (onProgress) onProgress(newTime);
@@ -240,7 +254,7 @@ export function NativeVideoPlayer({
 
     window.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
-  }, [isPlaying, maxWatched, videoStartTime, videoEndTime, isMuted, onProgress]);
+  }, [isPlaying, maxWatched, videoStartTime, videoEndTime, isMuted, onProgress, completed]);
 
   return (
     <div className="bg-black flex flex-col h-full w-full" ref={containerRef}>

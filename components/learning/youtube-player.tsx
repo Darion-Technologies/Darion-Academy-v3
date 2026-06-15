@@ -123,12 +123,16 @@ export function YouTubePlayer({
 
   useEffect(() => {
     registerSeekCallback((time) => {
-      setProgress(time);
+      let newTime = time;
+      if (!completed && newTime > maxWatchedRef.current) {
+        newTime = maxWatchedRef.current;
+      }
+      setProgress(newTime);
       if (ytPlayerRef.current) {
-        ytPlayerRef.current.seekTo(time, true);
+        ytPlayerRef.current.seekTo(newTime, true);
       }
     });
-  }, [registerSeekCallback]);
+  }, [registerSeekCallback, completed]);
 
   useEffect(() => {
     let player: YouTubePlayerInstance | null = null;
@@ -281,6 +285,11 @@ export function YouTubePlayer({
       newTime = videoEndTime;
     }
 
+    // Prevent skipping ahead of what has been watched
+    if (!completed && newTime > maxWatched) {
+      newTime = maxWatched;
+    }
+
     setProgress(newTime);
     if (ytPlayerRef.current) {
       ytPlayerRef.current.seekTo(newTime, true);
@@ -318,6 +327,11 @@ export function YouTubePlayer({
           e.stopPropagation();
           let newTime = ytPlayerRef.current.getCurrentTime() + 10;
           if (videoEndTime && newTime > videoEndTime) newTime = videoEndTime;
+          
+          if (!completed && newTime > maxWatchedRef.current) {
+            newTime = maxWatchedRef.current;
+          }
+          
           ytPlayerRef.current.seekTo(newTime, true);
           setProgress(newTime);
           break;
@@ -351,7 +365,7 @@ export function YouTubePlayer({
 
     window.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
-  }, [isPlaying, isMuted, videoStartTime, videoEndTime]);
+  }, [isPlaying, isMuted, videoStartTime, videoEndTime, completed]);
 
   return (
     <div className="mx-auto w-full max-w-[1920px] bg-black overflow-hidden border border-border flex flex-col" ref={containerRef}>

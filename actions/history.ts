@@ -17,28 +17,6 @@ export async function getWatchHistoryAction(userId: string): Promise<WatchHistor
   try {
     const [videoProgress, shortProgress] = await Promise.all([
       prisma.videoProgress.findMany({
-        where: { userId, watchedAt: { not: null } } as any, // assuming watchedAt exists or we use updatedAt
-        include: {
-          lesson: {
-            select: {
-              title: true,
-              module: {
-                select: {
-                  course: {
-                    select: {
-                      title: true,
-                      slug: true,
-                      thumbnailUrl: true,
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        orderBy: { updatedAt: "desc" },
-        take: 50
-      }).catch(() => prisma.videoProgress.findMany({
         where: { userId },
         include: {
           lesson: {
@@ -60,7 +38,7 @@ export async function getWatchHistoryAction(userId: string): Promise<WatchHistor
         },
         orderBy: { updatedAt: "desc" },
         take: 50
-      })),
+      }),
       prisma.shortProgress.findMany({
         where: { userId },
         include: {

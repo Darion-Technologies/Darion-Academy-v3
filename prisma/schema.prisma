@@ -460,6 +460,7 @@ model YouTubeShort {
   channelName     String?
   channelId       String?
   thumbnailUrl    String?
+  transcript      String?
   durationSeconds Int
   sourceUrl       String
   category        String

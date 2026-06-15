@@ -2,6 +2,7 @@ import { requireUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getShortByIdAction } from "@/actions/shorts";
 import { ShortQuizBuilder } from "../_components/ShortQuizBuilder";
+import { ShortEditForm } from "../_components/ShortEditForm";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -60,7 +61,12 @@ export default async function AdminShortDetailPage({
           </div>
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 space-y-8">
+          <ShortEditForm 
+            shortId={short.id} 
+            initialDescription={short.description || ""} 
+            initialTranscript={short.transcript || ""} 
+          />
           <ShortQuizBuilder shortId={short.id} existingQuizzes={short.quizzes} />
         </div>
       </div>
