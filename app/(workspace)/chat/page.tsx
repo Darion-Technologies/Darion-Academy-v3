@@ -4,8 +4,6 @@ import { ChatApp } from "@/components/chat/chat-app";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 export default async function ChatPage() {
   const user = await requireUser();
   const conversations = await getConversationsAction();

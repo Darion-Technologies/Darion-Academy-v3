@@ -1,9 +1,6 @@
 import { Brand } from "@/components/brand";
 import { LoginForm } from "@/components/auth/login-form";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 export default function LoginPage() {
   const randomImage = 1;
 

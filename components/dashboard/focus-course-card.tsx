@@ -69,7 +69,7 @@ export function FocusCourseCard({ course }: { course: DashboardEnrollment | null
           </div>
           
           <Button className="w-full font-bold tracking-wide shadow-lg border-white/10 hover:brightness-110" size="sm" asChild>
-            <Link href={`/courses/${course.courseSlug}`}>
+            <Link href={`/courses/${course.courseSlug}`} prefetch={true}>
               <Play className="w-4 h-4 mr-2 fill-current" />
               Resume Learning
             </Link>

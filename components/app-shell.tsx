@@ -192,7 +192,7 @@ export function AppShell({
           </div>
         </main>
         <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-1 backdrop-blur-xl lg:hidden pb-safe">
-          {mobileItems.map((item) => <Link key={item.href} href={item.href} className={cn("flex min-w-12 flex-col items-center gap-0.5 rounded-none px-1 py-1 text-[9px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-4" />{item.label}</Link>)}
+          {mobileItems.map((item) => <Link key={item.href} href={item.href} prefetch={true} className={cn("flex min-w-12 flex-col items-center gap-0.5 rounded-none px-1 py-1 text-[9px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}><item.icon className="size-4" />{item.label}</Link>)}
         </nav>
       </div>
     </div>
@@ -203,7 +203,7 @@ function NavLink({ item, active, collapsed, onClick, unreadChatCount }: { item: 
   const isChat = item.href === "/chat";
   const hasUnreadChat = isChat && typeof unreadChatCount === 'number' && unreadChatCount > 0;
   
-  const link = <Link href={item.href} onClick={onClick} className={cn(
+  const link = <Link href={item.href} prefetch={true} onClick={onClick} className={cn(
     "relative flex h-8 items-center rounded-none text-sm font-medium transition-colors",
     collapsed ? "justify-center px-1" : "gap-2.5 px-2.5",
     active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",

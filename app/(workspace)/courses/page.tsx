@@ -11,13 +11,36 @@ import { prisma } from "@/lib/prisma";
 import { formatDuration } from "@/lib/utils";
 import { ArrowRight, BookOpen } from "lucide-react";
 
+import { Suspense } from "react";
+import { CoursesSkeleton } from "./_components/courses-skeleton";
+
 export default async function CoursesPage() {
   const user = await requireUser();
-  const enrollments = await prisma.enrollment.findMany({
-    where: { learnerId: user.id },
+
+  return (
+    <>
+      <PageHeader title="My Courses" description="Your assigned learning catalog." />
+      <Suspense fallback={<CoursesSkeleton />}>
+        <CoursesData userId={user.id} />
+      </Suspense>
+    </>
+  );
+}
+
+import { unstable_cache } from "next/cache";
+
+const getCachedEnrollments = unstable_cache(
+  async (userId: string) => prisma.enrollment.findMany({
+    where: { learnerId: userId },
     include: { course: true },
     orderBy: { assignedAt: "desc" },
-  });
+  }),
+  ["user-courses-enrollments"],
+  { tags: ["user-courses-enrollments"], revalidate: 3600 }
+);
+
+async function CoursesData({ userId }: { userId: string }) {
+  const enrollments = await getCachedEnrollments(userId);
 
   const enrollmentsByCategory = enrollments.reduce((acc, curr) => {
     const cat = curr.course.category || "Uncategorized";
@@ -26,44 +49,41 @@ export default async function CoursesPage() {
     return acc;
   }, {} as Record<string, typeof enrollments>);
 
+  if (!enrollments.length) {
+    return <EmptyState title="No courses found" description="Assigned courses will appear here." />;
+  }
+
   return (
-    <>
-      <PageHeader title="My Courses" description="Your assigned learning catalog." />
-      {!enrollments.length ? (
-        <EmptyState title="No courses found" description="Assigned courses will appear here." />
-      ) : (
-        <Tabs defaultValue="All" className="space-y-8">
-          <div className="flex overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="h-10 w-auto justify-start">
-              <TabsTrigger value="All" className="px-4">All Courses</TabsTrigger>
-              {Object.keys(enrollmentsByCategory).map((category) => (
-                <TabsTrigger key={category} value={category} className="px-4">
-                  {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-
-          <TabsContent value="All" className="mt-0">
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {enrollments.map(({ course, progressPercent, status }) => (
-                <CourseCard key={`all-${course.id}`} course={course} progressPercent={progressPercent} status={status} />
-              ))}
-            </div>
-          </TabsContent>
-
-          {Object.entries(enrollmentsByCategory).map(([category, catEnrollments]) => (
-            <TabsContent key={category} value={category} className="mt-0">
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {catEnrollments.map(({ course, progressPercent, status }) => (
-                  <CourseCard key={`${category}-${course.id}`} course={course} progressPercent={progressPercent} status={status} />
-                ))}
-              </div>
-            </TabsContent>
+    <Tabs defaultValue="All" className="space-y-8">
+      <div className="flex overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+        <TabsList className="h-10 w-auto justify-start">
+          <TabsTrigger value="All" className="px-4">All Courses</TabsTrigger>
+          {Object.keys(enrollmentsByCategory).map((category) => (
+            <TabsTrigger key={category} value={category} className="px-4">
+              {category}
+            </TabsTrigger>
           ))}
-        </Tabs>
-      )}
-    </>
+        </TabsList>
+      </div>
+
+      <TabsContent value="All" className="mt-0">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {enrollments.map(({ course, progressPercent, status }) => (
+            <CourseCard key={`all-${course.id}`} course={course} progressPercent={progressPercent} status={status} />
+          ))}
+        </div>
+      </TabsContent>
+
+      {Object.entries(enrollmentsByCategory).map(([category, catEnrollments]) => (
+        <TabsContent key={category} value={category} className="mt-0">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {catEnrollments.map(({ course, progressPercent, status }) => (
+              <CourseCard key={`${category}-${course.id}`} course={course} progressPercent={progressPercent} status={status} />
+            ))}
+          </div>
+        </TabsContent>
+      ))}
+    </Tabs>
   );
 }
 
@@ -122,7 +142,7 @@ function CourseCard({ course, progressPercent, status }: { course: any; progress
         </div>
 
         <Button className="mt-auto w-full mt-5 active-press" asChild>
-          <Link href={`/courses/${course.slug}`}>
+          <Link href={`/courses/${course.slug}`} prefetch={true}>
             {progressPercent === 100 ? "Review Course" : "Open Course"}
             <ArrowRight className="size-4" />
           </Link>

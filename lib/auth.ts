@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import { unstable_cache } from "next/cache";
+
 export const roleHome: Record<UserRole, string> = {
   ADMIN: "/admin",
   MENTOR: "/mentor",
@@ -11,13 +13,25 @@ export const roleHome: Record<UserRole, string> = {
   INTERN: "/dashboard",
 };
 
+const getCachedUser = unstable_cache(
+  async (id: string) => prisma.user.findUnique({ where: { id } }),
+  ["user-profile"],
+  { tags: ["user-profile"], revalidate: 3600 }
+);
+
 export const getCurrentUser = cache(async () => {
   const supabase = await createClient();
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser();
-  if (!authUser) return null;
-  return prisma.user.findUnique({ where: { id: authUser.id } });
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) return null;
+  const user = await getCachedUser(session.user.id);
+  if (!user) return null;
+  
+  // unstable_cache serializes Dates to strings, so we must restore them
+  return {
+    ...user,
+    createdAt: new Date(user.createdAt),
+    updatedAt: new Date(user.updatedAt),
+  };
 });
 
 export async function requireUser() {
@@ -26,14 +40,20 @@ export async function requireUser() {
   return user;
 }
 
+const getCachedEnrollment = unstable_cache(
+  async (learnerId: string, mentorId?: string) => prisma.enrollment.findFirst({
+    where: mentorId ? { learnerId, mentorId } : { learnerId },
+    select: { id: true },
+  }),
+  ["user-enrollment"],
+  { tags: ["user-enrollment"], revalidate: 3600 }
+);
+
 export async function requireRole(...roles: UserRole[]) {
   const user = await requireUser();
   if (!roles.includes(user.role)) {
     const learnerOnly = roles.every((role) => role === "EMPLOYEE" || role === "INTERN");
-    const hasEnrollment = learnerOnly && await prisma.enrollment.findFirst({
-      where: { learnerId: user.id },
-      select: { id: true },
-    });
+    const hasEnrollment = learnerOnly && await getCachedEnrollment(user.id);
     if (!hasEnrollment) redirect(roleHome[user.role]);
   }
   return user;
@@ -42,10 +62,5 @@ export async function requireRole(...roles: UserRole[]) {
 export async function canReviewLearner(reviewerId: string, role: UserRole, learnerId: string) {
   if (role === "ADMIN") return true;
   if (role !== "MENTOR") return false;
-  return Boolean(
-    await prisma.enrollment.findFirst({
-      where: { learnerId, mentorId: reviewerId },
-      select: { id: true },
-    }),
-  );
+  return Boolean(await getCachedEnrollment(learnerId, reviewerId));
 }

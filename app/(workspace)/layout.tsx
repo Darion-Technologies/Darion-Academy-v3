@@ -7,13 +7,28 @@ import { AppearanceSync } from "@/components/appearance-sync";
 
 import { getUnreadChatCountAction } from "@/app/actions/chat";
 
+import { unstable_cache } from "next/cache";
+
+const getCachedLayoutData = unstable_cache(
+  async (userId: string) => {
+    const [unreadCount, hasEnrollment, preference] = await Promise.all([
+      prisma.notification.count({ where: { userId, read: false } }),
+      prisma.enrollment.count({ where: { learnerId: userId } }).then((count) => count > 0),
+      prisma.learningPreference.findUnique({ where: { userId } }),
+    ]);
+    return { unreadCount, hasEnrollment, preference };
+  },
+  ["workspace-layout-data"],
+  { tags: ["workspace-layout-data"], revalidate: 300 }
+);
+
 export default async function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   await syncCurrentSession(user.id);
-  const [unreadCount, hasEnrollment, preference, unreadChatCount] = await Promise.all([
-    prisma.notification.count({ where: { userId: user.id, read: false } }),
-    prisma.enrollment.count({ where: { learnerId: user.id } }).then((count) => count > 0),
-    prisma.learningPreference.findUnique({ where: { userId: user.id } }),
+  
+  // We don't cache unreadChatCount because chat needs real-time accuracy, but we run it concurrently
+  const [{ unreadCount, hasEnrollment, preference }, unreadChatCount] = await Promise.all([
+    getCachedLayoutData(user.id),
     getUnreadChatCountAction(),
   ]);
   

@@ -1,5 +1,6 @@
 "use server";
 
+import { cache as reactCache } from "react";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -109,16 +110,40 @@ export async function markConversationAsDeliveredAction(conversationId: string) 
   return { success: true };
 }
 
-// Get total unread conversations count
-export async function getUnreadChatCountAction() {
+export const getUnreadChatCountAction = reactCache(async () => {
   try {
     const user = await requireUser();
-    const conversations = await getConversationsAction();
-    return conversations.filter((c) => c.unreadCount && c.unreadCount > 0).length;
+    
+    // Fast direct query: find conversations where a message exists that is newer than our last read
+    const unreadConvs = await prisma.conversationParticipant.findMany({
+      where: { userId: user.id },
+      select: { conversationId: true, lastReadAt: true },
+    });
+    
+    if (!unreadConvs.length) return 0;
+    
+    // We do a single fast count of conversations with newer messages
+    const unreadCount = await prisma.conversation.count({
+      where: {
+        id: { in: unreadConvs.map(p => p.conversationId) },
+        messages: {
+          some: {
+            senderId: { not: user.id },
+            // If they never read anything, any message not from them is unread.
+            // If they did read something, find messages newer than lastReadAt
+            ...(unreadConvs.some(p => p.lastReadAt) 
+              ? { createdAt: { gt: unreadConvs.find(p => p.conversationId)?.lastReadAt || new Date(0) } } 
+              : {})
+          }
+        }
+      }
+    });
+
+    return unreadCount;
   } catch (err) {
     return 0;
   }
-}
+});
 
 // Get messages for a specific conversation
 export async function getMessagesAction(conversationId: string) {

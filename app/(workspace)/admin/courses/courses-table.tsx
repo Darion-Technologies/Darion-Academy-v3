@@ -47,7 +47,7 @@ export const columns: ColumnDef<CourseData>[] = [
                 alt="" 
                 fill 
                 className="object-cover" 
-                unoptimized 
+                unoptimized
               />
             </div>
           ) : (

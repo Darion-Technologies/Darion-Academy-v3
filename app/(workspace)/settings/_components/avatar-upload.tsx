@@ -1,10 +1,16 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Camera, Loader2 } from "lucide-react";
-import { uploadAvatarAction } from "@/app/actions/account";
+import { Camera, Loader2, Upload, Trash2 } from "lucide-react";
+import { uploadAvatarAction, removeAvatarAction } from "@/app/actions/account";
 import { toast } from "sonner";
 import { initials } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function AvatarUpload({
   name,
@@ -51,38 +57,77 @@ export function AvatarUpload({
     });
   }
 
-  return (
-    <div className="relative group size-24 shrink-0 border-4 border-background bg-muted shadow-lg transition-transform hover:scale-105">
-      {/* Avatar Image or Initials */}
-      <div className="absolute inset-0 flex items-center justify-center bg-primary/10 text-3xl font-bold text-primary">
-        {initials(name)}
-      </div>
-      {preview && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={preview}
-          alt={name}
-          className="relative z-10 size-full object-cover"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
-        />
-      )}
+  function handleRemove() {
+    setPreview(null);
+    startTransition(async () => {
+      try {
+        const result = await removeAvatarAction();
+        if (result?.success) {
+          toast.success("Profile picture removed");
+        } else {
+          toast.error("Failed to remove profile picture");
+          setPreview(currentAvatarUrl);
+        }
+      } catch (err: any) {
+        toast.error(err.message || "Failed to remove profile picture");
+        setPreview(currentAvatarUrl);
+      }
+    });
+  }
 
-      {/* Upload Overlay */}
-      <button
-        type="button"
-        disabled={isPending}
-        onClick={() => inputRef.current?.click()}
-        className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100"
-        aria-label="Upload profile picture"
-      >
-        {isPending ? (
-          <Loader2 className="size-6 animate-spin text-white" />
-        ) : (
-          <Camera className="size-6 text-white" />
-        )}
-      </button>
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            disabled={isPending}
+            className="relative group size-24 shrink-0 border-4 border-background bg-muted shadow-lg transition-transform hover:scale-105 overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            aria-label="Update profile picture"
+          >
+            {/* Avatar Image or Initials */}
+            <div className="absolute inset-0 flex items-center justify-center bg-primary/10 text-3xl font-bold text-primary">
+              {initials(name)}
+            </div>
+            {preview && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={preview}
+                alt={name}
+                className="relative z-10 size-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            )}
+
+            {/* Upload Overlay */}
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100">
+              {isPending ? (
+                <Loader2 className="size-6 animate-spin text-white" />
+              ) : (
+                <Camera className="size-6 text-white" />
+              )}
+            </div>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={() => inputRef.current?.click()} disabled={isPending}>
+            <Upload className="mr-2 size-4" />
+            Upload Photo
+          </DropdownMenuItem>
+          {preview && (
+            <DropdownMenuItem 
+              onClick={handleRemove} 
+              disabled={isPending}
+              className="text-destructive focus:text-destructive focus:bg-destructive/10"
+            >
+              <Trash2 className="mr-2 size-4" />
+              Remove Photo
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Hidden Input */}
       <input
@@ -93,6 +138,6 @@ export function AvatarUpload({
         className="hidden"
         disabled={isPending}
       />
-    </div>
+    </>
   );
 }

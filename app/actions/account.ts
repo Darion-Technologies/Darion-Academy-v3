@@ -81,6 +81,16 @@ export async function uploadAvatarAction(formData: FormData) {
   }
 }
 
+export async function removeAvatarAction() {
+  const user = await requireUser();
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { avatarUrl: null }
+  });
+  revalidatePath("/settings");
+  return { success: true };
+}
+
 export async function updatePreferencesAction(formData: FormData) {
   const user = await requireUser();
   await prisma.learningPreference.upsert({
