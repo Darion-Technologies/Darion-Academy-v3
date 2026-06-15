@@ -3,7 +3,7 @@
 import {
   Award, BarChart3, Bell, BookOpen, ClipboardCheck,
   FileQuestion, GraduationCap, LayoutDashboard, LayoutTemplate, LogOut, Menu,
-  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare, MessageSquare
+  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare, MessageSquare, NotebookPen, History
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -28,10 +28,12 @@ type NavGroup = { label: string; items: NavItem[] };
 const learnerItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/courses", label: "My Courses", icon: BookOpen },
+  { href: "/dashboard/shorts", label: "Tech Shorts", icon: PlaySquare },
+  { href: "/notes", label: "My Notes", icon: NotebookPen },
   { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/history", label: "History", icon: History },
   { href: "/certificates", label: "Certificates", icon: Award },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { href: "/dashboard/shorts", label: "Tech Shorts", icon: PlaySquare },
   { href: "/chat", label: "Messages", icon: MessageSquare },
   { href: "/notifications", label: "Notifications", icon: Bell },
 ];

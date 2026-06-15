@@ -330,3 +330,28 @@ export async function saveShortNoteAction(shortId: string, userId: string, conte
     throw new Error(error.message || "Failed to save notes.");
   }
 }
+
+export async function deleteShortCommentAction(commentId: string, userId: string, userRole: string) {
+  try {
+    const comment = await prisma.shortComment.findUnique({
+      where: { id: commentId }
+    });
+
+    if (!comment) throw new Error("Comment not found");
+
+    if (comment.userId !== userId && userRole !== "ADMIN") {
+      throw new Error("Unauthorized to delete this comment");
+    }
+
+    await prisma.shortComment.delete({
+      where: { id: commentId }
+    });
+
+    revalidatePath(`/dashboard/shorts`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting comment:", error);
+    throw new Error(error.message || "Failed to delete comment");
+  }
+}
+

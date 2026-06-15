@@ -274,9 +274,6 @@ export function YouTubePlayer({
     let newTime = newDisplayTime + effectiveStartTime;
     
     // Enforce bounds
-    if (newTime > maxWatched) {
-      newTime = maxWatched;
-    }
     if (videoStartTime && newTime < videoStartTime) {
       newTime = videoStartTime;
     }
@@ -289,6 +286,72 @@ export function YouTubePlayer({
       ytPlayerRef.current.seekTo(newTime, true);
     }
   };
+
+  // Keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!ytPlayerRef.current) return;
+      
+      const activeTag = document.activeElement?.tagName;
+      const activeType = (document.activeElement as HTMLInputElement)?.type;
+      
+      // Ignore if typing in a text input or textarea
+      if (
+        activeTag === "TEXTAREA" || 
+        (activeTag === "INPUT" && activeType !== "range" && activeType !== "button")
+      ) {
+        return;
+      }
+
+      switch (e.key) {
+        case " ":
+        case "k":
+        case "K":
+          e.preventDefault();
+          e.stopPropagation();
+          togglePlay();
+          break;
+        case "ArrowRight":
+        case "l":
+        case "L": {
+          e.preventDefault();
+          e.stopPropagation();
+          let newTime = ytPlayerRef.current.getCurrentTime() + 10;
+          if (videoEndTime && newTime > videoEndTime) newTime = videoEndTime;
+          ytPlayerRef.current.seekTo(newTime, true);
+          setProgress(newTime);
+          break;
+        }
+        case "ArrowLeft":
+        case "j":
+        case "J": {
+          e.preventDefault();
+          e.stopPropagation();
+          let newTime = ytPlayerRef.current.getCurrentTime() - 10;
+          if (videoStartTime && newTime < videoStartTime) newTime = videoStartTime;
+          else if (newTime < 0) newTime = 0;
+          ytPlayerRef.current.seekTo(newTime, true);
+          setProgress(newTime);
+          break;
+        }
+        case "m":
+        case "M":
+          e.preventDefault();
+          e.stopPropagation();
+          toggleMute();
+          break;
+        case "f":
+        case "F":
+          e.preventDefault();
+          e.stopPropagation();
+          toggleFullscreen();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
+  }, [isPlaying, isMuted, videoStartTime, videoEndTime]);
 
   return (
     <div className="mx-auto w-full max-w-[1920px] bg-black overflow-hidden border border-border flex flex-col" ref={containerRef}>

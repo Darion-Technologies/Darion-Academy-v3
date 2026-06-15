@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save, Share2 } from "lucide-react";
-import { markShortWatchedAction, toggleShortBookmarkAction, getShortCommentsAction, postShortCommentAction, getShortNoteAction, saveShortNoteAction } from "@/actions/shorts";
+import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save, Share2, Trash2 } from "lucide-react";
+import { markShortWatchedAction, toggleShortBookmarkAction, getShortCommentsAction, postShortCommentAction, getShortNoteAction, saveShortNoteAction, deleteShortCommentAction } from "@/actions/shorts";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Send, Loader2 } from "lucide-react";
@@ -20,12 +20,14 @@ export function LearnerShortsFeed({
   initialShorts, 
   watchedSet: initialWatchedSet, 
   bookmarkedSet: initialBookmarkedSet,
-  userId
+  userId,
+  userRole
 }: { 
   initialShorts: any[], 
   watchedSet: Set<string>, 
   bookmarkedSet: Set<string>,
-  userId: string
+  userId: string,
+  userRole: string
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("All");
@@ -262,6 +264,16 @@ export function LearnerShortsFeed({
     }
   };
 
+  const deleteComment = async (commentId: string) => {
+    try {
+      await deleteShortCommentAction(commentId, userId, userRole);
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      toast.success("Comment deleted");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete comment");
+    }
+  };
+
   if (initialShorts.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center text-white">
@@ -341,14 +353,25 @@ export function LearnerShortsFeed({
                         comment.user.name.charAt(0)
                       )}
                     </div>
-                    <div className="flex-1 bg-card border border-border shadow-sm p-3 text-sm">
+                    <div className="flex-1 bg-card border border-border shadow-sm p-3 text-sm relative group/comment">
                       <div className="flex justify-between items-center mb-1">
                         <span className="font-semibold text-foreground text-xs">{comment.user.name}</span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {new Date(comment.createdAt).toLocaleDateString()}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-muted-foreground">
+                            {new Date(comment.createdAt).toLocaleDateString()}
+                          </span>
+                          {(comment.userId === userId || userRole === "ADMIN") && (
+                            <button 
+                              onClick={() => deleteComment(comment.id)}
+                              className="opacity-0 group-hover/comment:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
+                              title="Delete comment"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-card-foreground break-words text-[13px] leading-relaxed">{comment.text}</p>
+                      <p className="text-card-foreground break-words text-[13px] leading-relaxed pr-6">{comment.text}</p>
                     </div>
                   </div>
                 ))}
@@ -645,6 +668,9 @@ export function LearnerShortsFeed({
         commentText={commentText}
         setCommentText={setCommentText}
         commentSubmitting={commentSubmitting}
+        deleteComment={deleteComment}
+        userId={userId}
+        userRole={userRole}
       />
 
       <MobileNotesSheet
@@ -716,7 +742,7 @@ function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavin
 }
 
 // Separate component for mobile sheet to handle open state internally based on event
-function MobileCommentsSheet({ comments, commentsLoading, submitComment, commentText, setCommentText, commentSubmitting }: any) {
+function MobileCommentsSheet({ comments, commentsLoading, submitComment, commentText, setCommentText, commentSubmitting, deleteComment, userId, userRole }: any) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -749,14 +775,25 @@ function MobileCommentsSheet({ comments, commentsLoading, submitComment, comment
                       comment.user.name.charAt(0)
                     )}
                   </div>
-                  <div className="flex-1 bg-card border border-border p-3 text-sm">
+                  <div className="flex-1 bg-card border border-border p-3 text-sm relative group/comment">
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-semibold text-foreground text-xs">{comment.user.name}</span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {new Date(comment.createdAt).toLocaleDateString()}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </span>
+                        {(comment.userId === userId || userRole === "ADMIN") && (
+                          <button 
+                            onClick={() => deleteComment(comment.id)}
+                            className="opacity-0 group-hover/comment:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
+                            title="Delete comment"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-card-foreground break-words text-[13px] leading-relaxed">{comment.text}</p>
+                    <p className="text-card-foreground break-words text-[13px] leading-relaxed pr-6">{comment.text}</p>
                   </div>
                 </div>
               ))}

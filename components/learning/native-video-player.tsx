@@ -124,10 +124,6 @@ export function NativeVideoPlayer({
     const newDisplayTime = parseFloat(e.target.value);
     let newTime = newDisplayTime + effectiveStartTime;
 
-    if (newTime > maxWatched) {
-      newTime = maxWatched; // Prevent seeking forward past what has been watched
-    }
-    
     // Enforce bounds
     if (videoStartTime && newTime < videoStartTime) {
       newTime = videoStartTime;
@@ -178,6 +174,73 @@ export function NativeVideoPlayer({
       document.exitFullscreen();
     }
   };
+
+  // Keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!videoRef.current) return;
+      const activeTag = document.activeElement?.tagName;
+      const activeType = (document.activeElement as HTMLInputElement)?.type;
+      
+      // Ignore if typing in a text input or textarea (but allow if focus is on the video scrubber range)
+      if (
+        activeTag === "TEXTAREA" || 
+        (activeTag === "INPUT" && activeType !== "range" && activeType !== "button")
+      ) {
+        return;
+      }
+
+      switch (e.key) {
+        case " ":
+        case "k":
+        case "K":
+          e.preventDefault();
+          e.stopPropagation();
+          togglePlay();
+          break;
+        case "ArrowRight":
+        case "l":
+        case "L": {
+          e.preventDefault();
+          e.stopPropagation();
+          let newTime = videoRef.current.currentTime + 10;
+          if (videoEndTime && newTime > videoEndTime) newTime = videoEndTime;
+          videoRef.current.currentTime = newTime;
+          setProgress(newTime);
+          if (onProgress) onProgress(newTime);
+          break;
+        }
+        case "ArrowLeft":
+        case "j":
+        case "J": {
+          e.preventDefault();
+          e.stopPropagation();
+          let newTime = videoRef.current.currentTime - 10;
+          if (videoStartTime && newTime < videoStartTime) newTime = videoStartTime;
+          else if (newTime < 0) newTime = 0;
+          videoRef.current.currentTime = newTime;
+          setProgress(newTime);
+          if (onProgress) onProgress(newTime);
+          break;
+        }
+        case "m":
+        case "M":
+          e.preventDefault();
+          e.stopPropagation();
+          toggleMute();
+          break;
+        case "f":
+        case "F":
+          e.preventDefault();
+          e.stopPropagation();
+          toggleFullscreen();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
+  }, [isPlaying, maxWatched, videoStartTime, videoEndTime, isMuted, onProgress]);
 
   return (
     <div className="bg-black flex flex-col h-full w-full" ref={containerRef}>

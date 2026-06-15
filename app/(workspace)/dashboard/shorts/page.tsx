@@ -74,6 +74,7 @@ export default async function LearnerShortsPage() {
           watchedSet={watchedSet} 
           bookmarkedSet={bookmarkedSet}
           userId={user.id}
+          userRole={user.role}
         />
       </div>
     </div>
