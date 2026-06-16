@@ -9,6 +9,7 @@ import { markShortWatchedAction, toggleShortBookmarkAction, getShortCommentsActi
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -424,9 +425,17 @@ export function LearnerShortsFeed({
             </TabsContent>
             
             <TabsContent value="notes" className="flex-1 flex flex-col m-0 overflow-hidden h-full">
-              <div className="p-4 border-b border-border bg-muted/30 shrink-0">
-                <h3 className="font-semibold text-sm mb-2 text-foreground">About this Short</h3>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{activeShort?.description || "No description provided."}</p>
+              <div className="p-2 border-b border-border bg-muted/30 shrink-0">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="description" className="border-none">
+                    <AccordionTrigger className="py-2 hover:no-underline px-2">
+                      <h3 className="font-semibold text-sm text-foreground">About this Short</h3>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-2 pb-3">
+                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">{activeShort?.description || "No description provided."}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
               
               <div className="flex-1 p-4 bg-background/50 relative flex flex-col overflow-hidden">
@@ -795,9 +804,17 @@ function MobileNotesSheet({ currentNotes, setCurrentNotes, loadingNotes, isSavin
           <SheetTitle className="text-foreground flex items-center gap-2"><PenLine className="w-4 h-4 text-primary" /> Description & Notes</SheetTitle>
         </SheetHeader>
         
-        <div className="p-4 border-b border-border bg-muted/30 shrink-0">
-          <h3 className="font-semibold text-sm mb-2 text-foreground">About this Short</h3>
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{description || "No description provided."}</p>
+        <div className="p-2 border-b border-border bg-muted/30 shrink-0">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="description" className="border-none">
+              <AccordionTrigger className="py-2 hover:no-underline px-2">
+                <h3 className="font-semibold text-sm text-foreground">About this Short</h3>
+              </AccordionTrigger>
+              <AccordionContent className="px-2 pb-3">
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{description || "No description provided."}</p>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
 
         <div className="flex-1 p-4 bg-background relative flex flex-col">

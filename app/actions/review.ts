@@ -5,6 +5,7 @@ import { requireRole, canReviewLearner } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { refreshEnrollmentProgress } from "@/lib/progress";
 import { issueCertificate } from "@/lib/certificate";
+import { sendPushNotification } from "@/lib/push";
 
 export async function reviewSubmissionAction(formData: FormData) {
   const reviewer = await requireRole("ADMIN", "MENTOR");
@@ -20,6 +21,11 @@ export async function reviewSubmissionAction(formData: FormData) {
     if (message) await tx.feedback.create({ data: { submissionId, authorId: reviewer.id, message } });
     await tx.notification.create({ data: { userId: submission.learnerId, type: message ? "FEEDBACK_ADDED" : "SUBMISSION_REVIEWED", title: "Submission reviewed", message: `Your submission is now ${status.replaceAll("_", " ").toLowerCase()}.`, href: `/lessons/${submission.assignment.lessonId}` } });
     await tx.activityLog.create({ data: { actorId: reviewer.id, action: `Reviewed submission: ${status}`, entityType: "Submission", entityId: submissionId } });
+  });
+  await sendPushNotification(submission.learnerId, {
+    title: "Submission reviewed",
+    body: `Your submission is now ${status.replaceAll("_", " ").toLowerCase()}.`,
+    url: `/lessons/${submission.assignment.lessonId}`
   });
   await refreshEnrollmentProgress(prisma, submission.learnerId, submission.assignment.lesson.module.courseId);
   revalidatePath("/mentor/submissions");

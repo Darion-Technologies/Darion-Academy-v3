@@ -1,18 +1,13 @@
-import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/lib/auth";
 import { getProgressData } from "@/lib/progress-data";
-import { ProfileCard } from "./_components/profile-card";
-import { ActivityBreakdown } from "./_components/activity-breakdown";
-import { PerformanceHeatmap } from "./_components/performance-heatmap";
-import { JourneyMetrics } from "./_components/journey-metrics";
-import { FocusCampaign } from "./_components/focus-campaign";
-import { QuickMetricsGrid } from "./_components/quick-metrics-grid";
-import { LeaderboardWidget } from "./_components/leaderboard-widget";
-import { Target } from "lucide-react";
+import { EfficiencyMetrics } from "./_components/efficiency-metrics";
+import { CourseXRay } from "./_components/course-xray";
+import { CompetencyMatrix } from "./_components/competency-matrix";
+import { LongTermVelocity } from "./_components/long-term-velocity";
 
 export const metadata = {
-  title: "Learning Progress - Darion Academy",
-  description: "Advanced analytics and tracking for your learning journey.",
+  title: "Learning Analytics - Darion Academy",
+  description: "Deep dive analytics and long-term tracking for your learning journey.",
 };
 
 export default async function ProgressPage() {
@@ -20,38 +15,29 @@ export default async function ProgressPage() {
   const data = await getProgressData(user.id);
 
   return (
-    <div className="flex flex-col gap-4 lg:gap-6 h-full w-full">
-      {/* Top Header */}
-      <div className="pb-2 border-b border-border flex items-center justify-between gap-2">
-        <h1 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
-          <Target className="size-5 text-primary" />
-          Learning Progress
-        </h1>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-          Analytics & Metrics
-        </p>
+    <div className="mx-auto w-full max-w-[1440px] px-2 sm:px-4 lg:px-6 bg-background font-sans pt-2 pb-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="text-sm font-bold text-foreground">Learning Analytics</h2>
       </div>
 
-      {/* 3-Column Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
-        {/* Left Column: Profile & Activity */}
-        <div className="lg:col-span-3 flex flex-col gap-4">
-          <ProfileCard user={user} data={data} />
-          <ActivityBreakdown data={data} />
+      {/* Top Level KPIs */}
+      <EfficiencyMetrics data={data} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start h-[calc(100vh-180px)] min-h-[600px]">
+        {/* Left Pane: Detailed skill breakdown and course internal structure */}
+        <div className="lg:col-span-8 flex flex-col gap-3 h-full">
+          <div className="flex-1 min-h-0">
+            <CourseXRay data={data} />
+          </div>
         </div>
 
-        {/* Center Column: Heatmap & Journey */}
-        <div className="lg:col-span-5 flex flex-col gap-4">
-          <PerformanceHeatmap data={data} />
-          <JourneyMetrics data={data} />
-        </div>
-
-        {/* Right Column: Campaign, Metrics, Leaderboard */}
-        <div className="lg:col-span-4 flex flex-col gap-4 h-full">
-          <FocusCampaign />
-          <QuickMetricsGrid data={data} />
-          <div className="flex-1">
-            <LeaderboardWidget />
+        {/* Right Pane: Long term progress & Skills Matrix */}
+        <div className="lg:col-span-4 flex flex-col gap-3 h-full">
+          <div className="flex-none">
+            <LongTermVelocity data={data} />
+          </div>
+          <div className="flex-1 min-h-0">
+            <CompetencyMatrix data={data} />
           </div>
         </div>
       </div>

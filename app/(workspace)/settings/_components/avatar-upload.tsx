@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Camera, Loader2, Upload, Trash2 } from "lucide-react";
+import { Camera, Loader2, Upload, Trash2, Eye } from "lucide-react";
 import { uploadAvatarAction, removeAvatarAction } from "@/app/actions/account";
 import { toast } from "sonner";
 import { initials } from "@/lib/utils";
@@ -11,6 +11,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function AvatarUpload({
   name,
@@ -21,6 +27,7 @@ export function AvatarUpload({
 }) {
   const [isPending, startTransition] = useTransition();
   const [preview, setPreview] = useState<string | null>(currentAvatarUrl);
+  const [viewOpen, setViewOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -112,6 +119,12 @@ export function AvatarUpload({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
+          {preview && (
+            <DropdownMenuItem onClick={() => setViewOpen(true)} disabled={isPending}>
+              <Eye className="mr-2 size-4" />
+              View Photo
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={() => inputRef.current?.click()} disabled={isPending}>
             <Upload className="mr-2 size-4" />
             Upload Photo
@@ -128,6 +141,28 @@ export function AvatarUpload({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Profile Photo</DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-center p-4">
+            {preview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img 
+                src={preview} 
+                alt="Profile Photo" 
+                className="max-h-[60vh] max-w-full rounded-md object-contain" 
+              />
+            ) : (
+              <div className="flex size-64 items-center justify-center rounded-full bg-primary/10 text-6xl font-bold text-primary">
+                {initials(name)}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Hidden Input */}
       <input

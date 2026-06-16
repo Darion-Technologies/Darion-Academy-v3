@@ -31,7 +31,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <TooltipProvider delayDuration={300}>
             <NavigationProgress />
             {children}
-            <Toaster position="top-right" closeButton richColors />
+            <Toaster position="top-right" closeButton />
           </TooltipProvider>
         </ThemeProvider>
       </body>

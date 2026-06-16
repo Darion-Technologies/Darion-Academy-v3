@@ -12,6 +12,7 @@ import { slugify } from "@/lib/utils";
 import { uploadPrivateFile } from "@/lib/storage";
 import { resolveAvailableOrder } from "@/lib/order";
 import { getYouTubeVideoId } from "@/lib/youtube";
+import { sendPushNotification } from "@/lib/push";
 import { Prisma, type UserRole } from "@/generated/prisma";
 
 export type ActionState = { error?: string; success?: string; courseId?: string };
@@ -274,6 +275,11 @@ export async function assignCourseAction(formData: FormData) {
     prisma.notification.create({ data: { userId: learnerId, type: "COURSE_ASSIGNED", title: "New course assigned", message: `You have been assigned ${enrollment.course.title}.`, href: `/courses/${enrollment.course.slug}` } }),
     prisma.activityLog.create({ data: { actorId: admin.id, action: "Assigned course", entityType: "Enrollment", entityId: enrollment.id } }),
   ]);
+  await sendPushNotification(learnerId, {
+    title: "New course assigned",
+    body: `You have been assigned ${enrollment.course.title}.`,
+    url: `/courses/${enrollment.course.slug}`
+  });
   revalidatePath("/admin/users");
   redirect("/admin/users");
 }

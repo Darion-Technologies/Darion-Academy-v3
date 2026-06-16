@@ -15,6 +15,7 @@ import { AppearanceMenu } from "@/components/appearance-menu";
 import { Brand } from "@/components/brand";
 import { SearchBar } from "@/components/search-bar";
 import { NotificationDropdown } from "@/components/notification-dropdown";
+import { PushManager } from "@/components/push-manager";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -178,10 +179,13 @@ export function AppShell({
               <div className="hidden sm:block">
                 <AppearanceMenu initialTheme={initialTheme} sidebarCollapsed={collapsed} />
               </div>
+              <div className="hidden sm:block">
+                <PushManager />
+              </div>
               <NotificationDropdown unreadCount={unreadCount} />
               <div className="ml-1 sm:ml-2 flex items-center gap-3 sm:border-l sm:pl-4">
                 <div className="hidden text-right sm:block"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
-                <Link href="/settings" className="relative grid size-7 sm:size-9 place-items-center overflow-hidden rounded-none sm:bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0">
+                <Link href="/settings" className="relative grid size-7 sm:size-9 place-items-center overflow-hidden rounded-full sm:bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0 border border-border">
                   <span className="absolute inset-0 flex items-center justify-center">{initials(user.name)}</span>
                   {user.avatarUrl && <img src={user.avatarUrl} alt="" width={36} height={36} className="relative z-10 size-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
                 </Link>
@@ -289,7 +293,7 @@ function MobileDrawer({ groups, user, close, pathname, unreadCount, unreadChatCo
       <div className="flex h-10 items-center justify-between border-b border-sidebar-border px-4"><Brand /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><X /></Button></div>
       <nav className="flex-1 overflow-y-auto p-2">{groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} unreadChatCount={unreadChatCount} unreadCount={unreadCount} />)}</div></div>)}</nav>
       <div className="border-t border-sidebar-border p-3 flex items-center gap-2">
-        <div className="relative grid size-8 shrink-0 place-items-center overflow-hidden bg-sidebar-muted/20 text-[10px] font-bold text-sidebar-foreground">
+        <div className="relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-sidebar-muted/20 text-[10px] font-bold text-sidebar-foreground">
           <span className="absolute inset-0 flex items-center justify-center">{initials(user.name)}</span>
           {user.avatarUrl && <img src={user.avatarUrl} alt="" width={36} height={36} className="relative z-10 size-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
         </div>

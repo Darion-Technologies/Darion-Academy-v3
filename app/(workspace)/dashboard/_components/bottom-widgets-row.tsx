@@ -1,9 +1,13 @@
+"use client";
+
 import { Search, Filter, Hourglass } from "lucide-react";
 import type { PendingAction, DashboardEnrollment } from "@/lib/dashboard-data";
 import { format } from "date-fns";
 import { FocusCourseCard } from "@/components/dashboard/focus-course-card";
+import { useRouter } from "next/navigation";
 
 export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActions: PendingAction[], activeCourse: DashboardEnrollment | null }) {
+  const router = useRouter();
   const getStatusColor = (status: string) => {
     if (status === "Waiting for approval" || status === "In Progress") return "text-blue-500";
     if (status === "Retake needed" || status === "Rework needed") return "text-red-500";
@@ -21,9 +25,12 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
       {/* Upcoming Deadlines - Takes up 2 columns */}
       <div className="lg:col-span-2 bg-card rounded-md border border-border p-3 shadow-none">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
-          <div className="flex items-center gap-1.5">
-            <Hourglass className="size-3.5 text-muted-foreground" />
-            <h2 className="text-xs font-bold text-foreground">Upcoming Deadlines & Actions</h2>
+          <div 
+            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors group"
+            onClick={() => router.push('/courses')}
+          >
+            <Hourglass className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+            <h2 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Upcoming Deadlines & Actions</h2>
           </div>
           <div className="flex items-center gap-2">
             <button className="p-1.5 border border-border rounded-lg hover:bg-muted transition-colors">
@@ -49,7 +56,11 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
             </thead>
             <tbody>
               {pendingActions.slice(0, 5).map((item) => (
-                <tr key={item.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
+                <tr 
+                  key={item.id} 
+                  onClick={() => router.push(`/courses/${item.courseSlug}`)}
+                  className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer"
+                >
                   <td className="px-3 py-2.5 font-medium text-foreground flex flex-col">
                     <div className="flex items-center gap-1.5">
                       <div className={`size-1.5 rounded-full ${getTypeDotColor(item.type)}`}></div>

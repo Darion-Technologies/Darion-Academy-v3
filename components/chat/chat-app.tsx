@@ -290,10 +290,10 @@ export function ChatApp({
         onSelectConversation={(id) => setActiveConversationId(id)}
       />
       
-      <div className="flex flex-1 flex-col overflow-hidden relative bg-card">
+      <div className="flex flex-1 flex-col overflow-hidden relative bg-white">
         {!activeConversationId ? (
-          <div className="flex h-full flex-col items-center justify-center text-muted-foreground p-8">
-            <div className="flex size-16 items-center justify-center rounded-none bg-muted mb-4 border border-border">
+          <div className="flex h-full flex-col items-center justify-center text-gray-400 p-8">
+            <div className="flex size-16 items-center justify-center rounded-2xl bg-gray-50 mb-4 border border-gray-100 shadow-sm">
               <MessageSquare className="size-8 text-foreground" />
             </div>
             <h3 className="text-lg font-bold text-foreground">Your Messages</h3>
@@ -308,57 +308,57 @@ export function ChatApp({
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between border-b border-border px-3 py-2 bg-card h-12 shrink-0 z-10">
+            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 bg-white h-14 shrink-0 z-10 shadow-sm">
               <button 
-                className="flex items-center gap-2.5 hover:bg-muted/50 p-1 -ml-1 rounded transition-colors text-left"
+                className="flex items-center gap-3 hover:bg-gray-50 p-1.5 -ml-1.5 rounded-xl transition-all text-left"
                 onClick={() => setInfoSidebarOpen(!infoSidebarOpen)}
               >
-                <div className="relative size-8 rounded-none overflow-hidden border border-border bg-secondary">
+                <div className="relative size-9 rounded-full overflow-hidden border border-gray-100 bg-gray-50">
                   {activeConversation?.type === "GROUP" ? (
-                    <div className="flex size-full items-center justify-center bg-muted text-foreground">
+                    <div className="flex size-full items-center justify-center bg-primary/10 text-primary">
                       <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
                   ) : recipient?.user?.avatarUrl ? (
                     <img src={recipient.user.avatarUrl} alt="" className="size-full object-cover" />
                   ) : (
-                    <div className="flex size-full items-center justify-center bg-muted text-foreground font-bold text-xs">
+                    <div className="flex size-full items-center justify-center bg-gray-100 text-gray-600 font-bold text-[13px]">
                       {(recipient?.user?.name || "C").substring(0, 2).toUpperCase()}
                     </div>
                   )}
                   {activeConversation?.type !== "GROUP" && (
-                    <span className="absolute bottom-0 right-0 block size-2 rounded-none bg-green-500 border border-card"></span>
+                    <span className="absolute bottom-0 right-0 block size-2.5 rounded-full bg-green-500 border-2 border-white"></span>
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-[12px] font-bold text-foreground leading-tight">
+                  <h2 className="text-[14px] font-bold text-gray-900 leading-tight">
                     {activeConversation?.type === "GROUP" ? (activeConversation.name || "Group Chat") : recipient?.user?.name || "Chat"}
                   </h2>
-                  <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">
+                  <span className="text-[11px] text-primary font-medium leading-tight mt-0.5">
                     {activeConversation?.type === "GROUP" ? `${activeConversation.participants.length} members` : "Active now"}
                   </span>
                 </div>
               </button>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <button 
                   onClick={() => startCall(false)}
-                  className="size-7 rounded-none flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-border"
+                  className="size-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-100"
                 >
-                  <svg className="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                 </button>
                 <button 
                   onClick={() => startCall(true)}
-                  className="size-7 rounded-none flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-border"
+                  className="size-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-100"
                 >
-                  <svg className="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2" ry="2"/></svg>
+                  <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2" ry="2"/></svg>
                 </button>
-                <button className="size-7 rounded-none flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-border">
-                  <svg className="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                <button className="size-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-100">
+                  <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                 </button>
                 <button 
                   onClick={() => setInfoSidebarOpen(!infoSidebarOpen)}
-                  className="size-7 rounded-none flex items-center justify-center text-foreground bg-muted hover:bg-muted/80 transition-colors border border-border xl:hidden"
+                  className="size-8 rounded-full flex items-center justify-center text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-100 xl:hidden"
                 >
-                  <svg className="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+                  <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
                 </button>
               </div>
             </div>

@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { scoreQuiz } from "@/lib/quiz";
 import { refreshEnrollmentProgress } from "@/lib/progress";
 import { uploadPrivateFile } from "@/lib/storage";
+import { sendPushNotification } from "@/lib/push";
 import type { AttemptStatus } from "@/generated/prisma";
 
 async function requireLessonEnrollment(userId: string, lessonId: string) {
@@ -56,6 +57,13 @@ export async function submitAssignmentAction(_state: SubmissionState, formData: 
   await prisma.notification.createMany({ data: [
     ...(enrollment.mentorId ? [{ userId: enrollment.mentorId, type: "GENERAL" as const, title: "Task submitted", message: `${user.name} submitted ${assignment.lesson.title}.`, href: "/mentor/submissions" }] : []),
   ] });
+  if (enrollment.mentorId) {
+    await sendPushNotification(enrollment.mentorId, {
+      title: "Task submitted",
+      body: `${user.name} submitted ${assignment.lesson.title}.`,
+      url: "/mentor/submissions"
+    });
+  }
   revalidatePath(`/lessons/${assignment.lessonId}`);
   return { success: "Your assignment was submitted for review." };
 }
@@ -203,6 +211,11 @@ export async function createVideoNoteAction(formData: FormData) {
         href: `/mentor/learners/${user.id}`
       }
     });
+    await sendPushNotification(enrollment.mentorId, {
+      title: "Question from learner",
+      body: `${user.name} asked a question in ${lesson.title}`,
+      url: `/mentor/learners/${user.id}`
+    });
   }
   
   revalidatePath(`/lessons/${lessonId}`);
@@ -253,6 +266,11 @@ export async function replyToDoubtAction(formData: FormData) {
       message: `${user.name} responded to your doubt in ${note.lesson.title}`,
       href: `/lessons/${note.lessonId}`
     }
+  });
+  await sendPushNotification(note.userId, {
+    title: "Mentor Replied",
+    body: `${user.name} responded to your doubt in ${note.lesson.title}`,
+    url: `/lessons/${note.lessonId}`
   });
   
   revalidatePath(`/lessons/${note.lessonId}`);

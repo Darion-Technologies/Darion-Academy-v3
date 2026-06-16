@@ -138,19 +138,19 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
   return (
     <div className="w-full relative px-2">
       {attachmentPreview && (
-        <div className="mb-3 relative inline-block">
-          <div className="relative h-24 w-24 rounded-none border border-border overflow-hidden bg-muted">
+        <div className="mb-3 relative inline-block pl-4">
+          <div className="relative h-24 w-24 rounded-xl border border-gray-200 overflow-hidden bg-gray-50">
             <img src={attachmentPreview} alt="Attachment preview" className="h-full w-full object-cover" />
           </div>
           <button
             onClick={removeAttachment}
-            className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90 border border-border"
+            className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 border-2 border-white shadow-sm"
           >
             <X className="size-3" />
           </button>
         </div>
       )}
-      <div className="flex items-center w-full bg-background border border-border rounded-none pr-1.5 pl-3 py-1 focus-within:ring-1 focus-within:ring-ring/50 transition-all">
+      <div className="flex items-center w-full bg-gray-100 border border-transparent rounded-full pr-1.5 pl-4 py-1.5 focus-within:ring-1 focus-within:ring-primary/30 focus-within:bg-white transition-all shadow-sm">
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -174,17 +174,17 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
           className="flex-1 bg-transparent border-none text-[12px] text-foreground outline-none placeholder:text-muted-foreground/70 h-8"
         />
         
-        <div className="flex items-center gap-0.5 shrink-0 ml-1 text-muted-foreground">
-          <button className="size-7 flex items-center justify-center hover:text-foreground transition-colors hover:bg-muted rounded-none border border-transparent">
+        <div className="flex items-center gap-0.5 shrink-0 ml-1 text-gray-400">
+          <button className="size-8 flex items-center justify-center hover:text-gray-700 transition-colors hover:bg-gray-200 rounded-full">
             <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>
           </button>
-          <button className="size-7 flex items-center justify-center hover:text-foreground transition-colors hover:bg-muted rounded-none border border-transparent">
+          <button className="size-8 flex items-center justify-center hover:text-gray-700 transition-colors hover:bg-gray-200 rounded-full">
             <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
           </button>
           <button 
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || isUploading}
-            className="size-7 flex items-center justify-center hover:text-foreground transition-colors hover:bg-muted rounded-none border border-transparent"
+            className="size-8 flex items-center justify-center hover:text-gray-700 transition-colors hover:bg-gray-200 rounded-full"
           >
             <ImageIcon className="size-4" />
           </button>
@@ -193,9 +193,9 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
             <button
               onClick={handleSend}
               disabled={isPending || isUploading}
-              className="ml-1 flex items-center justify-center size-7 bg-primary text-primary-foreground rounded-none hover:bg-primary/90 transition-transform active:scale-95"
+              className="ml-1 flex items-center justify-center size-8 bg-primary text-white rounded-full hover:bg-primary/90 transition-transform active:scale-95 shadow-sm"
             >
-              {isPending ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5 ml-0.5" />}
+              {isPending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4 ml-0.5" />}
             </button>
           )}
         </div>

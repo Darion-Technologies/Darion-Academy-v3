@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { markConversationAsReadAction, markConversationAsDeliveredAction } from "@/app/actions/chat";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { format } from "date-fns";
-import { ArrowDown, Check, CheckCheck } from "lucide-react";
+import { ArrowDown, Check, CheckCheck, User, PhoneMissed, Phone, Video } from "lucide-react";
 
 type Message = {
   id: string;
@@ -180,43 +180,42 @@ export function ChatWindow({
               <div className={cn("flex w-full mt-1", isMe ? "justify-end" : "justify-start")}>
                 <div className={cn("flex max-w-[80%] items-end gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
                   {!isMe && (
-                  <div className="w-7 shrink-0 flex items-start mt-auto mb-1">
+                  <div className="w-8 shrink-0 flex items-start mt-auto mb-1">
                     {showAvatar ? (
-                      <div className="relative size-7 overflow-hidden rounded-none bg-muted border border-border">
-                        <div className="absolute inset-0 flex h-full items-center justify-center text-[9px] font-bold text-foreground">
+                      <div className="relative size-8 overflow-hidden rounded-full border border-gray-100 bg-gray-50 shadow-sm">
+                        <div className="absolute inset-0 flex h-full items-center justify-center text-[11px] font-bold text-gray-500">
                           {msg.sender.name.substring(0, 2).toUpperCase()}
                         </div>
                         {msg.sender.avatarUrl && (
                           <img 
                             src={msg.sender.avatarUrl} 
                             alt="" 
-                            width={28} 
-                            height={28} 
+                            width={32} 
+                            height={32} 
                             className="relative z-10 size-full object-cover" 
                             onError={(e) => { e.currentTarget.style.display = 'none'; }} 
                           />
                         )}
                       </div>
                     ) : (
-                      <div className="size-7" />
+                      <div className="size-8" />
                     )}
                   </div>
                 )}
 
-                <div className={cn("flex flex-col gap-0.5 max-w-[80%]", isMe ? "items-end" : "items-start")}>
-                  {!isMe && showAvatar && (
-                    <div className="flex items-center gap-1.5 mb-0.5 ml-1">
-                      <span className="text-[10px] font-semibold text-foreground">{msg.sender.name}</span>
-                      <span className="text-[8px] text-muted-foreground">{format(new Date(msg.createdAt), "h:mm a")}</span>
+                <div className={cn("flex flex-col gap-0.5 max-w-[75%]", isMe ? "items-end" : "items-start")}>
+                  {showTimestamp && (
+                    <div className="flex items-center gap-2 mb-1 ml-1">
+                      <span className="text-[11px] text-gray-400 font-medium">{format(new Date(msg.createdAt), "EEEE h:mm a")}</span>
                     </div>
                   )}
-                  <div className="flex items-end gap-1">
+                  <div className="flex items-end gap-1.5 w-full">
                     <div
                       className={cn(
-                        "flex flex-col gap-1.5 px-2.5 py-1.5 text-[12px] w-full leading-snug border",
+                        "flex flex-col gap-2 px-4 py-2 w-full text-[15px] leading-[1.5] font-normal shadow-sm",
                         isMe
-                          ? "bg-primary text-primary-foreground border-primary rounded-none"
-                          : "bg-background text-foreground border-border rounded-none",
+                          ? "bg-primary text-white rounded-[20px] rounded-br-[4px]"
+                          : "bg-gray-100 text-gray-900 border border-gray-200/50 rounded-[20px] rounded-bl-[4px]",
                         isOptimistic && "opacity-70"
                       )}
                     >
@@ -226,15 +225,44 @@ export function ChatWindow({
                         <img 
                           src={msg.attachmentUrl} 
                           alt="Attachment" 
-                          className="rounded-none border border-border object-contain max-h-64"
+                          className="rounded-xl border border-gray-200 object-contain max-h-64 mt-1"
                         />
                       </a>
                     )}
-                    {msg.content && (
-                      <div className={cn("prose prose-sm max-w-none", isMe ? "prose-invert" : "dark:prose-invert")}>
+                    {msg.attachmentType === "call_log" ? (
+                      (() => {
+                        const isMissed = msg.content.includes("Missed");
+                        const isVideo = msg.content.includes("Video");
+                        return (
+                          <div className={cn(
+                            "flex items-center gap-3",
+                            isMe ? "text-white" : "text-gray-900"
+                          )}>
+                            <div className={cn(
+                              "flex size-10 items-center justify-center rounded-full bg-white/20",
+                              !isMe && "bg-black/5"
+                            )}>
+                              {isMissed ? <PhoneMissed className={cn("size-5", isMe ? "text-white" : "text-red-500")} /> : 
+                               isVideo ? <Video className="size-5" /> : 
+                               <Phone className="size-5" />}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="font-semibold text-[15px]">{msg.content}</span>
+                              <span className="text-xs opacity-80 mt-0.5">
+                                {isMissed ? "Missed Call" : isVideo ? "Video Call" : "Audio Call"}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })()
+                    ) : msg.content ? (
+                      <div className={cn(
+                        "whitespace-pre-wrap break-words",
+                        isMe ? "[&_a]:text-white [&_a]:underline [&_a]:font-medium" : "[&_a]:text-primary [&_a]:underline [&_a]:font-medium"
+                      )}>
                         <MarkdownRenderer content={msg.content} />
                       </div>
-                    )}
+                    ) : null}
                     </div>
                   </div>
                   {isMe && tickIcon && (

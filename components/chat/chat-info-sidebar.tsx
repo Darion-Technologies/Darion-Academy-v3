@@ -40,16 +40,16 @@ export function ChatInfoSidebar({
     .slice(0, 3);
     
   return (
-    <div className="flex w-full flex-col border-l border-border bg-card sm:w-[280px] shrink-0 h-full overflow-y-auto hidden xl:flex">
-      <div className="flex items-center justify-between p-3 border-b border-border">
-        <h2 className="text-[12px] font-bold text-foreground">{isGroup ? "Group Info" : "Contact Info"}</h2>
+    <div className="flex w-full flex-col border-l border-gray-100 bg-gray-50/30 sm:w-[320px] shrink-0 h-full overflow-y-auto hidden xl:flex font-sans">
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white/50">
+        <h2 className="text-[13px] font-bold text-gray-900">{isGroup ? "Group Info" : "Contact Info"}</h2>
       </div>
 
-      <div className="p-4 flex flex-col items-center border-b border-border">
-        <div className="relative size-12 rounded-none overflow-hidden mb-2 border border-border">
+      <div className="p-6 flex flex-col items-center border-b border-gray-100 bg-white/50">
+        <div className="relative size-20 rounded-full border-4 border-white shadow-sm overflow-hidden mb-3">
           {isGroup ? (
-            <div className="flex size-full items-center justify-center bg-muted text-foreground">
-              <Users className="size-6" />
+            <div className="flex size-full items-center justify-center bg-primary/10 text-primary">
+              <Users className="size-8" />
             </div>
           ) : otherP?.avatarUrl ? (
             <img 
@@ -59,55 +59,55 @@ export function ChatInfoSidebar({
               onError={(e) => { e.currentTarget.style.display = 'none'; }} 
             />
           ) : (
-            <div className="flex size-full items-center justify-center bg-muted text-foreground font-bold text-xl">
+            <div className="flex size-full items-center justify-center bg-gray-100 text-gray-500 font-bold text-2xl">
               {otherP?.name?.substring(0, 2).toUpperCase()}
             </div>
           )}
         </div>
-        <h3 className="text-base font-bold text-foreground mb-1">{displayName}</h3>
+        <h3 className="text-[18px] font-bold text-gray-900 mb-1">{displayName}</h3>
         
-        <div className="flex gap-4 mt-4 w-full justify-center">
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="size-8 rounded-none border border-border flex items-center justify-center hover:bg-muted transition-colors bg-card">
-              <Bell className="size-3.5 text-foreground" />
+        <div className="flex gap-4 mt-5 w-full justify-center">
+          <div className="flex flex-col items-center gap-1.5 cursor-pointer group">
+            <div className="size-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-gray-100 transition-colors bg-white shadow-sm">
+              <Bell className="size-4 text-gray-700" />
             </div>
-            <span className="text-[9px] text-muted-foreground font-medium">Notification</span>
+            <span className="text-[10px] text-gray-500 font-medium">Notification</span>
           </div>
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="size-8 rounded-none border border-border flex items-center justify-center hover:bg-muted transition-colors bg-card">
-              <Pin className="size-3.5 text-foreground" />
+          <div className="flex flex-col items-center gap-1.5 cursor-pointer group">
+            <div className="size-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-gray-100 transition-colors bg-white shadow-sm">
+              <Pin className="size-4 text-gray-700" />
             </div>
-            <span className="text-[9px] text-muted-foreground font-medium">Pin Group</span>
+            <span className="text-[10px] text-gray-500 font-medium">Pin Group</span>
           </div>
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="size-8 rounded-none border border-border flex items-center justify-center hover:bg-muted transition-colors bg-card">
-              <Users className="size-3.5 text-foreground" />
+          <div className="flex flex-col items-center gap-1.5 cursor-pointer group">
+            <div className="size-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-gray-100 transition-colors bg-white shadow-sm">
+              <Users className="size-4 text-gray-700" />
             </div>
-            <span className="text-[9px] text-muted-foreground font-medium">Member</span>
+            <span className="text-[10px] text-gray-500 font-medium">Member</span>
           </div>
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="size-8 rounded-none border border-border flex items-center justify-center hover:bg-muted transition-colors bg-card">
-              <Settings className="size-3.5 text-foreground" />
+          <div className="flex flex-col items-center gap-1.5 cursor-pointer group">
+            <div className="size-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-gray-100 transition-colors bg-white shadow-sm">
+              <Settings className="size-4 text-gray-700" />
             </div>
-            <span className="text-[9px] text-muted-foreground font-medium">Setting</span>
+            <span className="text-[10px] text-gray-500 font-medium">Setting</span>
           </div>
         </div>
       </div>
 
-      <div className="p-3 border-b border-border">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[12px] font-semibold text-foreground">{isGroup ? "Members" : "Contact Info"}</h3>
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[14px] font-bold text-gray-900">{isGroup ? "Members" : "Contact Info"}</h3>
         </div>
         
         {isGroup ? (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 mb-1">
-              <Users className="size-3.5 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground">{activeConversation.participants.length} members</span>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="size-4 text-gray-400" />
+              <span className="text-[12px] font-medium text-gray-500">{activeConversation.participants.length} members</span>
             </div>
             {activeConversation.participants.map((p: any) => (
-              <div key={p.userId} className="flex items-center gap-2">
-                <div className="size-6 shrink-0 rounded-none border border-border bg-muted overflow-hidden flex items-center justify-center text-[8px] font-bold text-foreground">
+              <div key={p.userId} className="flex items-center gap-3">
+                <div className="size-8 shrink-0 rounded-full border border-gray-100 bg-gray-50 overflow-hidden flex items-center justify-center text-[10px] font-bold text-gray-500 shadow-sm">
                   {p.user.avatarUrl ? (
                     <img src={p.user.avatarUrl} alt="" className="size-full object-cover" />
                   ) : (
@@ -115,91 +115,91 @@ export function ChatInfoSidebar({
                   )}
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
-                  <span className="text-[11px] font-semibold text-foreground truncate">{p.user.name}</span>
-                  <span className="text-[9px] text-muted-foreground capitalize truncate">{p.user.role?.toLowerCase() || "Member"}</span>
+                  <span className="text-[13px] font-semibold text-gray-900 truncate">{p.user.name}</span>
+                  <span className="text-[11px] text-gray-500 capitalize truncate">{p.user.role?.toLowerCase() || "Member"}</span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col">
-              <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider mb-0.5">Email</span>
-              <span className="text-[11px] font-semibold text-foreground truncate">{otherP?.email || "Unknown"}</span>
+              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Email</span>
+              <span className="text-[13px] font-semibold text-gray-900 truncate">{otherP?.email || "Unknown"}</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider mb-0.5">Role</span>
-              <span className="text-[11px] font-semibold text-foreground capitalize truncate">{otherP?.role?.toLowerCase() || "User"}</span>
+              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Role</span>
+              <span className="text-[13px] font-semibold text-gray-900 capitalize truncate">{otherP?.role?.toLowerCase() || "User"}</span>
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-3 border-b border-border">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[12px] font-semibold text-foreground">Images</h3>
-          <button className="text-[10px] font-bold text-foreground hover:underline">View All</button>
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[14px] font-bold text-gray-900">Images</h3>
+          <button className="text-[12px] font-bold text-primary hover:underline">View All</button>
         </div>
         {imageMessages.length > 0 ? (
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-3 gap-2">
             {imageMessages.map((msg, i) => (
-              <a key={i} href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block aspect-square rounded-none bg-muted border border-border overflow-hidden hover:opacity-80 transition-opacity">
+              <a key={i} href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block aspect-square rounded-xl bg-gray-50 border border-gray-100 shadow-sm overflow-hidden hover:opacity-80 transition-opacity">
                 <img src={msg.attachmentUrl} alt="Attachment" className="size-full object-cover" />
               </a>
             ))}
           </div>
         ) : (
-          <p className="text-[10px] text-muted-foreground">No images shared yet.</p>
+          <p className="text-[12px] text-gray-500 font-medium">No images shared yet.</p>
         )}
       </div>
 
-      <div className="p-3 border-b border-border">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[12px] font-semibold text-foreground">Files</h3>
-          <button className="text-[10px] font-bold text-foreground hover:underline">View All</button>
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[14px] font-bold text-gray-900">Files</h3>
+          <button className="text-[12px] font-bold text-primary hover:underline">View All</button>
         </div>
         {fileMessages.length > 0 ? (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {fileMessages.map((file, i) => (
-              <a key={i} href={file.attachmentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 hover:bg-muted/30 p-1 -mx-1 transition-colors">
-                <div className="size-8 rounded-none flex items-center justify-center shrink-0 bg-muted border border-border">
-                  <FileText className="size-4 text-foreground" />
+              <a key={i} href={file.attachmentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:bg-gray-50 p-1.5 -mx-1.5 rounded-xl transition-colors">
+                <div className="size-10 rounded-xl flex items-center justify-center shrink-0 bg-gray-50 border border-gray-100 shadow-sm">
+                  <FileText className="size-4 text-gray-600" />
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
-                  <span className="text-[11px] font-semibold text-foreground truncate">Document</span>
-                  <span className="text-[9px] text-muted-foreground">Attachment</span>
+                  <span className="text-[13px] font-semibold text-gray-900 truncate">Document</span>
+                  <span className="text-[11px] text-gray-500">Attachment</span>
                 </div>
-                <span className="text-[9px] text-muted-foreground shrink-0">{new Date(file.createdAt).toLocaleDateString()}</span>
+                <span className="text-[10px] text-gray-400 font-medium shrink-0">{new Date(file.createdAt).toLocaleDateString()}</span>
               </a>
             ))}
           </div>
         ) : (
-          <p className="text-[10px] text-muted-foreground">No files shared yet.</p>
+          <p className="text-[12px] text-gray-500 font-medium">No files shared yet.</p>
         )}
       </div>
 
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[12px] font-semibold text-foreground">Links</h3>
-          <button className="text-[10px] font-bold text-foreground hover:underline">View All</button>
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[14px] font-bold text-gray-900">Links</h3>
+          <button className="text-[12px] font-bold text-primary hover:underline">View All</button>
         </div>
         {linkItems.length > 0 ? (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {linkItems.map((link, i) => (
-              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 hover:bg-muted/30 p-1 -mx-1 transition-colors">
-                <div className="size-7 rounded-none shrink-0 border border-border bg-muted flex items-center justify-center">
-                  <LinkIcon className="size-3.5 text-foreground" />
+              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:bg-gray-50 p-1.5 -mx-1.5 rounded-xl transition-colors">
+                <div className="size-9 rounded-xl shrink-0 border border-gray-100 bg-gray-50 flex items-center justify-center shadow-sm">
+                  <LinkIcon className="size-4 text-gray-600" />
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
-                  <span className="text-[11px] font-semibold text-foreground truncate">{link.url}</span>
-                  <span className="text-[9px] text-muted-foreground">{link.domain}</span>
+                  <span className="text-[13px] font-semibold text-gray-900 truncate">{link.url}</span>
+                  <span className="text-[11px] text-gray-500 font-medium">{link.domain}</span>
                 </div>
-                <span className="text-[9px] text-muted-foreground shrink-0">{link.date}</span>
+                <span className="text-[10px] text-gray-400 font-medium shrink-0">{link.date}</span>
               </a>
             ))}
           </div>
         ) : (
-          <p className="text-[10px] text-muted-foreground">No links shared yet.</p>
+          <p className="text-[12px] text-gray-500 font-medium">No links shared yet.</p>
         )}
       </div>
 
