@@ -8,33 +8,28 @@ export function WelcomeCard({ data }: { data: TopDashboardData }) {
   const firstName = user.name.split(" ")[0];
 
   return (
-    <div className="gradient-welcome relative flex h-full flex-col justify-between overflow-hidden p-4 sm:p-5 text-foreground border border-border shadow-sm rounded-none">
-      <div className="pointer-events-none absolute -right-16 -top-20 size-64 border border-border" />
-      <div className="pointer-events-none absolute -bottom-24 -right-8 size-56 bg-primary/5 blur-2xl" />
+    <div className="gradient-welcome relative flex h-full flex-col justify-between overflow-hidden p-3 text-foreground border border-border shadow-none rounded-none">
 
       {/* Header row */}
       <div className="flex items-start justify-between relative z-10">
-        <div className="bg-secondary px-2.5 py-1 text-[11px] font-semibold tracking-wide text-foreground backdrop-blur">
+        <div className="bg-secondary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-foreground">
           {getGreetingTime()}
         </div>
         <Link
           href="/courses"
-          className="border border-border bg-card p-1.5 sm:p-2 transition-colors hover:bg-secondary"
+          className="border border-border bg-card p-1 transition-colors hover:bg-secondary"
         >
-          <ArrowUpRight className="size-4 text-foreground" />
+          <ArrowUpRight className="size-3 text-foreground" />
         </Link>
       </div>
 
-      <div className="relative z-10 mt-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div className="w-full">
-          <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Darion Group Internal Academy
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight">
-            Welcome back,<br />
-            {firstName}
-          </h1>
+      <div className="relative z-10 mt-2 flex flex-col justify-between">
+        <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">
+          Darion Group
         </div>
+        <h1 className="text-sm font-bold leading-tight tracking-tight">
+          Welcome, {firstName}
+        </h1>
       </div>
     </div>
   );

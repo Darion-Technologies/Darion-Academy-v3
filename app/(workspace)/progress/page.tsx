@@ -1,73 +1,60 @@
 import { PageHeader } from "@/components/page-header";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { requireUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { getProgressData } from "@/lib/progress-data";
+import { ProfileCard } from "./_components/profile-card";
+import { ActivityBreakdown } from "./_components/activity-breakdown";
+import { PerformanceHeatmap } from "./_components/performance-heatmap";
+import { JourneyMetrics } from "./_components/journey-metrics";
+import { FocusCampaign } from "./_components/focus-campaign";
+import { QuickMetricsGrid } from "./_components/quick-metrics-grid";
+import { LeaderboardWidget } from "./_components/leaderboard-widget";
+import { Target } from "lucide-react";
+
+export const metadata = {
+  title: "Learning Progress - Darion Academy",
+  description: "Advanced analytics and tracking for your learning journey.",
+};
 
 export default async function ProgressPage() {
   const user = await requireUser();
-  const enrollments = await prisma.enrollment.findMany({
-    where: { learnerId: user.id },
-    include: { course: { include: { modules: { include: { lessons: true } } } } },
-  });
+  const data = await getProgressData(user.id);
 
   return (
-    <>
-      <PageHeader
-        title="Learning Progress"
-        description="A complete view of your course completion and status."
-      />
-      <div className="space-y-4">
-        {enrollments.map((e) => {
-          const totalLessons = e.course.modules.flatMap((m) => m.lessons).length;
-          const statusConfig = {
-            ASSIGNED:          { variant: "neutral"  as const, icon: Clock,          text: "Not started yet. Begin your first module to get going." },
-            IN_PROGRESS:       { variant: "info"     as const, icon: Clock,          text: "Keep going! Complete all required lessons, assignments, and quizzes." },
-            AWAITING_APPROVAL: { variant: "warning"  as const, icon: AlertTriangle,  text: "All requirements complete. Awaiting mentor approval." },
-            COMPLETED:         { variant: "success"  as const, icon: CheckCircle2,   text: "Course completed and approved. Well done!" },
-          };
-          const config = statusConfig[e.status];
-          const StatusIcon = config.icon;
-
-          return (
-            <div key={e.id} className="border bg-card p-6 shadow-[var(--shadow-sm)]">
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <h2 className="font-bold text-foreground">{e.course.title}</h2>
-                <Badge variant={config.variant}>
-                  {e.status.replaceAll("_", " ")}
-                </Badge>
-              </div>
-
-              <div className="mb-1.5 flex justify-between text-xs">
-                <span className="font-medium text-muted-foreground">
-                  {totalLessons} lessons · {e.course.modules.length} modules
-                </span>
-                <b className="text-foreground">{e.progressPercent}%</b>
-              </div>
-              <Progress value={e.progressPercent} />
-
-              <div className="mt-4 flex items-center gap-2.5 border bg-muted/55 p-3">
-                <StatusIcon
-                  className={`size-4 shrink-0 ${
-                    config.variant === "success" ? "text-[var(--success)]"
-                    : config.variant === "warning" ? "text-[var(--warning)]"
-                    : config.variant === "info"    ? "text-primary"
-                    : "text-muted-foreground"
-                  }`}
-                />
-                <p className="text-xs text-muted-foreground">{config.text}</p>
-              </div>
-            </div>
-          );
-        })}
-
-        {enrollments.length === 0 && (
-          <div className="text-center py-16 text-sm font-semibold text-muted-foreground">
-            No enrolled courses yet.
-          </div>
-        )}
+    <div className="flex flex-col gap-4 lg:gap-6 h-full w-full">
+      {/* Top Header */}
+      <div className="pb-2 border-b border-border flex items-center justify-between gap-2">
+        <h1 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
+          <Target className="size-5 text-primary" />
+          Learning Progress
+        </h1>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+          Analytics & Metrics
+        </p>
       </div>
-    </>
+
+      {/* 3-Column Dashboard Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
+        {/* Left Column: Profile & Activity */}
+        <div className="lg:col-span-3 flex flex-col gap-4">
+          <ProfileCard user={user} data={data} />
+          <ActivityBreakdown data={data} />
+        </div>
+
+        {/* Center Column: Heatmap & Journey */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          <PerformanceHeatmap data={data} />
+          <JourneyMetrics data={data} />
+        </div>
+
+        {/* Right Column: Campaign, Metrics, Leaderboard */}
+        <div className="lg:col-span-4 flex flex-col gap-4 h-full">
+          <FocusCampaign />
+          <QuickMetricsGrid data={data} />
+          <div className="flex-1">
+            <LeaderboardWidget />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

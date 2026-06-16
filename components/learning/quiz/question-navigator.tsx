@@ -84,7 +84,7 @@ export function QuestionNavigator({
                 onClick={() => onNavigate(index)}
                 className={getButtonClass(status, isCurrent)}
                 aria-label={`Question ${index + 1}`}
-                title={`Q${index + 1} — ${status.replace(/_/g, " ")}`}
+                title={`Q${index + 1} - ${status.replace(/_/g, " ")}`}
               >
                 {index + 1}
                 {getStatusIcon(status)}

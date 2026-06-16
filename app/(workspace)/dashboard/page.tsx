@@ -1,36 +1,28 @@
-import { Suspense } from "react";
-import { requireRole } from "@/lib/auth";
-import { TopRow } from "./_components/top-row";
-import { BottomRow } from "./_components/bottom-row";
-import { MetricsRibbonContainer } from "./_components/metrics-ribbon-container";
-import { TopRowSkeleton } from "./_components/top-row-skeleton";
-import { BottomRowSkeleton } from "./_components/bottom-row-skeleton";
+import { requireUser } from "@/lib/auth";
+import { getTopDashboardData, getHeatmapData } from "@/lib/dashboard-data";
+import { DashboardGreeting } from "./_components/dashboard-greeting";
+import { HighlightsRow } from "./_components/highlights-row";
+import { ChartsRow } from "./_components/charts-row";
+import { BottomWidgetsRow } from "./_components/bottom-widgets-row";
 
 export const metadata = {
-  title: "Dashboard — Darion Academy",
+  title: "Dashboard - Darion Academy",
   description: "Track your learning progress, streaks, and upcoming assignments.",
 };
 
 export default async function LearnerDashboard() {
-  const user = await requireRole("EMPLOYEE", "INTERN");
+  const user = await requireUser();
+  const [data, { heatmapDays }] = await Promise.all([
+    getTopDashboardData(user.id),
+    getHeatmapData(user.id),
+  ]);
 
   return (
-    <div className="mx-auto max-w-[1360px] space-y-1.5 sm:space-y-2 px-1 sm:px-0">
-      {/* Top Grid Row: Hero, Study List, Progress */}
-      <Suspense fallback={<TopRowSkeleton />}>
-        <TopRow userId={user.id} />
-      </Suspense>
-
-      {/* Analytics Metrics Ribbon */}
-      <Suspense fallback={<div className="h-[74px] animate-pulse bg-muted rounded-none border border-border" />}>
-        <MetricsRibbonContainer userId={user.id} />
-      </Suspense>
-
-      {/* Bottom Grid Row: Heatmap, To Do List */}
-      <Suspense fallback={<BottomRowSkeleton />}>
-        <BottomRow userId={user.id} />
-      </Suspense>
-
+    <div className="mx-auto max-w-[1440px] px-2 sm:px-4 lg:px-6 bg-background font-sans pt-2 pb-4 lg:pb-0 lg:h-[calc(100vh-24px)] lg:overflow-hidden flex flex-col">
+      <DashboardGreeting userName={user.name.split(' ')[0]} />
+      <HighlightsRow stats={data.stats} enrollments={data.enrollments} />
+      <ChartsRow enrollments={data.enrollments} heatmapDays={heatmapDays} />
+      <BottomWidgetsRow pendingActions={data.pendingActions} activeCourse={data.activeCourse} />
     </div>
   );
 }

@@ -4,7 +4,7 @@ export default async function ChatLayout({ children }: { children: React.ReactNo
   await requireUser();
 
   return (
-    <div className="flex h-[calc(100vh-130px)] w-full overflow-hidden border border-border shadow-sm rounded-none bg-card">
+    <div className="flex flex-1 w-full overflow-hidden bg-card border-x border-border">
       {children}
     </div>
   );

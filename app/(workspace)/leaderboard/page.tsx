@@ -6,7 +6,7 @@ import { initials } from "@/lib/utils";
 import { BadgeType } from "@/generated/prisma";
 
 export const metadata = {
-  title: "Leaderboard — Darion Academy",
+  title: "Leaderboard - Darion Academy",
   description: "Global learner rankings and activity scores.",
 };
 

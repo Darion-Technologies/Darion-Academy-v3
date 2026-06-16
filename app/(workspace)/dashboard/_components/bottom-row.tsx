@@ -12,14 +12,14 @@ export async function BottomRow({ userId }: { userId: string }) {
   ]);
 
   return (
-    <div className="grid grid-cols-1 items-stretch gap-1.5 sm:gap-2 lg:grid-cols-[1.4fr_1fr_1fr]">
-      <div className="min-h-[220px]">
+    <div className="grid grid-cols-1 items-stretch gap-1 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="min-h-[180px]">
         <DashboardCalendar heatmapDays={heatmapDays} pendingActions={data.pendingActions} />
       </div>
-      <div className="min-h-[220px]">
+      <div className="min-h-[180px]">
         <ToDoList actions={data.pendingActions} />
       </div>
-      <div className="min-h-[220px]">
+      <div className="min-h-[180px]">
         <MiniLeaderboard />
       </div>
     </div>

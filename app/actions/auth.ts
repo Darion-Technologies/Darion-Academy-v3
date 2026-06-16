@@ -28,21 +28,32 @@ async function recordLoginStreak(userId: string) {
 
 export async function loginAction(_state: AuthState, formData: FormData): Promise<AuthState> {
   const ip = (await headers()).get("x-forwarded-for") ?? "127.0.0.1";
-  const { success: rateLimitSuccess } = await enforceRateLimit(`login_${ip}`);
-  if (!rateLimitSuccess) return { error: "Too many login attempts. Please try again later." };
-
+  
+  // Fire off rate limit check in background while parsing
+  const rateLimitPromise = enforceRateLimit(`login_${ip}`);
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Enter a valid email and password." };
+
+  const { success: rateLimitSuccess } = await rateLimitPromise;
+  if (!rateLimitSuccess) return { error: "Too many login attempts. Please try again later." };
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error || !data.user) return { error: error?.message ?? "Unable to sign in." };
+  
   const profile = await prisma.user.findUnique({ where: { id: data.user.id } });
   if (!profile || !profile.active) {
     await supabase.auth.signOut();
     return { error: "Your Darion Academy profile is not active." };
   }
-  await recordLoginStreak(profile.id);
-  if (data.session?.access_token) await recordSession(profile.id, data.session.access_token);
+  
+  // Parallelize the database updates
+  const updatePromises: Promise<any>[] = [recordLoginStreak(profile.id)];
+  if (data.session?.access_token) {
+    updatePromises.push(recordSession(profile.id, data.session.access_token));
+  }
+  await Promise.all(updatePromises);
+  
   redirect(roleHome[profile.role]);
 }
 

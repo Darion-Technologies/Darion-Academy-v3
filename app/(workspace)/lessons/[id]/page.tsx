@@ -44,7 +44,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
 
   const isLearner = Boolean(enrollment);
 
-  // Module lock check — verify previous module is completed
+  // Module lock check - verify previous module is completed
   if (isLearner && lesson.module.order > 1) {
     const prevModule = await prisma.module.findFirst({
       where: { courseId: lesson.module.courseId, order: lesson.module.order - 1 },

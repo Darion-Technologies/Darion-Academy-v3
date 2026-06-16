@@ -8,9 +8,10 @@ import type { DashboardEnrollment } from "@/lib/dashboard-data";
 export function FocusCourseCard({ course }: { course: DashboardEnrollment | null }) {
   if (!course) {
     return (
-      <Card className="h-full flex flex-col items-center justify-center p-6 text-center text-muted-foreground border-dashed">
-        <p className="text-sm font-medium">You have no active courses.</p>
-        <Button variant="outline" size="sm" className="mt-3" asChild>
+      <Card className="h-full flex flex-col items-center justify-center p-6 text-center border border-border shadow-none rounded-none bg-card">
+        <h3 className="text-sm font-semibold text-foreground mb-1">No active courses</h3>
+        <p className="text-xs text-muted-foreground mb-4">Try exploring the library to find something new.</p>
+        <Button variant="outline" size="sm" asChild>
           <Link href="/courses">Browse Library</Link>
         </Button>
       </Card>
@@ -18,59 +19,50 @@ export function FocusCourseCard({ course }: { course: DashboardEnrollment | null
   }
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden relative group border-0 ring-1 ring-border/50 shadow-md">
-      {/* Full Background Image */}
+    <Card className="h-full flex flex-col overflow-hidden relative group border-none shadow-none rounded-none bg-card">
       {course.hasThumbnail ? (
         <Image
           src={`/api/admin/courses/${course.courseId}/thumbnail`}
           alt=""
           fill
-          className="object-cover transition-transform duration-1000 group-hover:scale-105"
+          className="object-cover absolute inset-0 z-0 opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105"
           unoptimized
         />
       ) : (
-        <div className="absolute inset-0 bg-accent flex items-center justify-center text-accent-foreground font-bold uppercase text-6xl opacity-30">
-          {course.courseTitle.slice(0, 2)}
+        <div className="absolute inset-0 z-0 bg-muted flex items-center justify-center">
+          <span className="text-6xl font-bold uppercase text-muted-foreground/20">{course.courseTitle.slice(0, 2)}</span>
         </div>
       )}
       
-      {/* Dark Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent pointer-events-none" />
-      
-      {/* Floating Focus Course Badge */}
-      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full shadow-sm border border-white/10 z-10">
-        <div className="size-2 rounded-full bg-primary animate-pulse" />
-        <span className="text-[10px] font-bold uppercase tracking-widest text-white drop-shadow-md">
-          Focus Course
-        </span>
-      </div>
-      
-      {/* Bottom Content Area */}
-      <div className="p-3 sm:p-4 flex-1 flex flex-col justify-end z-10 relative">
-        <div className="flex flex-col min-w-0 mb-4 mt-auto pt-8">
-          <h3 className="text-sm sm:text-lg font-bold leading-tight text-white line-clamp-2 drop-shadow-md">
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/95 via-black/60 to-black/10" />
+
+      {/* Content */}
+      <div className="p-4 flex-1 flex flex-col relative z-20 justify-end pt-16">
+        <div className="mt-auto flex flex-col min-w-0 mb-4">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Focus Course</span>
+          </div>
+          <h3 className="text-xl font-bold text-white line-clamp-2 leading-tight">
             {course.courseTitle}
           </h3>
-          <p className="text-xs font-medium text-white/80 mt-1 truncate drop-shadow-sm">
+          <p className="text-xs text-zinc-300 line-clamp-1 mt-1.5 font-medium">
             {course.nextPendingModuleTitle || "Continue Learning"}
           </p>
         </div>
 
-        <div className="mt-auto">
-          {/* Progress Section */}
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-white/70">Progress</span>
-            <span className="text-[10px] font-bold text-white">
-              {course.progressPercent}%
-            </span>
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Progress</span>
+            <span className="text-[10px] font-bold text-white">{course.progressPercent}%</span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/20 mb-4 border border-white/10">
-            <div className="h-full bg-primary transition-all shadow-[0_0_8px_var(--primary)]" style={{ width: `${course.progressPercent}%` }} />
+          <div className="h-1 w-full overflow-hidden bg-white/20 rounded-none mb-4">
+            <div className="h-full bg-primary" style={{ width: `${course.progressPercent}%` }} />
           </div>
           
-          <Button className="w-full font-bold tracking-wide shadow-lg border-white/10 hover:brightness-110" size="sm" asChild>
+          <Button className="w-full shadow-none bg-primary text-primary-foreground hover:bg-primary/90 font-bold border-none rounded-none uppercase tracking-wider text-[11px] h-9" asChild>
             <Link href={`/courses/${course.courseSlug}`} prefetch={true}>
-              <Play className="w-4 h-4 mr-2 fill-current" />
+              <Play className="w-3.5 h-3.5 mr-2 fill-current" />
               Resume Learning
             </Link>
           </Button>

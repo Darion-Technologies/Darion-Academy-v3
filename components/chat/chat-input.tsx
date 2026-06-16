@@ -136,7 +136,7 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
   }
 
   return (
-    <div className="border-t border-border bg-card p-3 sm:p-4">
+    <div className="w-full relative px-2">
       {attachmentPreview && (
         <div className="mb-3 relative inline-block">
           <div className="relative h-24 w-24 rounded-none border border-border overflow-hidden bg-muted">
@@ -144,13 +144,13 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
           </div>
           <button
             onClick={removeAttachment}
-            className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90"
+            className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90 border border-border"
           >
             <X className="size-3" />
           </button>
         </div>
       )}
-      <div className="flex items-end gap-2">
+      <div className="flex items-center w-full bg-background border border-border rounded-none pr-1.5 pl-3 py-1 focus-within:ring-1 focus-within:ring-ring/50 transition-all">
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -158,35 +158,47 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
           accept="image/*" 
           className="hidden" 
         />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isPending || isUploading}
-          className="h-[44px] w-[44px] shrink-0 rounded-none text-muted-foreground hover:text-foreground"
-        >
-          <ImageIcon className="size-5" />
-        </Button>
-        <textarea
+        <input
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
             handleTyping();
           }}
-          onKeyDown={handleKeyDown}
-          placeholder="Type a message..."
-          className="max-h-32 min-h-[44px] w-full resize-none bg-muted/50 p-3 text-sm text-foreground outline-none border border-border focus:border-primary rounded-none transition-colors"
-          rows={1}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
+          placeholder="Aa"
+          className="flex-1 bg-transparent border-none text-[12px] text-foreground outline-none placeholder:text-muted-foreground/70 h-8"
         />
-        <Button
-          onClick={handleSend}
-          disabled={(!content.trim() && !attachmentFile) || isPending || isUploading}
-          size="icon"
-          className="h-[44px] w-[44px] shrink-0 rounded-none"
-        >
-          {isPending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-        </Button>
+        
+        <div className="flex items-center gap-0.5 shrink-0 ml-1 text-muted-foreground">
+          <button className="size-7 flex items-center justify-center hover:text-foreground transition-colors hover:bg-muted rounded-none border border-transparent">
+            <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>
+          </button>
+          <button className="size-7 flex items-center justify-center hover:text-foreground transition-colors hover:bg-muted rounded-none border border-transparent">
+            <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </button>
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isPending || isUploading}
+            className="size-7 flex items-center justify-center hover:text-foreground transition-colors hover:bg-muted rounded-none border border-transparent"
+          >
+            <ImageIcon className="size-4" />
+          </button>
+          
+          {(content.trim() || attachmentFile) && (
+            <button
+              onClick={handleSend}
+              disabled={isPending || isUploading}
+              className="ml-1 flex items-center justify-center size-7 bg-primary text-primary-foreground rounded-none hover:bg-primary/90 transition-transform active:scale-95"
+            >
+              {isPending ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5 ml-0.5" />}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

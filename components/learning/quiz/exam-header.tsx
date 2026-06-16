@@ -87,7 +87,7 @@ export function ExamHeader({
         </div>
       </div>
 
-      {/* Progress bar — Darion Blue */}
+      {/* Progress bar - Darion Blue */}
       <div className="h-0.5 w-full bg-[#0B1824]">
         <div
           className="h-full bg-primary transition-all duration-300"

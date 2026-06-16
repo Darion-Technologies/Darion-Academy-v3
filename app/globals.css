@@ -7,7 +7,7 @@
 
 :root {
   color-scheme: light;
-  --background: #FAFAFA;
+  --background: #FFFFFF;
   --foreground: #111111;
   --card: #FFFFFF;
   --card-foreground: #111111;
@@ -16,10 +16,10 @@
   --primary: #0070F3;
   --primary-hover: #3291FF;
   --primary-foreground: #FFFFFF;
-  --secondary: #F4F4F5;
+  --secondary: #FAFAFA;
   --secondary-foreground: #111111;
-  --muted: #FAFAFA;
-  --muted-foreground: #878787;
+  --muted: #F4F4F5;
+  --muted-foreground: #555555;
   --accent: #0070F3;
   --accent-foreground: #FFFFFF;
   --destructive: #E5484D;
@@ -28,8 +28,8 @@
   --ring: #0070F3;
   --surface-elevated: #FFFFFF;
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #444444;
-  --sidebar-muted: #878787;
+  --sidebar-foreground: #222222;
+  --sidebar-muted: #555555;
   --sidebar-accent: #F4F4F5;
   --sidebar-accent-foreground: #111111;
   --sidebar-border: #EAEAEA;
@@ -54,32 +54,32 @@
 
 .dark {
   color-scheme: dark;
-  --background: #111111;
-  --foreground: #EDEDED;
-  --card: #161616;
-  --card-foreground: #EDEDED;
-  --popover: #1C1C1C;
-  --popover-foreground: #EDEDED;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #09090b;
+  --card-foreground: #fafafa;
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
   --primary: #0070F3;
   --primary-hover: #3291FF;
   --primary-foreground: #FFFFFF;
-  --secondary: #232323;
-  --secondary-foreground: #EDEDED;
-  --muted: #232323;
-  --muted-foreground: #878787;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
   --accent: #0070F3;
   --accent-foreground: #FFFFFF;
-  --destructive: #E5484D;
-  --border: #2E2E2E;
-  --input: #2E2E2E;
+  --destructive: #ef4444;
+  --border: #27272a;
+  --input: #27272a;
   --ring: #0070F3;
-  --surface-elevated: #161616;
-  --sidebar: #111111;
-  --sidebar-foreground: #EDEDED;
-  --sidebar-muted: #878787;
-  --sidebar-accent: #232323;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #2E2E2E;
+  --surface-elevated: #18181b;
+  --sidebar: #09090b;
+  --sidebar-foreground: #fafafa;
+  --sidebar-muted: #a1a1aa;
+  --sidebar-accent: #27272a;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #27272a;
   --success: #10B981;
   --success-light: #064E3B;
   --warning: #F59E0B;
@@ -162,6 +162,23 @@ button:not(:disabled), a { cursor: pointer; }
 @keyframes slide-up-fade {
   0% { opacity: 0; transform: translateY(12px) scale(0.98); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes wave {
+  0% { transform: rotate(0.0deg) }
+  10% { transform: rotate(14.0deg) }
+  20% { transform: rotate(-8.0deg) }
+  30% { transform: rotate(14.0deg) }
+  40% { transform: rotate(-4.0deg) }
+  50% { transform: rotate(10.0deg) }
+  60% { transform: rotate(0.0deg) }
+  100% { transform: rotate(0.0deg) }
+}
+
+.animate-wave {
+  animation: wave 2.5s infinite;
+  transform-origin: 70% 70%;
+  display: inline-block;
 }
 
 .streak-halo {

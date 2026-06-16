@@ -21,16 +21,16 @@ const getCachedUser = unstable_cache(
 
 export const getCurrentUser = cache(async () => {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session?.user) return null;
-  const user = await getCachedUser(session.user.id);
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
+  const dbUser = await getCachedUser(user.id);
+  if (!dbUser) return null;
   
   // unstable_cache serializes Dates to strings, so we must restore them
   return {
-    ...user,
-    createdAt: new Date(user.createdAt),
-    updatedAt: new Date(user.updatedAt),
+    ...dbUser,
+    createdAt: new Date(dbUser.createdAt),
+    updatedAt: new Date(dbUser.updatedAt),
   };
 });
 

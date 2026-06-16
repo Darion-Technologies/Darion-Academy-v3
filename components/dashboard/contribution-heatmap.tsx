@@ -14,7 +14,7 @@ const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Se
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Timezone-safe key using LOCAL date parts — avoids UTC offset mismatches */
+/** Timezone-safe key using LOCAL date parts - avoids UTC offset mismatches */
 function toDateKey(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");

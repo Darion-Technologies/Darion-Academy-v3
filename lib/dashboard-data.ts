@@ -107,7 +107,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
       where: { userId },
       select: { id: true, enrollmentId: true, status: true },
     }),
-    // Week-only streaks — used by StreakWidget
+    // Week-only streaks - used by StreakWidget
     prisma.loginStreak.findMany({
       where: { userId, date: { gte: getStartOfWeek() } },
       select: { date: true },

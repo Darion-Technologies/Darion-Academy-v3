@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Users, User, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { NewChatDialog } from "@/components/chat/new-chat-dialog";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -62,11 +63,35 @@ export function ChatSidebar({
   }, [currentUserId, supabase]);
 
   return (
-    <div className="flex w-full flex-col border-r border-border bg-muted/20 sm:w-80 shrink-0">
-      <div className="flex items-center justify-between border-b border-border p-4">
-        <h2 className="text-sm font-bold tracking-tight uppercase text-foreground">Messages</h2>
-        <Button variant="ghost" size="icon-sm" onClick={() => setDialogOpen(true)} className="rounded-none">
-          <Plus className="size-4" />
+    <div className="flex w-full flex-col border-r border-border bg-card sm:w-[280px] shrink-0 h-full antialiased">
+      <div className="flex flex-col p-3 gap-3 border-b border-border">
+        {/* Search */}
+        <div className="relative">
+          <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <Input placeholder="Search" className="pl-8 bg-background border-border rounded-none h-8 text-xs" />
+        </div>
+
+        {/* Tabs */}
+        <div className="flex p-0.5 bg-muted/30 border border-border">
+          <button className="flex-1 flex items-center justify-center gap-1.5 py-1 bg-background border border-border text-xs font-semibold text-foreground rounded-none">
+            <User className="size-3.5" />
+            Inbox
+            <span className="flex items-center justify-center size-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-none">24</span>
+          </button>
+          <button className="flex-1 flex items-center justify-center gap-1.5 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground rounded-none">
+            <svg className="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+            Explore
+            <span className="flex items-center justify-center size-4 bg-muted text-muted-foreground border border-border text-[9px] font-bold rounded-none">10</span>
+          </button>
+        </div>
+
+        <h2 className="text-sm font-bold text-foreground mt-1">Messages</h2>
+
+        <Button 
+          onClick={() => setDialogOpen(true)} 
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-none text-xs font-bold h-8"
+        >
+          Create New Group
         </Button>
       </div>
 
@@ -91,14 +116,16 @@ export function ChatSidebar({
                   key={conv.id}
                   onClick={() => onSelectConversation(conv.id)}
                   className={cn(
-                    "flex items-center gap-3 border-b border-border p-3 transition-colors hover:bg-muted/50 w-full text-left",
-                    isActive && "bg-muted"
+                    "flex items-start gap-2.5 border-b border-border p-2.5 transition-colors hover:bg-muted/30 w-full text-left relative rounded-none",
+                    isActive && "bg-muted/50"
                   )}
                 >
                   <div className="relative size-10 shrink-0">
                     <div className="flex size-full items-center justify-center bg-secondary text-secondary-foreground border border-border rounded-none overflow-hidden">
                       {isGroup ? (
-                        <Users className="size-5" />
+                        <div className="flex size-full items-center justify-center bg-muted text-foreground">
+                          <Users className="size-4" />
+                        </div>
                       ) : otherP?.avatarUrl ? (
                         <img 
                           src={otherP.avatarUrl} 
@@ -111,22 +138,30 @@ export function ChatSidebar({
                       )}
                     </div>
                     {!isGroup && otherP && onlineUsers.has(otherP.id) && (
-                      <span className="absolute -bottom-1 -right-1 block size-3 rounded-full bg-green-500 border-2 border-card z-10"></span>
+                      <span className="absolute bottom-0 right-0 block size-2.5 bg-green-500 border border-card z-10 rounded-none"></span>
                     )}
                   </div>
-                  <div className="flex flex-1 flex-col overflow-hidden">
-                    <span className={cn("truncate text-sm", conv.unreadCount ? "font-bold text-foreground" : "font-semibold")}>
-                      {displayName}
-                    </span>
-                    <span className={cn("truncate text-xs", conv.unreadCount ? "font-bold text-foreground" : "text-muted-foreground")}>
-                      {lastMessage}
-                    </span>
-                  </div>
-                  {conv.unreadCount ? (
-                    <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                      {conv.unreadCount > 99 ? "99+" : conv.unreadCount}
+                  
+                  <div className="flex flex-1 flex-col overflow-hidden pt-0.5">
+                    <div className="flex justify-between items-center mb-0.5">
+                      <span className={cn("truncate text-[12px]", conv.unreadCount ? "font-bold text-foreground" : "font-semibold")}>
+                        {displayName}
+                      </span>
+                      <span className={cn("text-[9px] shrink-0", conv.unreadCount ? "font-bold text-foreground" : "text-muted-foreground")}>
+                        {conv.messages[0] ? new Date(conv.messages[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                      </span>
                     </div>
-                  ) : null}
+                    <div className="flex justify-between items-center">
+                      <span className={cn("truncate text-[10px] pr-2 leading-tight", conv.unreadCount ? "font-bold text-foreground" : "text-muted-foreground")}>
+                        {lastMessage}
+                      </span>
+                      {conv.unreadCount ? (
+                        <div className="flex size-4 shrink-0 items-center justify-center bg-primary text-primary-foreground text-[9px] font-bold rounded-none">
+                          {conv.unreadCount > 99 ? "99+" : conv.unreadCount}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
                 </button>
               );
             })}

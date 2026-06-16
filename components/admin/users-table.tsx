@@ -120,8 +120,8 @@ export function UsersTable({ users }: { users: User[] }) {
                   <TableCell>
                     <Badge>{u.role}</Badge>
                   </TableCell>
-                  <TableCell>{u.employeeId ?? "—"}</TableCell>
-                  <TableCell>{u.department ?? "—"}</TableCell>
+                  <TableCell>{u.employeeId ?? "-"}</TableCell>
+                  <TableCell>{u.department ?? "-"}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <form action={async (formData) => {

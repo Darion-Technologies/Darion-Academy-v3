@@ -52,21 +52,21 @@ export function YourProgressWidget({
       <CardContent className="flex-1 flex flex-col items-center justify-center pt-2 pb-4">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square h-[140px]"
+          className="mx-auto aspect-square h-[80px]"
         >
           <RadialBarChart
             data={chartData}
             startAngle={90}
             endAngle={90 - (360 * avgProgress) / 100}
-            innerRadius={50}
-            outerRadius={70}
+            innerRadius={30}
+            outerRadius={40}
           >
             <PolarGrid
               gridType="circle"
               radialLines={false}
               stroke="none"
               className="first:fill-muted last:fill-background"
-              polarRadius={[55, 45]}
+              polarRadius={[35, 25]}
             />
             <RadialBar dataKey="completion" background cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
@@ -83,14 +83,14 @@ export function YourProgressWidget({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-2xl font-bold"
+                          className="fill-foreground text-lg font-bold"
                         >
                           {avgProgress}%
                         </tspan>
                         <tspan
                           x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 16}
-                          className="fill-muted-foreground text-[10px] uppercase"
+                          y={(viewBox.cy || 0) + 12}
+                          className="fill-muted-foreground text-[8px] uppercase"
                         >
                           Done
                         </tspan>
@@ -104,12 +104,12 @@ export function YourProgressWidget({
         </ChartContainer>
 
         {/* Stats footer */}
-        <div className="mt-4 flex w-full flex-col gap-1.5">
-          <div className="flex w-full items-center justify-center bg-secondary/80 px-3 py-2 text-xs font-semibold text-secondary-foreground rounded-none">
+        <div className="mt-2 flex w-full flex-col gap-1">
+          <div className="flex w-full items-center justify-center bg-secondary/80 px-2 py-1 text-[10px] font-semibold text-secondary-foreground rounded-none">
             {completedTasks}/{totalTasks || 1} Modules Completed
           </div>
           {stats !== undefined && (
-            <div className="flex w-full items-center justify-center bg-secondary/80 px-3 py-2 text-xs font-semibold text-secondary-foreground rounded-none">
+            <div className="flex w-full items-center justify-center bg-secondary/80 px-2 py-1 text-[10px] font-semibold text-secondary-foreground rounded-none">
               {formatDuration(stats.videoPlayedSeconds || 0)} Video Played
             </div>
           )}

@@ -13,7 +13,7 @@ export function InstructionsScreen({ quiz, onStart, isPending }: InstructionsScr
       {/* Header bar */}
       <div className="bg-sidebar px-8 py-6 text-sidebar-foreground">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7FC5DD] mb-2">
-          Darion Academy — Exam Environment
+          Darion Academy - Exam Environment
         </div>
         <h1 className="text-xl font-bold tracking-tight">{quiz.title}</h1>
         <p className="text-sm text-[#7FC5DD] mt-1">
@@ -79,7 +79,7 @@ export function InstructionsScreen({ quiz, onStart, isPending }: InstructionsScr
             disabled={isPending}
             className="w-full md:w-auto px-12 text-base font-bold uppercase tracking-wider"
           >
-            {isPending ? "Starting Exam..." : "I Understand — Start Exam"}
+            {isPending ? "Starting Exam..." : "I Understand - Start Exam"}
           </Button>
         </div>
       </div>

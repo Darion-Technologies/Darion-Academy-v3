@@ -172,62 +172,70 @@ export function ChatWindow({
             <div key={msg.id} className="flex flex-col w-full">
               {showTimestamp && (
                 <div className="flex justify-center my-4">
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground bg-muted/30 px-2 py-1 rounded-none border border-border">
-                    {format(new Date(msg.createdAt), "MMM d, h:mm a")}
+                  <span className="text-[9px] font-semibold text-muted-foreground bg-background px-3 py-1">
+                    {format(new Date(msg.createdAt), "MMM d, yyyy")}
                   </span>
                 </div>
               )}
               <div className={cn("flex w-full mt-1", isMe ? "justify-end" : "justify-start")}>
                 <div className={cn("flex max-w-[80%] items-end gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
                   {!isMe && (
-                  <div className="w-8 shrink-0">
+                  <div className="w-7 shrink-0 flex items-start mt-auto mb-1">
                     {showAvatar ? (
-                      <div className="relative size-8 overflow-hidden rounded-none bg-muted border border-border">
-                        <div className="absolute inset-0 flex h-full items-center justify-center text-[10px] font-bold text-foreground">
+                      <div className="relative size-7 overflow-hidden rounded-none bg-muted border border-border">
+                        <div className="absolute inset-0 flex h-full items-center justify-center text-[9px] font-bold text-foreground">
                           {msg.sender.name.substring(0, 2).toUpperCase()}
                         </div>
                         {msg.sender.avatarUrl && (
                           <img 
                             src={msg.sender.avatarUrl} 
                             alt="" 
-                            width={32} 
-                            height={32} 
+                            width={28} 
+                            height={28} 
                             className="relative z-10 size-full object-cover" 
                             onError={(e) => { e.currentTarget.style.display = 'none'; }} 
                           />
                         )}
                       </div>
                     ) : (
-                      <div className="size-8" />
+                      <div className="size-7" />
                     )}
                   </div>
                 )}
 
-                <div className="flex flex-col gap-1 items-end max-w-full">
-                  <div
-                    className={cn(
-                      "flex flex-col gap-2 px-4 py-3 text-sm border rounded-none w-full",
-                      isMe
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-muted text-foreground border-border",
-                      isOptimistic && "opacity-70"
-                    )}
-                  >
-                  {msg.attachmentUrl && msg.attachmentType === "image" && (
-                    <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block max-w-sm cursor-zoom-in">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img 
-                        src={msg.attachmentUrl} 
-                        alt="Attachment" 
-                        className="rounded-none border border-border object-contain max-h-64"
-                      />
-                    </a>
-                  )}
-                  {msg.content && (
-                    <div className={cn("prose prose-sm max-w-none dark:prose-invert", isMe && "prose-invert")}>
-                      <MarkdownRenderer content={msg.content} />
+                <div className={cn("flex flex-col gap-0.5 max-w-[80%]", isMe ? "items-end" : "items-start")}>
+                  {!isMe && showAvatar && (
+                    <div className="flex items-center gap-1.5 mb-0.5 ml-1">
+                      <span className="text-[10px] font-semibold text-foreground">{msg.sender.name}</span>
+                      <span className="text-[8px] text-muted-foreground">{format(new Date(msg.createdAt), "h:mm a")}</span>
                     </div>
                   )}
+                  <div className="flex items-end gap-1">
+                    <div
+                      className={cn(
+                        "flex flex-col gap-1.5 px-2.5 py-1.5 text-[12px] w-full leading-snug border",
+                        isMe
+                          ? "bg-primary text-primary-foreground border-primary rounded-none"
+                          : "bg-background text-foreground border-border rounded-none",
+                        isOptimistic && "opacity-70"
+                      )}
+                    >
+                    {msg.attachmentUrl && msg.attachmentType === "image" && (
+                      <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block max-w-sm cursor-zoom-in">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={msg.attachmentUrl} 
+                          alt="Attachment" 
+                          className="rounded-none border border-border object-contain max-h-64"
+                        />
+                      </a>
+                    )}
+                    {msg.content && (
+                      <div className={cn("prose prose-sm max-w-none", isMe ? "prose-invert" : "dark:prose-invert")}>
+                        <MarkdownRenderer content={msg.content} />
+                      </div>
+                    )}
+                    </div>
                   </div>
                   {isMe && tickIcon && (
                     <div className="mt-0.5 px-1">{tickIcon}</div>

@@ -13,8 +13,8 @@ type LoginMethod = "email" | "employeeId";
 
 export function LoginForm() {
   const [method, setMethod] = useState<LoginMethod>("email");
-  const [emailState, emailAction, emailPending] = useActionState(loginAction, {});
-  const [empState, empAction, empPending] = useActionState(loginWithEmployeeIdAction, {});
+  const [emailState, emailAction, emailPending] = useActionState(loginAction, { error: "", success: "" });
+  const [empState, empAction, empPending] = useActionState(loginWithEmployeeIdAction, { error: "", success: "" });
 
   const state = method === "email" ? emailState : empState;
   const action = method === "email" ? emailAction : empAction;

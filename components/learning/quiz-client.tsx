@@ -234,7 +234,7 @@ export function QuizClient({ quiz, canAttempt }: QuizProps) {
       />
 
       <div className="max-w-[1600px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Navigator — left */}
+        {/* Navigator - left */}
         <div className="lg:col-span-1 order-2 lg:order-1 hidden md:block">
           <QuestionNavigator
             questions={quiz.questions}
@@ -244,7 +244,7 @@ export function QuizClient({ quiz, canAttempt }: QuizProps) {
           />
         </div>
 
-        {/* Question area — right */}
+        {/* Question area - right */}
         <div className="lg:col-span-3 order-1 lg:order-2 space-y-4">
           <div className="bg-card border border-border shadow-[var(--shadow-sm)] min-h-[400px] flex flex-col">
 

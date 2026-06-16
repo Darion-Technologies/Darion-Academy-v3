@@ -22,7 +22,7 @@ export async function getConversationsAction() {
       participants: {
         include: {
           user: {
-            select: { id: true, name: true, avatarUrl: true },
+            select: { id: true, name: true, avatarUrl: true, email: true, role: true },
           },
         },
       },
