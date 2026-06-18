@@ -2,50 +2,39 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function BottomRowSkeleton() {
   return (
-    <div className="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-[1.8fr_1fr]">
-      {/* Heatmap */}
-      <div className="flex min-h-[280px] flex-col overflow-hidden border bg-card text-card-foreground shadow">
-        <div className="mb-1 flex flex-row items-center justify-between border-b p-6 pb-2 pt-6">
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-6 w-32" />
-        </div>
-        <div className="flex-1 px-3 pb-2 pt-4">
-          <div className="flex">
-            <div className="mr-1 flex w-[28px] flex-col justify-between py-1">
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-2 w-5" />
-              ))}
-            </div>
-            <div className="flex gap-[2px] overflow-hidden">
-              {[...Array(53)].map((_, i) => (
-                <div key={i} className="flex flex-col gap-[2px]">
-                  {[...Array(7)].map((_, j) => (
-                    <Skeleton key={j} className="h-[12px] w-[12px]]" />
-                  ))}
-                </div>
-              ))}
-            </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 pb-4">
+      <div className="lg:col-span-2 bg-card rounded-md border border-border p-3 shadow-none">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="size-3.5 rounded-sm" />
+            <Skeleton className="h-4 w-48 rounded-sm" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-7 w-8 rounded-md" />
+            <Skeleton className="h-7 w-20 rounded-md" />
           </div>
         </div>
-      </div>
-
-      {/* To Do List */}
-      <div className="flex min-h-[280px] flex-col overflow-hidden border bg-card text-card-foreground shadow">
-        <div className="mb-1 flex flex-row items-center justify-between border-b p-6 pb-4 pt-6">
-          <Skeleton className="h-5 w-28" />
-          <Skeleton className="h-6 w-16" />
-        </div>
-        <div className="flex flex-1 flex-col px-3 pb-3 pt-2">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="flex items-center gap-3 border-b px-2 py-2 last:border-0">
-              <Skeleton className="size-4 shrink-0" />
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-3.5 w-3/4" />
-                <Skeleton className="h-2.5 w-1/2" />
-              </div>
-              <Skeleton className="h-5 w-16" />
+        <div className="w-full">
+          <div className="h-8 bg-muted/50 rounded-lg mb-2"></div>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4 py-3 border-b border-border/50 last:border-0">
+              <Skeleton className="h-4 w-1/3 rounded-sm" />
+              <Skeleton className="h-4 w-20 rounded-sm" />
+              <Skeleton className="h-4 w-16 rounded-sm" />
+              <Skeleton className="h-4 w-16 rounded-sm" />
+              <Skeleton className="h-4 w-12 rounded-sm" />
             </div>
           ))}
+        </div>
+      </div>
+      <div className="lg:col-span-1 bg-card rounded-md border border-border shadow-none flex flex-col overflow-hidden min-h-[220px]">
+        <div className="p-3 border-b border-border">
+          <Skeleton className="h-4 w-32 rounded-sm mb-2" />
+          <Skeleton className="h-3 w-48 rounded-sm" />
+        </div>
+        <div className="p-3 space-y-3">
+          <Skeleton className="h-16 w-full rounded-md" />
+          <Skeleton className="h-16 w-full rounded-md" />
         </div>
       </div>
     </div>

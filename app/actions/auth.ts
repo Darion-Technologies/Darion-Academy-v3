@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { roleHome } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { after } from "next/server";
+import { UserRole } from "@/generated/prisma";
 import { recordSession, sessionIdFromToken } from "@/lib/session";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
@@ -41,20 +43,18 @@ export async function loginAction(_state: AuthState, formData: FormData): Promis
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error || !data.user) return { error: error?.message ?? "Unable to sign in." };
   
-  const profile = await prisma.user.findUnique({ where: { id: data.user.id } });
-  if (!profile || !profile.active) {
-    await supabase.auth.signOut();
-    return { error: "Your Darion Academy profile is not active." };
-  }
+  const role = (data.user.user_metadata?.role as UserRole) || "EMPLOYEE";
   
-  // Parallelize the database updates
-  const updatePromises: Promise<any>[] = [recordLoginStreak(profile.id)];
-  if (data.session?.access_token) {
-    updatePromises.push(recordSession(profile.id, data.session.access_token));
-  }
-  await Promise.all(updatePromises);
+  // Offload database updates completely out of the request lifecycle using after
+  after(async () => {
+    const updatePromises: Promise<any>[] = [recordLoginStreak(data.user.id)];
+    if (data.session?.access_token) {
+      updatePromises.push(recordSession(data.user.id, data.session.access_token));
+    }
+    await Promise.allSettled(updatePromises);
+  });
   
-  redirect(roleHome[profile.role]);
+  redirect(roleHome[role]);
 }
 
 export async function loginWithEmployeeIdAction(_state: AuthState, formData: FormData): Promise<AuthState> {
@@ -81,8 +81,14 @@ export async function loginWithEmployeeIdAction(_state: AuthState, formData: For
   });
   if (error || !data.user) return { error: error?.message ?? "Unable to sign in." };
 
-  await recordLoginStreak(user.id);
-  if (data.session?.access_token) await recordSession(user.id, data.session.access_token);
+  after(async () => {
+    const updatePromises: Promise<any>[] = [recordLoginStreak(user.id)];
+    if (data.session?.access_token) {
+      updatePromises.push(recordSession(user.id, data.session.access_token));
+    }
+    await Promise.allSettled(updatePromises);
+  });
+  
   redirect(roleHome[user.role]);
 }
 

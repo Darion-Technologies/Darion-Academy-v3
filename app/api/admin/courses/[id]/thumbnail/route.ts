@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireRole, requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createSignedUrl, getPrivateUploadMaxBytes, uploadPrivateFile } from "@/lib/storage";
+import { getPrivateUploadMaxBytes, uploadPrivateFile } from "@/lib/storage";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const bucket = "course-files";
 
@@ -26,10 +27,21 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "Thumbnail not found." }, { status: 404 });
   }
 
-  const signedUrl = await createSignedUrl(bucket, course.thumbnailUrl, 300);
-  const response = NextResponse.redirect(signedUrl);
-  response.headers.set("Cache-Control", "private, max-age=240");
-  return response;
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.storage.from(bucket).download(course.thumbnailUrl);
+
+  if (error || !data) {
+    return NextResponse.json({ error: "Thumbnail could not be downloaded." }, { status: 404 });
+  }
+
+  const arrayBuffer = await data.arrayBuffer();
+  
+  return new NextResponse(arrayBuffer, {
+    headers: {
+      "Content-Type": data.type || "image/jpeg",
+      "Cache-Control": "private, max-age=86400",
+    },
+  });
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {

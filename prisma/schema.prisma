@@ -47,6 +47,7 @@ model User {
   videoProgress       VideoProgress[]
   conversations       ConversationParticipant[]
   messages            Message[]
+  personalEvents      PersonalEvent[]
 }
 
 model UserSession {
@@ -97,6 +98,7 @@ model Course {
   category              String
   difficulty            Difficulty           @default(BEGINNER)
   estimatedMinutes      Int                  @default(60)
+  deadlineDays          Int?
   thumbnailUrl          String?
   status                CourseStatus         @default(DRAFT)
   createdAt             DateTime             @default(now())
@@ -161,6 +163,7 @@ model Enrollment {
   startedAt       DateTime?
   completedAt     DateTime?
   approvedAt      DateTime?
+  deadlineAt      DateTime?
   certificates    Certificate[]
   course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   learner         User             @relation("LearnerEnrollments", fields: [learnerId], references: [id], onDelete: Cascade)
@@ -619,6 +622,8 @@ enum NotificationType {
   FEEDBACK_ADDED
   CERTIFICATE_GENERATED
   GENERAL
+  DEADLINE_REMINDER
+  DAILY_NUDGE
 }
 
 enum AppearanceTheme {
@@ -681,4 +686,17 @@ model Message {
   
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model PersonalEvent {
+  id          String   @id @default(cuid())
+  userId      String   @db.Uuid
+  title       String
+  description String?
+  date        DateTime @db.Date
+  color       String   @default("blue")
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }

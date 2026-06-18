@@ -6,6 +6,7 @@ import { syncCurrentSession } from "@/lib/session";
 import { AppearanceSync } from "@/components/appearance-sync";
 
 import { getUnreadChatCountAction } from "@/app/actions/chat";
+import { getTopDashboardData } from "@/lib/dashboard-data";
 
 import { unstable_cache } from "next/cache";
 
@@ -22,6 +23,24 @@ const getCachedLayoutData = unstable_cache(
   { tags: ["workspace-layout-data"], revalidate: 300 }
 );
 
+async function fetchSidebarCourses(userId: string) {
+  const dashboardData = await getTopDashboardData(userId);
+  return dashboardData.enrollments
+    .filter(e => e.status === "IN_PROGRESS" || e.status === "ASSIGNED")
+    .map(course => ({
+      id: course.courseId,
+      title: course.courseTitle,
+      slug: course.courseSlug,
+      tasks: dashboardData.pendingActions
+        .filter(a => a.courseSlug === course.courseSlug)
+        .map(action => ({
+          id: action.id,
+          title: action.title,
+          href: `/courses/${course.courseSlug}?task=${action.id}`
+        }))
+    }));
+}
+
 export default async function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   await syncCurrentSession(user.id);
@@ -32,6 +51,8 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
     getUnreadChatCountAction(),
   ]);
   
+  const activeCoursesPromise = fetchSidebarCourses(user.id);
+
   return (
     <AppShell
       user={{ name: user.name, email: user.email, role: user.role, employeeId: user.employeeId, avatarUrl: user.avatarUrl }}
@@ -40,6 +61,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
       hasEnrollment={hasEnrollment}
       initialSidebarCollapsed={preference?.sidebarCollapsed ?? false}
       initialTheme={preference?.theme ?? "SYSTEM"}
+      activeCoursesPromise={activeCoursesPromise}
     >
       <AppearanceSync theme={preference?.theme ?? "SYSTEM"} />
       <RealtimeSync userId={user.id} />

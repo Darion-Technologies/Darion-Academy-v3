@@ -9,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CheckCheck } from "lucide-react";
+import { PushManager } from "@/components/push-manager";
 
 export default async function NotificationsPage() {
   const user = await requireUser();
@@ -27,14 +28,17 @@ export default async function NotificationsPage() {
         title="Notifications"
         description="Updates about assignments, reviews, and certificates."
         action={
-          unreadItems.length > 0 ? (
-            <form action={markAllNotificationsReadAction}>
-              <SubmitButton variant="secondary" className="active-press gap-2" pendingText="Clearing...">
-                <CheckCheck className="size-4" />
-                Mark all as read
-              </SubmitButton>
-            </form>
-          ) : null
+          <div className="flex items-center gap-2">
+            <PushManager />
+            {unreadItems.length > 0 ? (
+              <form action={markAllNotificationsReadAction}>
+                <SubmitButton variant="secondary" className="active-press gap-2" pendingText="Clearing...">
+                  <CheckCheck className="size-4" />
+                  Mark all as read
+                </SubmitButton>
+              </form>
+            ) : null}
+          </div>
         }
       />
       {items.length === 0 ? (

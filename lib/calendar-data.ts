@@ -6,7 +6,7 @@ export type CalendarEvent = {
   id: string;
   title: string;
   date: Date;
-  type: "assignment" | "quiz" | "course_start";
+  type: "assignment" | "quiz" | "course_start" | "personal";
   courseName: string;
   courseSlug: string;
   status: "pending" | "completed" | "overdue";
@@ -133,6 +133,24 @@ export const getCalendarData = reactCache(async (userId: string): Promise<Calend
           }
         }
       }
+    }
+
+    // 3. Fetch Personal Events
+    const personalEvents = await prisma.personalEvent.findMany({
+      where: { userId },
+    });
+
+    for (const pe of personalEvents) {
+      events.push({
+        id: `personal-${pe.id}`,
+        title: pe.title,
+        date: pe.date,
+        type: "personal",
+        courseName: pe.description || "Personal Event",
+        courseSlug: "personal", // generic slug
+        status: "pending",
+        link: "#", // No specific link for personal events yet
+      });
     }
 
     return {

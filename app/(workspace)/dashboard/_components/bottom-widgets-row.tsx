@@ -21,13 +21,13 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 pb-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 pb-4 animate-in fade-in duration-700">
       {/* Upcoming Deadlines - Takes up 2 columns */}
       <div className="lg:col-span-2 bg-card rounded-md border border-border p-3 shadow-none">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
           <div 
             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors group"
-            onClick={() => router.push('/courses')}
+            onClick={() => router.push('/calendar')}
           >
             <Hourglass className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
             <h2 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Upcoming Deadlines & Actions</h2>
@@ -62,11 +62,11 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
                   className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer"
                 >
                   <td className="px-3 py-2.5 font-medium text-foreground flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                      <div className={`size-1.5 rounded-full ${getTypeDotColor(item.type)}`}></div>
-                      <span className="truncate max-w-[180px]">{item.title}</span>
+                    <div className="flex items-center gap-2">
+                      <div className={`size-1.5 shrink-0 rounded-full ${getTypeDotColor(item.type)}`}></div>
+                      <span className="font-bold text-[13px] leading-tight">{item.title}</span>
                     </div>
-                    <span className="text-[9px] text-muted-foreground pl-3 truncate max-w-[180px]">{item.courseName}</span>
+                    <span className="text-[10px] text-muted-foreground pl-3.5 mt-0.5 leading-tight">{item.courseName}</span>
                   </td>
                   <td className="px-3 py-2.5 text-muted-foreground">{item.dueDate ? format(new Date(item.dueDate), "MMM d, yy") : "-"}</td>
                   <td className="px-3 py-2.5 text-muted-foreground capitalize">{item.type}</td>

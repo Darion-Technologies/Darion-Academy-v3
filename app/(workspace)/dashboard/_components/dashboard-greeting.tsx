@@ -3,7 +3,6 @@
 import { Bell, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { SearchBar } from "@/components/search-bar";
-import { PushManager } from "@/components/push-manager";
 import { useEffect, useState } from "react";
 import { initials } from "@/lib/utils";
 
@@ -32,7 +31,6 @@ export function DashboardGreeting({ userName, fullName, avatarUrl }: { userName:
       </div>
       <div className="flex items-center gap-4 hidden lg:flex">
         <div className="flex items-center gap-2">
-          <PushManager />
           <Link href="/chat" className="relative p-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-transparent hover:border-border rounded-xl">
             <MessageSquare className="size-5" />
             <span className="absolute top-1 right-1 flex size-2.5 items-center justify-center rounded-full bg-red-500 border-2 border-background"></span>

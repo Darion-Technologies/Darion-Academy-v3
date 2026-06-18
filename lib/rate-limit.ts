@@ -20,7 +20,12 @@ export async function enforceRateLimit(identifier: string) {
   if (!authRateLimit) return { success: true }; // Fallback if no Redis configured
   
   try {
-    const { success, reset } = await authRateLimit.limit(identifier);
+    const { success, reset } = await Promise.race([
+      authRateLimit.limit(identifier),
+      new Promise<{ success: boolean; reset: number }>((resolve) =>
+        setTimeout(() => resolve({ success: true, reset: 0 }), 300)
+      ),
+    ]);
     return { success, reset };
   } catch (error) {
     console.error("Rate Limiting Error:", error);

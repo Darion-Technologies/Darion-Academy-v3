@@ -29,7 +29,7 @@ export function UpcomingSidebar({ data }: UpcomingSidebarProps) {
   }
 
   return (
-    <div className="w-full lg:w-[280px] shrink-0 border border-border bg-card rounded-none flex flex-col h-full overflow-hidden">
+    <div className="w-full lg:w-[240px] shrink-0 border border-border bg-card rounded-none flex flex-col h-full overflow-hidden">
       <div className="p-2.5 border-b border-border bg-muted/20">
         <h3 className="text-xs font-bold flex items-center gap-1.5 uppercase tracking-wider text-muted-foreground">
           <Clock className="size-3.5 text-muted-foreground" />

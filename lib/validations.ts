@@ -17,6 +17,7 @@ export const courseSchema = z.object({
   category: z.string().min(2).max(80),
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]),
   estimatedMinutes: z.coerce.number().int().min(1).max(100000),
+  deadlineDays: z.coerce.number().int().min(1).max(3650).optional(),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
 });
 

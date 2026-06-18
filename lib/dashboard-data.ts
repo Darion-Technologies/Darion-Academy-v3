@@ -1,6 +1,7 @@
 import { cache as reactCache } from "react";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { calculateModuleDeadlines } from "@/lib/deadlines";
 import type { EnrollmentStatus, AttemptStatus } from "@/generated/prisma";
 
 /* ------------------------------------------------------------------ */
@@ -11,6 +12,7 @@ export type DashboardEnrollment = {
   id: string;
   status: EnrollmentStatus;
   progressPercent: number;
+  deadlineAt?: Date | null;
   courseId: string;
   courseTitle: string;
   courseSlug: string;
@@ -206,13 +208,20 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
       }
     }
 
-    // Certificate status
     const cert = certMap.get(enrollment.id);
     let certificateStatus: DashboardEnrollment["certificateStatus"] = "not_eligible";
     let certificateId: string | null = null;
     if (cert) {
       certificateId = cert.id;
       certificateStatus = cert.status === "GENERATED" ? "generated" : "eligible";
+    }
+
+    const moduleDeadlinesMap = new Map<string, Date>();
+    if (course.deadlineDays && enrollment.assignedAt) {
+      const deadlines = calculateModuleDeadlines(enrollment.assignedAt, course.deadlineDays, course.modules);
+      for (const d of deadlines) {
+        moduleDeadlinesMap.set(d.moduleId, d.deadlineAt);
+      }
     }
 
     // Build pending actions for this course
@@ -234,6 +243,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
                 quizId: firstPending.quiz.id,
                 status: qResult?.status === "FAILED" ? "Retake needed" : "Not attempted",
                 priority: qResult?.status === "FAILED" ? "high" : "medium",
+                dueDate: moduleDeadlinesMap.get(mod.id),
               });
             }
           } else if (firstPending.assignment) {
@@ -243,6 +253,8 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
               if (firstPending.assignment.dueDays) {
                 dueDate = new Date(enrollment.assignedAt);
                 dueDate.setDate(dueDate.getDate() + firstPending.assignment.dueDays);
+              } else {
+                dueDate = moduleDeadlinesMap.get(mod.id);
               }
               pendingActions.push({
                 id: `assignment-${firstPending.assignment.id}`,
@@ -267,6 +279,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
               lessonId: firstPending.id,
               status: "Incomplete",
               priority: "medium",
+              dueDate: moduleDeadlinesMap.get(mod.id),
             });
           }
         }
@@ -277,6 +290,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
       id: enrollment.id,
       status: enrollment.status,
       progressPercent: enrollment.progressPercent,
+      deadlineAt: enrollment.deadlineAt,
       courseId: course.id,
       courseTitle: course.title,
       courseSlug: course.slug,

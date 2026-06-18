@@ -3,19 +3,18 @@
 import {
   Award, BarChart3, Bell, BookOpen, ClipboardCheck,
   FileQuestion, GraduationCap, LayoutDashboard, LayoutTemplate, LogOut, Menu,
-  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare, MessageSquare, NotebookPen, History, ChevronDown, ChevronRight, Settings, Moon, Sun, MoreHorizontal, Calendar
+  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare, MessageSquare, NotebookPen, History, ChevronDown, ChevronRight, Settings, Moon, Sun, MoreHorizontal, Calendar, Hash
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, use, Suspense } from "react";
 import { logoutAction } from "@/app/actions/auth";
 import { updateAppearanceAction } from "@/app/actions/account";
 import { AppearanceMenu } from "@/components/appearance-menu";
 import { Brand } from "@/components/brand";
 import { SearchBar } from "@/components/search-bar";
 import { NotificationDropdown } from "@/components/notification-dropdown";
-import { PushManager } from "@/components/push-manager";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -24,6 +23,13 @@ import { cn, initials } from "@/lib/utils";
 
 type NavItem = { href: string; label: string; icon?: LucideIcon; children?: NavItem[] };
 type NavGroup = { label: string; items: NavItem[] };
+
+export type SidebarCourse = {
+  id: string;
+  title: string;
+  slug: string;
+  tasks: { id: string; title: string; href: string }[];
+};
 
 const learnerItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -64,6 +70,7 @@ export function AppShell({
   hasEnrollment = false,
   initialSidebarCollapsed = false,
   initialTheme = "SYSTEM",
+  activeCoursesPromise,
   children,
 }: {
   user: { name: string; email: string; role: UserRole; employeeId?: string | null; avatarUrl?: string | null };
@@ -72,6 +79,7 @@ export function AppShell({
   hasEnrollment?: boolean;
   initialSidebarCollapsed?: boolean;
   initialTheme?: AppearanceTheme;
+  activeCoursesPromise?: Promise<SidebarCourse[]>;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -131,6 +139,23 @@ export function AppShell({
               </div>
             </div>
           ))}
+          {activeCoursesPromise && (
+            <Suspense fallback={
+              <div className="space-y-1">
+                {!collapsed && <p className="px-2 text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/50 mb-2">Active Courses</p>}
+                <div className="space-y-0.5 px-3">
+                  <div className="h-8 rounded-md bg-sidebar-muted/50 animate-pulse" />
+                  <div className="h-8 rounded-md bg-sidebar-muted/50 animate-pulse mt-1" />
+                </div>
+              </div>
+            }>
+              <ActiveCoursesRenderer 
+                promise={activeCoursesPromise} 
+                collapsed={collapsed} 
+                pathname={pathname} 
+              />
+            </Suspense>
+          )}
         </nav>
         <div className="border-t border-sidebar-border p-3 flex flex-col gap-2">
           <Link href="/settings" className={cn(
@@ -167,7 +192,7 @@ export function AppShell({
         </div>
       </aside>
 
-      {mobileOpen && <MobileDrawer groups={groups} user={user} pathname={pathname} close={() => setMobileOpen(false)} unreadCount={unreadCount} unreadChatCount={unreadChatCount} />}
+      {mobileOpen && <MobileDrawer groups={groups} activeCoursesPromise={activeCoursesPromise} user={user} pathname={pathname} close={() => setMobileOpen(false)} unreadCount={unreadCount} unreadChatCount={unreadChatCount} />}
 
       <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[200px]")}>
         {!(pathname === "/dashboard" || pathname.startsWith("/chat")) && (
@@ -178,9 +203,6 @@ export function AppShell({
             <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
               <div className="hidden sm:block">
                 <AppearanceMenu initialTheme={initialTheme} sidebarCollapsed={collapsed} />
-              </div>
-              <div className="hidden sm:block">
-                <PushManager />
               </div>
               <NotificationDropdown unreadCount={unreadCount} />
               <div className="ml-1 sm:ml-2 flex items-center gap-3 sm:border-l sm:pl-4">
@@ -230,8 +252,8 @@ function NavLink({ item, active, collapsed, onClick, unreadChatCount, unreadCoun
         )}
       </div>
       {!collapsed && (
-        <div className="flex flex-1 items-center justify-between">
-          <span>{item.label}</span>
+        <div className="flex flex-1 items-center justify-between min-w-0 gap-2">
+          <span className="truncate" title={item.label}>{item.label}</span>
           {hasUnreadChat && (
             <span className="flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
               {unreadChatCount}
@@ -243,7 +265,7 @@ function NavLink({ item, active, collapsed, onClick, unreadChatCount, unreadCoun
             </span>
           )}
           {item.children && (
-             expanded ? <ChevronDown className="size-4 opacity-50" /> : <ChevronRight className="size-4 opacity-50" />
+             expanded ? <ChevronDown className="size-4 shrink-0 opacity-50" /> : <ChevronRight className="size-4 shrink-0 opacity-50" />
           )}
         </div>
       )}
@@ -263,17 +285,18 @@ function NavLink({ item, active, collapsed, onClick, unreadChatCount, unreadCoun
           {linkContent}
         </button>
         {expanded && !collapsed && (
-          <div className="mt-1 flex flex-col space-y-1 relative before:absolute before:left-[19px] before:top-0 before:bottom-2 before:w-px before:bg-sidebar-border">
+          <div className="mt-0.5 flex flex-col space-y-0.5 relative before:absolute before:left-[19px] before:top-1 before:bottom-3 before:w-px before:bg-sidebar-border">
             {item.children.map(child => (
               <Link 
                 key={child.href} 
                 href={child.href}
                 className={cn(
-                  "relative flex h-8 items-center pl-10 pr-3 text-xs transition-colors rounded-md",
+                  "relative flex h-7 items-center pl-10 pr-3 text-[11px] transition-colors rounded-md truncate",
                   pathname === child.href ? "text-sidebar-foreground font-semibold" : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                 )}
+                title={child.label}
               >
-                {child.label}
+                <span className="truncate">{child.label}</span>
               </Link>
             ))}
           </div>
@@ -286,12 +309,57 @@ function NavLink({ item, active, collapsed, onClick, unreadChatCount, unreadCoun
   return collapsed ? <Tooltip><TooltipTrigger asChild>{link}</TooltipTrigger><TooltipContent side="right">{item.label}</TooltipContent></Tooltip> : link;
 }
 
-function MobileDrawer({ groups, user, close, pathname, unreadCount, unreadChatCount }: { groups: NavGroup[]; user: { name: string; role: UserRole; avatarUrl?: string | null; employeeId?: string | null }; close: () => void; pathname: string; unreadCount?: number; unreadChatCount?: number }) {
+function ActiveCoursesRenderer({ promise, collapsed, pathname, onClick }: { promise: Promise<SidebarCourse[]>, collapsed: boolean, pathname: string, onClick?: () => void }) {
+  const activeCourses = use(promise);
+  
+  if (!activeCourses || activeCourses.length === 0) return null;
+
+  const courseItems: NavItem[] = activeCourses.map((c: SidebarCourse) => ({
+    label: c.title,
+    href: `/courses/${c.slug}`,
+    icon: Hash,
+    children: c.tasks.length > 0 ? c.tasks.map((t: { title: string, href: string }) => ({
+      label: t.title,
+      href: t.href
+    })) : undefined
+  }));
+
+  return (
+    <div className="space-y-1 mt-6">
+      {!collapsed && (
+        <p className="px-2 text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/50 mb-2">
+          Active Courses
+        </p>
+      )}
+      <div className="space-y-0.5">
+        {courseItems.map((item) => (
+          <NavLink 
+            key={item.href} 
+            item={item} 
+            active={pathname.startsWith(item.href)} 
+            collapsed={collapsed} 
+            pathname={pathname}
+            onClick={onClick}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MobileDrawer({ groups, activeCoursesPromise, user, close, pathname, unreadCount, unreadChatCount }: { groups: NavGroup[]; activeCoursesPromise?: Promise<SidebarCourse[]>; user: { name: string; role: UserRole; avatarUrl?: string | null; employeeId?: string | null }; close: () => void; pathname: string; unreadCount?: number; unreadChatCount?: number }) {
   return <div className="fixed inset-0 z-50 lg:hidden">
     <button className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={close} aria-label="Close navigation" />
     <aside className="relative flex h-full w-[240px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl antialiased">
       <div className="flex h-10 items-center justify-between border-b border-sidebar-border px-4"><Brand /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><X /></Button></div>
-      <nav className="flex-1 overflow-y-auto p-2">{groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} unreadChatCount={unreadChatCount} unreadCount={unreadCount} />)}</div></div>)}</nav>
+      <nav className="flex-1 overflow-y-auto p-2">
+        {groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} unreadChatCount={unreadChatCount} unreadCount={unreadCount} pathname={pathname} />)}</div></div>)}
+        {activeCoursesPromise && (
+          <Suspense fallback={<div className="h-10 animate-pulse bg-sidebar-muted/50 rounded-md mx-2 mt-4" />}>
+            <ActiveCoursesRenderer promise={activeCoursesPromise} collapsed={false} pathname={pathname} onClick={close} />
+          </Suspense>
+        )}
+      </nav>
       <div className="border-t border-sidebar-border p-3 flex items-center gap-2">
         <div className="relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-sidebar-muted/20 text-[10px] font-bold text-sidebar-foreground">
           <span className="absolute inset-0 flex items-center justify-center">{initials(user.name)}</span>

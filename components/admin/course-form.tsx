@@ -15,6 +15,7 @@ type CourseFormValue = {
   category: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
   estimatedMinutes: number;
+  deadlineDays?: number | null;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   description: string;
   thumbnailUrl?: string | null;
@@ -62,6 +63,7 @@ export function CourseForm({ course }: { course?: CourseFormValue }) {
     <div><Label>Category</Label><Input name="category" defaultValue={course?.category} required /></div>
     <div><Label>Difficulty</Label><Select name="difficulty" defaultValue={course?.difficulty ?? "BEGINNER"}><option value="BEGINNER">Beginner</option><option value="INTERMEDIATE">Intermediate</option><option value="ADVANCED">Advanced</option></Select></div>
     <div><Label>Estimated minutes</Label><Input name="estimatedMinutes" type="number" defaultValue={course?.estimatedMinutes ?? 60} min={1} required /></div>
+    <div><Label>Deadline (Days) <span className="text-muted-foreground font-normal">(Optional)</span></Label><Input name="deadlineDays" type="number" defaultValue={course?.deadlineDays ?? ""} min={1} max={3650} /></div>
     <div><Label>Status</Label><Select name="status" defaultValue={course?.status ?? "DRAFT"}><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="ARCHIVED">Archived</option></Select></div>
     <div>
       <Label>Thumbnail</Label>

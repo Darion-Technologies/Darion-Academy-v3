@@ -11,6 +11,7 @@ import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cn, formatDuration } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { calculateModuleDeadlines } from "@/lib/deadlines";
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
 
@@ -101,6 +102,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
   const isCompleted = enrollment?.progressPercent === 100;
   const hasCertificate = (enrollment?.certificates?.length ?? 0) > 0;
+
+  const moduleDeadlines = enrollment && course.deadlineDays 
+    ? calculateModuleDeadlines(enrollment.assignedAt, course.deadlineDays, course.modules) 
+    : [];
+  const moduleDeadlineMap = new Map(moduleDeadlines.map(md => [md.moduleId, md.deadlineAt]));
 
   return (
     <div className="space-y-6 max-w-[900px]">
@@ -226,6 +232,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                       {isModuleCompleted  && <Badge variant="success">Complete</Badge>}
                       {isModuleInProgress && <Badge variant="info">In Progress</Badge>}
                       {isModuleLocked     && <Badge variant="neutral">Locked</Badge>}
+                      {!isModuleCompleted && moduleDeadlineMap.has(module.id) && (
+                        <Badge variant="warning" className="border-amber-400 text-amber-500 bg-amber-500/10 shadow-none">
+                          Due {moduleDeadlineMap.get(module.id)!.toLocaleDateString()}
+                        </Badge>
+                      )}
                     </div>
                     {module.description && (
                       <p className="mt-1 text-sm text-muted-foreground">{module.description}</p>

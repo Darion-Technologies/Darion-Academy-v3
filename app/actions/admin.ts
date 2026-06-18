@@ -265,10 +265,20 @@ export async function assignCourseAction(formData: FormData) {
   const courseId = String(formData.get("courseId") ?? "");
   const learnerId = String(formData.get("learnerId") ?? "");
   const mentorId = String(formData.get("mentorId") ?? "") || null;
+  
+  const course = await prisma.course.findUnique({ where: { id: courseId } });
+  if (!course) throw new Error("Course not found");
+
+  let deadlineAt = null;
+  if (course.deadlineDays) {
+    deadlineAt = new Date();
+    deadlineAt.setDate(deadlineAt.getDate() + course.deadlineDays);
+  }
+
   const enrollment = await prisma.enrollment.upsert({
     where: { learnerId_courseId: { learnerId, courseId } },
     update: { mentorId },
-    create: { learnerId, courseId, mentorId },
+    create: { learnerId, courseId, mentorId, deadlineAt },
     include: { course: true },
   });
   await prisma.$transaction([
