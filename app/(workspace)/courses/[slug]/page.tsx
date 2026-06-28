@@ -109,7 +109,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
   const moduleDeadlineMap = new Map(moduleDeadlines.map(md => [md.moduleId, md.deadlineAt]));
 
   return (
-    <div className="space-y-6 max-w-[900px]">
+    <div className="space-y-6 max-w-[900px] mx-auto">
       {/* Back + Course title */}
       <div>
         <Link

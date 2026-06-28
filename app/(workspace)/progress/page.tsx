@@ -15,7 +15,7 @@ export default async function ProgressPage() {
   const data = await getProgressData(user.id);
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-2 sm:px-4 lg:px-6 bg-background font-sans pt-2 pb-4 flex flex-col gap-3">
+    <div className="container-responsive bg-background font-sans pt-2 pb-4 flex flex-col gap-3">
       <div className="flex items-center justify-between mb-1">
         <h2 className="text-sm font-bold text-foreground">Learning Analytics</h2>
       </div>
@@ -23,7 +23,7 @@ export default async function ProgressPage() {
       {/* Top Level KPIs */}
       <EfficiencyMetrics data={data} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start h-[calc(100vh-180px)] min-h-[600px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start lg:h-[calc(100vh-180px)] lg:min-h-[600px]">
         {/* Left Pane: Detailed skill breakdown and course internal structure */}
         <div className="lg:col-span-8 flex flex-col gap-3 h-full">
           <div className="flex-1 min-h-0">

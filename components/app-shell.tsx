@@ -3,7 +3,7 @@
 import {
   Award, BarChart3, Bell, BookOpen, ClipboardCheck,
   FileQuestion, GraduationCap, LayoutDashboard, LayoutTemplate, LogOut, Menu,
-  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare, MessageSquare, NotebookPen, History, ChevronDown, ChevronRight, Settings, Moon, Sun, MoreHorizontal, Calendar, Hash
+  Users, X, Trophy, PanelLeftClose, PanelLeftOpen, PlaySquare, MessageSquare, NotebookPen, History, ChevronDown, ChevronRight, Settings, Moon, Sun, MoreHorizontal, Calendar, Hash, Bookmark
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -196,8 +196,8 @@ export function AppShell({
 
       <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[200px]")}>
         {!(pathname === "/dashboard" || pathname.startsWith("/chat")) && (
-          <header className="sticky top-0 z-30 flex h-10 items-center gap-2 lg:gap-3 border-b border-border bg-card/95 px-2 lg:px-4 shadow-none backdrop-blur-xl sm:px-4">
-            <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden h-8 w-8" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-4" /></Button>
+          <header className="sticky top-0 z-30 flex h-auto min-h-12 pt-safe items-center gap-2 lg:gap-3 border-b border-border bg-card/95 px-2 lg:px-4 shadow-none backdrop-blur-xl sm:px-4 py-1">
+            <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden h-10 w-10" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-5" /></Button>
             <div className="lg:hidden"><Brand /></div>
             <div className="hidden min-w-0 max-w-xl flex-1 lg:block"><SearchBar /></div>
             <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
@@ -207,27 +207,27 @@ export function AppShell({
               <NotificationDropdown unreadCount={unreadCount} />
               <div className="ml-1 sm:ml-2 flex items-center gap-3 sm:border-l sm:pl-4">
                 <div className="hidden text-right sm:block"><p className="text-sm font-semibold leading-tight">{user.name}</p><p className="text-xs capitalize text-muted-foreground">{user.role.toLowerCase()}{user.employeeId ? ` (${user.employeeId})` : ""}</p></div>
-                <Link href="/settings" className="relative grid size-7 sm:size-9 place-items-center overflow-hidden rounded-full sm:bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0 border border-border">
+                <Link href="/settings" className="relative grid size-8 sm:size-10 place-items-center overflow-hidden rounded-full sm:bg-muted text-[10px] sm:text-xs font-bold text-foreground shrink-0 border border-border transition-transform active:scale-95">
                   <span className="absolute inset-0 flex items-center justify-center">{initials(user.name)}</span>
-                  {user.avatarUrl && <img src={user.avatarUrl} alt="" width={36} height={36} className="relative z-10 size-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+                  {user.avatarUrl && <img src={user.avatarUrl} alt="" width={40} height={40} className="relative z-10 size-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
                 </Link>
               </div>
             </div>
           </header>
         )}
         <main className={cn(
-          "mx-auto w-full flex-1",
-          pathname.startsWith("/chat") ? "p-0 max-w-none" : "max-w-[1440px] p-1.5 pb-16 sm:p-2 lg:p-3"
+          "flex-1 w-full",
+          pathname.startsWith("/chat") ? "p-0 max-w-none" : "container-responsive pb-20 pt-4"
         )}>
           <div key={pathname} className={cn(
             "animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both",
-            pathname.startsWith("/chat") && "h-[calc(100vh-2.5rem)] flex flex-col"
+            pathname.startsWith("/chat") && "h-[calc(100dvh-2.5rem)] flex flex-col"
           )}>
             {children}
           </div>
         </main>
         <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-1 backdrop-blur-xl lg:hidden pb-safe">
-          {mobileItems.map((item) => <Link key={item.href} href={item.href} prefetch={true} className={cn("flex min-w-12 flex-col items-center gap-0.5 rounded-none px-1 py-1 text-[9px] font-medium", isActive(item.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground")}>{item.icon && <item.icon className="size-4" />}{item.label}</Link>)}
+          {mobileItems.map((item) => <Link key={item.href} href={item.href} prefetch={true} className={cn("flex min-w-16 min-h-12 flex-col items-center justify-center gap-1 rounded-md px-1 py-2 text-[10px] font-medium active:scale-95 transition-all", isActive(item.href) ? "bg-accent/10 text-accent" : "text-muted-foreground hover:text-foreground hover:bg-accent/5")}>{item.icon && <item.icon className="size-5" />}{item.label}</Link>)}
         </nav>
       </div>
     </div>

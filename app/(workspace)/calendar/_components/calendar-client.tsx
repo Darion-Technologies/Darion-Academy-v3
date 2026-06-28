@@ -19,7 +19,7 @@ export function CalendarClient({ data }: CalendarClientProps) {
   const [activeCourseTypes, setActiveCourseTypes] = useState<string[]>(["engineering", "soft_skills", "onboarding"]);
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-40px)] w-full overflow-hidden bg-background">
+    <div className="flex flex-col lg:flex-row flex-1 lg:h-[calc(100vh-120px)] w-full rounded-xl border border-border overflow-hidden bg-background shadow-sm">
       <CalendarSidebar 
         currentDate={currentDate} 
         onChangeDate={setCurrentDate}

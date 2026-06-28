@@ -18,7 +18,7 @@ export default async function LearnerDashboard() {
   const user = await requireUser();
 
   return (
-    <div className="mx-auto max-w-[1440px] px-2 sm:px-4 lg:px-6 bg-background font-sans pt-2 pb-4 lg:pb-0 lg:h-[calc(100vh-24px)] lg:overflow-y-auto no-scrollbar flex flex-col">
+    <div className="container-responsive bg-background font-sans pt-2 pb-4 lg:pb-0 lg:h-[calc(100vh-24px)] lg:overflow-y-auto no-scrollbar flex flex-col gap-4">
       <DashboardGreeting 
         userName={user.name.split(' ')[0]} 
         fullName={user.name} 

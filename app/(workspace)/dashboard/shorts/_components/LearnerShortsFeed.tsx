@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save, Share2, Trash2, AlignLeft } from "lucide-react";
+import { Search, Play, CheckCircle2, Bookmark, BookmarkCheck, ExternalLink, FileQuestion, MessageSquare, Heart, Check, X, PenLine, Save, Share2, Trash2, AlignLeft, Pause } from "lucide-react";
 import { markShortWatchedAction, toggleShortBookmarkAction, getShortCommentsAction, postShortCommentAction, getShortNoteAction, saveShortNoteAction, deleteShortCommentAction, fetchAutoTranscriptAction } from "@/actions/shorts";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -62,6 +62,30 @@ export function LearnerShortsFeed({
   // Auto-transcript state
   const [autoTranscript, setAutoTranscript] = useState("");
   const [loadingTranscript, setLoadingTranscript] = useState(false);
+
+  // Auto-hide UI state
+  const [showUI, setShowUI] = useState(true);
+  const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetIdleTimer = useCallback(() => {
+    setShowUI(true);
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      setShowUI(false);
+    }, 4500); // 4.5 seconds to hide
+  }, []);
+
+  const cancelIdleTimer = useCallback(() => {
+    setShowUI(true);
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+  }, []);
+
+  useEffect(() => {
+    resetIdleTimer();
+    return () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, [currentIndex, resetIdleTimer]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -316,35 +340,7 @@ export function LearnerShortsFeed({
   return (
     <div className="w-full h-full flex flex-col bg-background" style={{ WebkitTapHighlightColor: "transparent" }}>
       
-      {/* Top Bar: Search & Categories */}
-      <div className="w-full z-40 p-4 border-b border-border bg-card/80 backdrop-blur-xl shrink-0">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-3">
-
-          <div className="flex gap-2 overflow-x-auto w-full scrollbar-none snap-x py-1">
-            {CATEGORIES.map(cat => (
-              <button 
-                key={cat} 
-                onClick={() => setCategory(cat)}
-                className={cn(
-                  "snap-start shrink-0 px-4 py-1.5 text-xs font-semibold transition-all shadow-sm",
-                  category === cat 
-                    ? "bg-primary text-primary-foreground" 
-                    : "bg-background text-muted-foreground hover:bg-muted border border-border"
-                )}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          
-          <Button asChild variant="outline" size="sm" className="shrink-0 bg-background hover:bg-muted border-border text-foreground h-9 px-4 gap-2 shadow-sm">
-            <Link href="/dashboard/shorts/saved">
-              <Bookmark className="w-4 h-4 text-red-500 fill-red-500/20" />
-              <span>Saved</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
+      {/* Top Bar removed and moved to AppShell Header */}
 
       {/* Main Content Area: 3-Column Split View */}
       <div className="flex-1 flex overflow-hidden">
@@ -458,13 +454,17 @@ export function LearnerShortsFeed({
         </div>
 
         {/* Center Side: Video Feed */}
-        <div className="flex-1 flex items-center justify-center overflow-hidden p-2 sm:p-4 md:p-6 bg-muted/20">
+        <div className="flex-1 flex items-center justify-center overflow-hidden sm:p-4 md:p-6 bg-black sm:bg-muted/20">
           {filteredShorts.length === 0 ? (
             <div className="text-muted-foreground text-sm">No shorts match your search.</div>
           ) : (
             <div 
               ref={containerRef}
-              className="w-full max-w-[400px] h-full sm:h-[90%] md:h-full sm:max-h-[850px] sm:aspect-[9/16] overflow-y-auto snap-y snap-mandatory scrollbar-none scroll-smooth bg-black shadow-lg border border-border relative"
+              onMouseMove={resetIdleTimer}
+              onTouchStart={resetIdleTimer}
+              onClick={resetIdleTimer}
+              onScroll={resetIdleTimer}
+              className="w-full h-full sm:max-w-[400px] sm:h-[90%] md:h-full sm:max-h-[850px] sm:aspect-[9/16] overflow-y-auto snap-y snap-mandatory scrollbar-none scroll-smooth bg-black sm:shadow-2xl sm:border sm:border-border sm:rounded-2xl lg:rounded-none lg:shadow-lg relative"
             >
             {filteredShorts.map((short, index) => {
               const isWatched = watchedSet.has(short.id);
@@ -479,13 +479,25 @@ export function LearnerShortsFeed({
                 >
                   {/* Video Area */}
                   {isActive ? (
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${short.youtubeVideoId}?autoplay=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=${short.youtubeVideoId}&playsinline=1`}
-                      title={short.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full absolute inset-0 object-cover pointer-events-auto"
-                    />
+                    <>
+                      <iframe
+                        src={`https://www.youtube-nocookie.com/embed/${short.youtubeVideoId}?autoplay=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=${short.youtubeVideoId}&playsinline=1`}
+                        title={short.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="w-full h-full absolute inset-0 object-cover pointer-events-none lg:pointer-events-auto scale-[1.2] lg:scale-100"
+                      />
+                      {/* Interaction Overlay to ensure UI shows on tap/hover (Mobile Only) */}
+                      <div 
+                        className="absolute inset-0 z-[5] cursor-pointer lg:hidden"
+                        onMouseMove={resetIdleTimer}
+                        onTouchStart={resetIdleTimer}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          resetIdleTimer();
+                        }}
+                      />
+                    </>
                   ) : (
                     <div className="relative w-full h-full absolute inset-0">
                       {short.thumbnailUrl && (
@@ -498,14 +510,18 @@ export function LearnerShortsFeed({
                   )}
 
                   {/* Right Action Bar Overlay */}
-                  <div className="absolute right-3 bottom-8 sm:bottom-12 flex flex-col items-center gap-5 pointer-events-auto z-10">
+                  <div 
+                    className={cn("absolute right-3 bottom-8 sm:bottom-12 flex flex-col items-center gap-5 z-10 transition-opacity duration-500 lg:opacity-100 lg:pointer-events-auto", showUI ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none")}
+                    onMouseEnter={cancelIdleTimer}
+                    onMouseLeave={resetIdleTimer}
+                  >
                     
                     {/* Bookmark */}
                     <button 
                       onClick={() => handleToggleBookmark(short.id)}
                       className="flex flex-col items-center gap-1.5 group"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 rounded-full lg:rounded-none bg-black/40 lg:bg-black/50 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-black/60 lg:group-hover:bg-black/80 transition-all group-active:scale-95">
                         {isBookmarked ? (
                           <Heart className="w-6 h-6 text-red-500 fill-red-500" />
                         ) : (
@@ -523,7 +539,7 @@ export function LearnerShortsFeed({
                       }}
                       className="flex flex-col items-center gap-1.5 group mt-1"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 rounded-full lg:rounded-none bg-black/40 lg:bg-black/50 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-black/60 lg:group-hover:bg-black/80 transition-all group-active:scale-95">
                         <Share2 className="w-6 h-6 text-white fill-white/20" />
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Share</span>
@@ -534,7 +550,7 @@ export function LearnerShortsFeed({
                       onClick={loadTranscriptMobile}
                       className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10 group-hover:bg-black/60 transition-all group-active:scale-95">
                         <AlignLeft className="w-6 h-6 text-white fill-white/20" />
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Transcript</span>
@@ -545,7 +561,7 @@ export function LearnerShortsFeed({
                       onClick={loadNotesMobile}
                       className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10 group-hover:bg-black/60 transition-all group-active:scale-95">
                         <PenLine className="w-6 h-6 text-white fill-white/20" />
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Notes</span>
@@ -554,9 +570,9 @@ export function LearnerShortsFeed({
                     {/* Comments (Mobile Only) */}
                     <button 
                       onClick={loadCommentsMobile}
-                      className="flex lg:hidden flex-col items-center gap-1.5 group relative"
+                      className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10 group-hover:bg-black/60 transition-all group-active:scale-95">
                         <MessageSquare className="w-6 h-6 text-white fill-white/20" />
                       </div>
                       <span className="text-[11px] text-white font-semibold drop-shadow-md">Discuss</span>
@@ -567,7 +583,7 @@ export function LearnerShortsFeed({
                       onClick={() => handleManualMarkWatched(short.id)}
                       className="flex flex-col items-center gap-1.5 group"
                     >
-                      <div className="p-3 bg-black/50 backdrop-blur-md group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-3 rounded-full lg:rounded-none bg-black/40 lg:bg-black/50 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-black/60 lg:group-hover:bg-black/80 transition-all group-active:scale-95">
                         {isWatched ? (
                           <CheckCircle2 className="w-6 h-6 text-green-400 fill-green-400/20" />
                         ) : (
@@ -583,14 +599,14 @@ export function LearnerShortsFeed({
                         onClick={() => setQuizOpen(true)}
                         className="flex flex-col items-center gap-1.5 group relative mt-1"
                       >
-                        <div className="p-3 bg-primary/90 backdrop-blur-md group-hover:bg-primary transition-all shadow-[0_0_20px_rgba(var(--primary),0.6)] group-active:scale-95">
+                        <div className="p-3 rounded-full lg:rounded-none bg-primary/90 backdrop-blur-md border border-white/20 lg:border-transparent group-hover:bg-primary transition-all shadow-[0_0_20px_rgba(var(--primary),0.6)] group-active:scale-95">
                           <FileQuestion className="w-6 h-6 text-primary-foreground fill-primary-foreground/20" />
                         </div>
                         <span className="text-[11px] text-white font-semibold drop-shadow-md">Quiz</span>
                         
                         {/* Bouncing notification dot if not watched yet */}
                         {!isWatched && (
-                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 animate-bounce border-2 border-black" />
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 animate-bounce border-2 border-black" />
                         )}
                       </button>
                     )}
@@ -602,7 +618,7 @@ export function LearnerShortsFeed({
                       rel="noreferrer"
                       className="flex flex-col items-center gap-1.5 group mt-3"
                     >
-                      <div className="p-2.5 bg-white/10 backdrop-blur-md group-hover:bg-white/20 transition-all group-active:scale-95">
+                      <div className="p-2.5 rounded-full lg:rounded-none bg-white/10 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-white/20 transition-all group-active:scale-95">
                         <ExternalLink className="w-5 h-5 text-white" />
                       </div>
                     </a>

@@ -3,19 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function ShortsLoading() {
   return (
     <div className="-mx-2 -mt-2 -mb-16 sm:-mx-4 sm:-mt-4 sm:-mb-16 lg:-mx-6 lg:-mt-6 lg:-mb-6 h-[calc(100dvh-40px)] lg:h-[calc(100dvh-48px)] flex flex-col bg-background" style={{ WebkitTapHighlightColor: "transparent" }}>
-      {/* Top Bar */}
-      <div className="w-full z-40 p-4 border-b border-border bg-card/80 backdrop-blur-xl shrink-0">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-3">
-          <div className="flex gap-2 overflow-x-auto w-full scrollbar-none snap-x py-1">
-             <Skeleton className="h-8 w-16" />
-             <Skeleton className="h-8 w-24" />
-             <Skeleton className="h-8 w-20" />
-             <Skeleton className="h-8 w-32" />
-             <Skeleton className="h-8 w-28" />
-          </div>
-          <Skeleton className="h-9 w-24 shrink-0" />
-        </div>
-      </div>
+      {/* Top Bar removed from skeleton as it is now in AppShell */}
 
       {/* Main Content Area: 3-Column Split View */}
       <div className="flex-1 flex overflow-hidden">
@@ -46,8 +34,8 @@ export default function ShortsLoading() {
         </div>
 
         {/* Center Side: Video Feed */}
-        <div className="flex-1 flex items-center justify-center overflow-hidden p-2 sm:p-4 md:p-6 bg-muted/20">
-          <div className="w-full max-w-[400px] h-full sm:h-[90%] md:h-full sm:max-h-[850px] sm:aspect-[9/16] bg-black shadow-lg border border-border relative flex flex-col items-center justify-center">
+        <div className="flex-1 flex items-center justify-center overflow-hidden sm:p-4 md:p-6 bg-black sm:bg-muted/20">
+          <div className="w-full h-full sm:max-w-[400px] sm:h-[90%] md:h-full sm:max-h-[850px] sm:aspect-[9/16] bg-black sm:shadow-2xl sm:border sm:border-border sm:rounded-2xl relative flex flex-col items-center justify-center">
             {/* Play Icon Placeholder */}
             <div className="absolute inset-0 flex items-center justify-center">
               <Skeleton className="size-16 rounded-full bg-white/10" />
@@ -57,7 +45,7 @@ export default function ShortsLoading() {
             <div className="absolute bottom-28 right-4 flex flex-col items-center gap-6 z-10">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
-                  <Skeleton className="size-12 rounded-none bg-white/20" />
+                  <Skeleton className="size-12 rounded-full bg-white/20" />
                   <Skeleton className="h-3 w-8 bg-white/20" />
                 </div>
               ))}
