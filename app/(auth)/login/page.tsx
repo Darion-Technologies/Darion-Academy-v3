@@ -1,7 +1,12 @@
 import { Brand } from "@/components/brand";
 import { LoginForm } from "@/components/auth/login-form";
+import { getCurrentUser, roleHome } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const user = await getCurrentUser();
+  if (user) redirect(roleHome[user.role]);
+
   const randomImage = 1;
 
   return (

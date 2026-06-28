@@ -1,0 +1,836 @@
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import {
+  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  ActivityIndicator, useColorScheme, Dimensions, Alert, Animated, TouchableWithoutFeedback, TextInput
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Markdown from 'react-native-marked';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import Slider from '@react-native-community/slider';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { apiClient, localIp } from '../../api/client';
+
+function formatTime(seconds: number) {
+  if (isNaN(seconds)) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+export default function CoursePlayerScreen({ route, navigation }: any) {
+  const { id } = route.params || {};
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [completing, setCompleting] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playerStatus, setPlayerStatus] = useState<string>('idle');
+  const [isLocked, setIsLocked] = useState(false);
+
+  // Notes state
+  const [notes, setNotes] = useState<any[]>([]);
+  const [noteText, setNoteText] = useState('');
+  const [isDoubt, setIsDoubt] = useState(false);
+  const [submittingNote, setSubmittingNote] = useState(false);
+
+  // Video progress state
+  const [progress, setProgress] = useState(0);
+  const [maxWatched, setMaxWatched] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  // Proxy state
+  const [proxyUrl, setProxyUrl] = useState<string | null>(null);
+  const [proxyLoading, setProxyLoading] = useState(false);
+
+  const [showControls, setShowControls] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState(1.0);
+  const [showSettings, setShowSettings] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
+  
+  // Clean up orientation lock on unmount
+  useEffect(() => {
+    return () => { ScreenOrientation.unlockAsync(); };
+  }, []);
+
+  const videoStartTime = data?.lesson?.videoStartTime || 0;
+  const videoEndTime = data?.lesson?.videoEndTime || 0;
+
+  const isYoutubeType = data?.lesson?.type === 'YOUTUBE';
+  const isYoutubeProxy = isYoutubeType && !!proxyUrl;
+
+  const playerEndTime = videoEndTime > 0 ? videoEndTime : (isYoutubeProxy ? videoStartTime + duration : duration);
+
+  const progressRef = useRef(progress);
+  const maxWatchedRef = useRef(maxWatched);
+  const hasSeekedInit = useRef(false);
+
+  useEffect(() => { progressRef.current = progress; }, [progress]);
+  useEffect(() => { maxWatchedRef.current = maxWatched; }, [maxWatched]);
+
+  useEffect(() => {
+    // Android ExoPlayer can sometimes ignore seeks if applied while paused or loading.
+    // By waiting until the player is actively playing (player.playing), we ensure the seek is accepted.
+    console.log(`[AutoSeek] Evaluate -> status: ${player?.status}, playing: ${player?.playing}, duration: ${duration}, hasSeeked: ${hasSeekedInit.current}`);
+    if (player && player.status === 'readyToPlay' && player.playing && !hasSeekedInit.current) {
+      const initialSeek = progressRef.current;
+      
+      if (initialSeek <= videoStartTime) {
+         if (!isYoutubeProxy && videoStartTime > 0) {
+            player.currentTime = videoStartTime;
+         }
+         hasSeekedInit.current = true;
+         return;
+      }
+
+      const targetTime = isYoutubeProxy ? initialSeek - videoStartTime : initialSeek;
+      
+      // Wait for the HLS proxy stream to buffer enough before attempting to seek
+      // if (isYoutubeProxy && targetTime > duration && duration < (playerEndTime - videoStartTime) - 5) {
+      //    console.log(`[AutoSeek] Waiting for buffer... duration: ${duration}`);
+      //    return; // Wait for duration to increase as playlist generates
+      // }
+
+      setTimeout(() => {
+        if (player) player.currentTime = targetTime;
+      }, 1000);
+      hasSeekedInit.current = true;
+    }
+  }, [player?.status, player?.playing, duration, videoStartTime, isYoutubeProxy, playerEndTime]);
+
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const rippleAnim = useRef(new Animated.Value(0)).current;
+  const [doubleTapAction, setDoubleTapAction] = useState<'left' | 'right' | null>(null);
+  const lastTapRef = useRef<number | null>(null);
+
+  const hideControls = useCallback(() => {
+    Animated.timing(fadeAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => setShowControls(false));
+  }, [fadeAnim]);
+
+  const handleOverlayTap = (e: any) => {
+    const now = Date.now();
+    const DOUBLE_PRESS_DELAY = 300;
+    
+    if (lastTapRef.current && (now - lastTapRef.current) < DOUBLE_PRESS_DELAY) {
+      // Double tap detected
+      if (isLocked) return;
+      const { locationX } = e.nativeEvent;
+      const isLeft = locationX < dimensions.width / 2;
+      
+      let seekAmount = isLeft ? -10 : 10;
+      let newTime = progressRef.current + seekAmount;
+      if (newTime < videoStartTime) newTime = videoStartTime;
+      const end = playerEndTime;
+      if (end > 0 && newTime > end) newTime = end;
+
+      if (!data?.existingProgress?.completed && newTime > maxWatchedRef.current) {
+         newTime = maxWatchedRef.current;
+      }
+      
+      setProgress(newTime);
+      if (player) {
+        player.currentTime = isYoutubeProxy ? newTime - videoStartTime : newTime;
+      }
+      
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      
+      // Show Ripple
+      setDoubleTapAction(isLeft ? 'left' : 'right');
+      rippleAnim.setValue(1);
+      Animated.timing(rippleAnim, { toValue: 0, duration: 500, useNativeDriver: true }).start(() => setDoubleTapAction(null));
+
+      // Briefly show controls on double tap
+      setShowControls(true);
+      fadeAnim.setValue(1);
+      lastTapRef.current = null;
+    } else {
+      lastTapRef.current = now;
+      setTimeout(() => {
+        if (lastTapRef.current === now) {
+          // Single tap resolved
+          if (isLocked) {
+            if (showControls) hideControls();
+            else {
+              setShowControls(true);
+              Animated.timing(fadeAnim, { toValue: 1, duration: 250, useNativeDriver: true }).start();
+            }
+          } else {
+            togglePlay();
+            setShowControls(true);
+            Animated.timing(fadeAnim, { toValue: 1, duration: 250, useNativeDriver: true }).start();
+          }
+        }
+      }, DOUBLE_PRESS_DELAY);
+    }
+  };
+
+  // Hide controls automatically
+  useEffect(() => {
+    if (isPlaying && showControls) {
+      const t = setTimeout(hideControls, 3000);
+      return () => clearTimeout(t);
+    }
+  }, [isPlaying, showControls, hideControls]);
+
+  const isDark = useColorScheme() === 'dark';
+  const theme = {
+    bg: isDark ? '#000000' : '#f3f6f8',
+    card: isDark ? '#111111' : '#ffffff',
+    text: isDark ? '#ffffff' : '#111827',
+    muted: isDark ? '#a1a1aa' : '#6b7280',
+    primary: '#1e88e5',
+    border: isDark ? '#27272a' : '#e5e7eb',
+    success: '#10b981',
+  };
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchLesson = async () => {
+      setLoading(true);
+      try {
+        const response = await apiClient.get(`/api/mobile/lessons/${id}`);
+        setData(response.data);
+        
+        // Initialize progress
+        const p = response.data?.videoProgress;
+        const vStart = response.data?.lesson?.videoStartTime || 0;
+        
+        let initP = vStart;
+        let initM = vStart;
+        if (p) {
+          initP = Math.max(p.timestamp || 0, vStart);
+          initM = Math.max(p.maxTimestamp || 0, vStart);
+        }
+        setProgress(initP);
+        setMaxWatched(initM);
+        setNotes(response.data?.lesson?.videoNotes || []);
+      } catch (err: any) {
+        console.error('Error fetching lesson:', err);
+        Alert.alert('Error', err.response?.data?.error || 'Failed to load lesson');
+        if (err.response?.status === 403) navigation.goBack();
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLesson();
+  }, [id]);
+
+  useEffect(() => {
+    if (data?.lesson?.type === 'YOUTUBE' && data?.lesson?.youtubeVideoId) {
+      const start = data.lesson.videoStartTime || 0;
+      const end = data.lesson.videoEndTime || 0;
+      setProxyUrl(`http://${localIp}:8080/hls/${data.lesson.youtubeVideoId}/playlist.m3u8?start=${start}&end=${end}`);
+    }
+  }, [data?.lesson?.youtubeVideoId, data?.lesson?.type, data?.lesson?.videoStartTime, data?.lesson?.videoEndTime]);
+
+  const handleAddNote = async () => {
+    if (!noteText.trim()) return;
+    setSubmittingNote(true);
+    try {
+      const res = await apiClient.post(`/api/mobile/lessons/${id}/notes`, {
+        text: noteText,
+        timestamp: Math.floor(progress),
+        isDoubt
+      });
+      if (res.data?.success) {
+        setNotes(prev => [...prev, res.data.note].sort((a, b) => a.timestamp - b.timestamp));
+        setNoteText('');
+        setIsDoubt(false);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Failed to add note');
+    } finally {
+      setSubmittingNote(false);
+    }
+  };
+
+  const handleDeleteNote = (noteId: string) => {
+    Alert.alert('Delete Note', 'Are you sure you want to delete this note?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+        try {
+          await apiClient.delete(`/api/mobile/lessons/${id}/notes?noteId=${noteId}`);
+          setNotes(prev => prev.filter(n => n.id !== noteId));
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        } catch (err) {
+          Alert.alert('Error', 'Failed to delete note');
+        }
+      }}
+    ]);
+  };
+
+
+
+
+
+  const handleComplete = async () => {
+    if (completing || data?.existingProgress?.completed) return;
+    setCompleting(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      await apiClient.post('/api/mobile/learning/complete', { lessonId: id });
+      setData((prev: any) => ({
+        ...prev,
+        existingProgress: { ...prev.existingProgress, completed: true }
+      }));
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (err) {
+      Alert.alert('Error', 'Failed to mark lesson as complete');
+    } finally {
+      setCompleting(false);
+    }
+  };
+
+  const togglePlay = () => {
+    if (player) {
+      if (player.playing) player.pause();
+      else player.play();
+    }
+  };
+
+  // Handle native video progress 
+  useEffect(() => {
+    if (!videoSource || !player) return;
+    const interval = setInterval(() => {
+      if (!hasSeekedInit.current) return; // Wait for initial seek to complete
+
+      let cTime = player.currentTime;
+      if (isYoutubeProxy) cTime += videoStartTime;
+      
+      setProgress(cTime);
+      if (cTime > maxWatchedRef.current) {
+        setMaxWatched(cTime);
+      }
+
+      const end = playerEndTime;
+
+      // Check if we reached the end of the duration
+      if (end > 0 && cTime >= end - 1) {
+        player.pause();
+        if (!data?.existingProgress?.completed && data?.canComplete) {
+          handleComplete();
+        }
+        return;
+      }
+
+      if (!data?.existingProgress?.completed && cTime > maxWatchedRef.current + 2) {
+        const revertTime = maxWatchedRef.current;
+        player.currentTime = isYoutubeProxy ? revertTime - videoStartTime : revertTime;
+        return;
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [player, videoSource, data?.existingProgress?.completed, data?.canComplete, isYoutubeProxy, videoStartTime, playerEndTime]);
+
+  // Handle Seek using absolute time
+  const handleSeek = (value: number) => {
+    hasSeekedInit.current = true; // Ensure interval runs
+    let newTime = value;
+    if (newTime < videoStartTime) newTime = videoStartTime;
+    
+    const end = playerEndTime;
+    if (end > 0 && newTime > end) newTime = end;
+    
+    if (!data?.existingProgress?.completed && newTime > maxWatchedRef.current) {
+      newTime = maxWatchedRef.current;
+    }
+    setProgress(newTime);
+    if (player) {
+      player.currentTime = isYoutubeProxy ? newTime - videoStartTime : newTime;
+    }
+  };
+
+  const changeSpeed = (speed: number) => {
+    setPlaybackRate(speed);
+    setShowSettings(false);
+  };
+
+  const toggleFullscreen = async () => {
+    if (isFullscreen) {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      setIsFullscreen(false);
+    } else {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+      setIsFullscreen(true);
+    }
+  };
+
+  // Auto-save progress every 10 seconds
+  useEffect(() => {
+    if (!isPlaying || data?.existingProgress?.completed || !data?.canComplete) return;
+    const interval = setInterval(() => {
+      apiClient.post('/api/mobile/learning/progress', {
+        lessonId: id,
+        timestamp: Math.floor(progressRef.current),
+        maxTimestamp: Math.floor(maxWatchedRef.current),
+      }).catch(err => console.log('Auto-save failed:', err.message));
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [isPlaying, id, data?.canComplete, data?.existingProgress?.completed]);
+  // Setup expo-video player for native videos and proxied streams
+  const videoSource = isYoutubeProxy ? proxyUrl : (!isYoutubeType && data?.lesson?.videoUrl ? data.lesson.videoUrl : null);
+
+  const player = useVideoPlayer(videoSource, p => {
+    p.loop = false;
+    p.addListener('statusChange', (event) => {
+      setPlayerStatus(event.status);
+      if (event.status === 'error') {
+        console.error('[Player Actual Error Message]:', event.error?.message);
+      }
+    });
+    p.addListener('playingChange', (event) => {
+      setIsPlaying(event.isPlaying);
+    });
+  });
+
+  // Debug player status
+  useEffect(() => {
+    if (player) {
+      console.log(`[Player] Status: ${player.status}, Playing: ${player.playing}, Source: ${videoSource ? 'Yes' : 'No'}`);
+      if (player.status === 'error') {
+        console.error(`[Player Error Object]:`, player.error);
+      }
+    }
+  }, [player?.status, player?.playing, videoSource, player?.error]);
+
+  useEffect(() => {
+    if (player) {
+      player.playbackRate = playbackRate;
+    }
+  }, [player, playbackRate]);
+
+  // Update duration
+  useEffect(() => {
+    if (player && player.duration) {
+      setDuration(player.duration);
+    }
+  }, [player?.duration]);
+
+  const pulseAnim = useRef(new Animated.Value(0.4)).current;
+  
+  useEffect(() => {
+    if (loading) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 0.4, duration: 800, useNativeDriver: true }),
+        ])
+      ).start();
+    }
+  }, [loading]);
+
+  const renderSkeleton = () => (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.bg }]} edges={['top']}>
+      <View style={[styles.playerContainer, { height: dimensions.width * (9 / 16) }]}>
+        <Animated.View style={[{ width: '100%', height: '100%', backgroundColor: theme.border, opacity: pulseAnim }]} />
+      </View>
+
+      <View style={[styles.headerInfo, { backgroundColor: theme.card, borderBottomColor: theme.border }]}>
+        <Animated.View style={{ height: 12, backgroundColor: theme.border, width: 100, borderRadius: 4, opacity: pulseAnim, marginBottom: 8 }} />
+        <Animated.View style={{ height: 24, backgroundColor: theme.border, width: 250, borderRadius: 6, opacity: pulseAnim }} />
+      </View>
+
+      <View style={[styles.tabs, { borderBottomColor: theme.border, backgroundColor: theme.card }]}>
+        <View style={styles.tab}>
+          <Animated.View style={{ height: 16, backgroundColor: theme.border, width: 60, borderRadius: 4, opacity: pulseAnim }} />
+        </View>
+        <View style={styles.tab}>
+          <Animated.View style={{ height: 16, backgroundColor: theme.border, width: 80, borderRadius: 4, opacity: pulseAnim }} />
+        </View>
+        <View style={styles.tab}>
+          <Animated.View style={{ height: 16, backgroundColor: theme.border, width: 50, borderRadius: 4, opacity: pulseAnim }} />
+        </View>
+      </View>
+
+      <View style={[styles.scrollContent, { padding: 20 }]}>
+        <Animated.View style={{ height: 16, backgroundColor: theme.border, width: '100%', borderRadius: 4, opacity: pulseAnim, marginBottom: 12 }} />
+        <Animated.View style={{ height: 16, backgroundColor: theme.border, width: '90%', borderRadius: 4, opacity: pulseAnim, marginBottom: 12 }} />
+        <Animated.View style={{ height: 16, backgroundColor: theme.border, width: '95%', borderRadius: 4, opacity: pulseAnim, marginBottom: 12 }} />
+        <Animated.View style={{ height: 16, backgroundColor: theme.border, width: '70%', borderRadius: 4, opacity: pulseAnim, marginBottom: 12 }} />
+        <Animated.View style={{ height: 16, backgroundColor: theme.border, width: '85%', borderRadius: 4, opacity: pulseAnim, marginBottom: 12 }} />
+      </View>
+    </SafeAreaView>
+  );
+
+  if (loading) {
+    return renderSkeleton();
+  }
+
+  if (!data || !data.lesson) return null;
+
+  const { lesson, existingProgress, canComplete, nextLessonId, prevLessonId, submission } = data;
+  const isCompleted = existingProgress?.completed;
+
+  return (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.bg }]} edges={['top']}>
+      {/* Video Player Area */}
+      <View style={[styles.playerContainer, isFullscreen && { height: dimensions.height, width: dimensions.width }]}>
+        {isYoutubeType && proxyLoading ? (
+          <View style={[styles.placeholderVideo, { backgroundColor: '#000' }]}>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <Text style={{ color: theme.muted, marginTop: 12 }}>Bypassing Ads via Proxy...</Text>
+          </View>
+        ) : videoSource ? (
+          <View style={{ width: dimensions.width, height: isFullscreen ? dimensions.height : dimensions.width * (9 / 16) }}>
+            <VideoView 
+              style={{ width: '100%', height: '100%' }} 
+              player={player}
+              nativeControls={false} 
+            />
+
+            {/* Custom Overlay Controls for Native Video */}
+            <TouchableOpacity activeOpacity={1} style={StyleSheet.absoluteFill} onPress={handleOverlayTap}>
+              <View style={StyleSheet.absoluteFill}>
+                {showControls && (
+                  <Animated.View style={[StyleSheet.absoluteFill, { opacity: fadeAnim, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' }]}>
+                    
+                    {isLocked ? (
+                      <TouchableOpacity onPress={() => setIsLocked(false)} style={styles.unlockBtn}>
+                        <BlurView intensity={40} tint="dark" style={styles.unlockBlur}>
+                          <Ionicons name="lock-closed" size={24} color="#fff" />
+                          <Text style={styles.unlockText}>Unlock Screen</Text>
+                        </BlurView>
+                      </TouchableOpacity>
+                    ) : (
+                      <>
+                        {/* Top Control Bar */}
+                        <LinearGradient colors={['rgba(0,0,0,0.7)', 'transparent']} style={styles.topControlsBar}>
+                          <View style={styles.topControlsRow}>
+                            <TouchableOpacity onPress={() => isFullscreen ? toggleFullscreen() : navigation.goBack()} style={styles.backButton}>
+                              <Ionicons name={isFullscreen ? "chevron-down" : "close"} size={24} color="#fff" />
+                            </TouchableOpacity>
+                          </View>
+                        </LinearGradient>
+
+                        {/* Bottom Control Bar */}
+                        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.controlsBar}>
+                          <Slider
+                            style={styles.sliderFull}
+                            minimumValue={videoStartTime}
+                            maximumValue={playerEndTime || 100}
+                            value={progress}
+                            onSlidingComplete={handleSeek}
+                            minimumTrackTintColor={theme.primary}
+                            maximumTrackTintColor="rgba(255,255,255,0.3)"
+                            thumbTintColor={theme.primary}
+                          />
+                          
+                          <View style={styles.controlsRowBottom}>
+                            <View style={styles.controlsLeft}>
+                              {playerStatus === 'loading' ? (
+                                <ActivityIndicator size="small" color="#fff" style={{ marginRight: 8 }} />
+                              ) : (
+                                <TouchableOpacity onPress={togglePlay} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                                  <Ionicons name={isPlaying ? "pause" : "play"} size={22} color="#fff" />
+                                </TouchableOpacity>
+                              )}
+                              <Text style={styles.timeTextSmall}>
+                                {formatTime(progress)} <Text style={{color: 'rgba(255,255,255,0.5)'}}>/ {formatTime(playerEndTime)}</Text>
+                              </Text>
+                            </View>
+                            
+                            <View style={styles.controlsRight}>
+                              <TouchableOpacity style={styles.settingsButton} onPress={() => setIsLocked(true)}>
+                                <Ionicons name="lock-open" size={16} color="#fff" />
+                              </TouchableOpacity>
+                              
+                              <TouchableOpacity style={styles.settingsButton} onPress={() => Alert.alert('Captions', 'Captions will be available soon.')}>
+                                <Ionicons name="chatbox-ellipses" size={16} color="#fff" />
+                              </TouchableOpacity>
+                              
+                              <View style={{ position: 'relative' }}>
+                                <TouchableOpacity onPress={() => setShowSettings(!showSettings)} style={styles.settingsButton}>
+                                  <Text style={styles.speedText}>{playbackRate}x</Text>
+                                </TouchableOpacity>
+                                {showSettings && (
+                                  <View style={styles.settingsMenu}>
+                                    {[0.5, 1, 1.25, 1.5, 2].map((speed) => (
+                                      <TouchableOpacity key={speed} style={styles.speedOption} onPress={() => changeSpeed(speed)}>
+                                        <Text style={[styles.speedOptionText, playbackRate === speed && styles.speedOptionActive]}>
+                                          {speed}x
+                                        </Text>
+                                      </TouchableOpacity>
+                                    ))}
+                                  </View>
+                                )}
+                              </View>
+                              <TouchableOpacity onPress={toggleFullscreen} style={styles.fullscreenButton}>
+                                <Ionicons name={isFullscreen ? "contract" : "expand"} size={18} color="#fff" />
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        </LinearGradient>
+                      </>
+                    )}
+                  </Animated.View>
+                )}
+
+                {/* Double Tap Ripples */}
+                {doubleTapAction && (
+                  <Animated.View 
+                    style={[
+                      styles.rippleContainer, 
+                      doubleTapAction === 'left' ? { left: '15%' } : { right: '15%' },
+                      { opacity: rippleAnim }
+                    ]} 
+                    pointerEvents="none"
+                  >
+                    <View style={styles.rippleCircle}>
+                      <Ionicons name={doubleTapAction === 'left' ? "play-back" : "play-forward"} size={32} color="#fff" />
+                      <Text style={styles.rippleText}>10s</Text>
+                    </View>
+                  </Animated.View>
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={[styles.placeholderVideo, { backgroundColor: '#000' }]}>
+            <Text style={{ color: '#fff' }}>Video not available</Text>
+          </View>
+        )}
+      </View>
+
+      {!isFullscreen && (
+        <>
+          <View style={[styles.headerInfo, { backgroundColor: theme.card, borderBottomColor: theme.border }]}>
+        <Text style={[styles.moduleTitle, { color: theme.primary }]}>{lesson.module.title}</Text>
+        <Text style={[styles.lessonTitle, { color: theme.text }]}>{lesson.title}</Text>
+      </View>
+
+      {/* Tabs */}
+      <View style={[styles.tabs, { borderBottomColor: theme.border, backgroundColor: theme.card }]}>
+        <TouchableOpacity style={[styles.tab, activeTab === 'overview' && { borderBottomColor: theme.primary, borderBottomWidth: 2 }]} onPress={() => setActiveTab('overview')}>
+          <Text style={[styles.tabText, { color: activeTab === 'overview' ? theme.primary : theme.muted }]}>Overview</Text>
+        </TouchableOpacity>
+        {lesson.assignment && (
+          <TouchableOpacity style={[styles.tab, activeTab === 'assignment' && { borderBottomColor: theme.primary, borderBottomWidth: 2 }]} onPress={() => setActiveTab('assignment')}>
+            <Text style={[styles.tabText, { color: activeTab === 'assignment' ? theme.primary : theme.muted }]}>Assignment</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity style={[styles.tab, activeTab === 'notes' && { borderBottomColor: theme.primary, borderBottomWidth: 2 }]} onPress={() => setActiveTab('notes')}>
+          <Text style={[styles.tabText, { color: activeTab === 'notes' ? theme.primary : theme.muted }]}>Notes</Text>
+        </TouchableOpacity>
+      </View>
+
+      {activeTab === 'overview' ? (
+        <View style={styles.scrollContent}>
+          <Markdown 
+            value={lesson.content || ' '}
+            flatListProps={{ contentContainerStyle: { padding: 20 } }}
+            theme={{ colors: { text: theme.text, background: theme.bg, code: theme.muted, link: theme.primary, border: theme.border } }}
+          />
+        </View>
+      ) : activeTab === 'assignment' ? (
+        <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {lesson.assignment && (
+            <View style={styles.tabContent}>
+              <Text style={[styles.assignmentLabel, { color: theme.text }]}>Instructions</Text>
+              <Text style={[styles.assignmentText, { color: theme.muted }]}>{lesson.assignment.instructions}</Text>
+              
+              {submission ? (
+                <View style={[styles.submissionStatus, { backgroundColor: theme.border }]}>
+                  <Text style={{ color: theme.text, fontWeight: '700' }}>Status: {submission.status}</Text>
+                  {submission.feedback?.length > 0 && (
+                    <View style={{ marginTop: 12 }}>
+                      <Text style={{ color: theme.text, fontWeight: '600' }}>Mentor Feedback:</Text>
+                      {submission.feedback.map((f: any) => (
+                        <Text key={f.id} style={{ color: theme.muted, marginTop: 4 }}>"{f.message}" - {f.author?.name}</Text>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <View style={[styles.submissionStatus, { backgroundColor: theme.border }]}>
+                  <Text style={{ color: theme.text, fontWeight: '600' }}>Pending Submission</Text>
+                  <Text style={{ color: theme.muted, marginTop: 4, fontSize: 13 }}>Please submit your assignment on the web platform.</Text>
+                </View>
+              )}
+            </View>
+          )}
+        </ScrollView>
+      ) : activeTab === 'notes' ? (
+        <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.tabContent}>
+            {/* Note Input */}
+            <View style={[styles.noteInputContainer, { backgroundColor: theme.border }]}>
+              <TextInput
+                style={[styles.noteInput, { color: theme.text }]}
+                placeholder={`Add a note at ${formatTime(progress)}...`}
+                placeholderTextColor={theme.muted}
+                value={noteText}
+                onChangeText={setNoteText}
+                multiline
+              />
+              <View style={styles.noteActions}>
+                <TouchableOpacity onPress={() => setIsDoubt(!isDoubt)} style={styles.doubtCheckbox}>
+                  <Ionicons name={isDoubt ? "checkbox" : "square-outline"} size={20} color={isDoubt ? theme.primary : theme.muted} />
+                  <Text style={[styles.doubtText, { color: theme.text }]}>Mark as question</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.addNoteBtn, { backgroundColor: theme.primary, opacity: (!noteText.trim() || submittingNote) ? 0.5 : 1 }]} 
+                  onPress={handleAddNote}
+                  disabled={!noteText.trim() || submittingNote}
+                >
+                  <Text style={styles.addNoteText}>{submittingNote ? "Saving..." : "Save Note"}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Notes List */}
+            {notes.length === 0 ? (
+              <Text style={{ color: theme.muted, textAlign: 'center', marginTop: 32 }}>No notes yet.</Text>
+            ) : (
+              notes.map((note) => {
+                const isActive = progress >= note.timestamp && progress < note.timestamp + 10;
+                return (
+                <View key={note.id} style={[styles.noteCard, { backgroundColor: theme.card, borderColor: isActive ? theme.primary : theme.border }]}>
+                  <View style={styles.noteHeader}>
+                    <TouchableOpacity onPress={() => handleSeek(note.timestamp)} style={[styles.noteTimestamp, { backgroundColor: theme.primary + '20' }]}>
+                      <Text style={{ color: theme.primary, fontWeight: '600', fontSize: 12 }}>{formatTime(note.timestamp)}</Text>
+                    </TouchableOpacity>
+                    {note.isDoubt && (
+                      <View style={[styles.doubtBadge, { backgroundColor: note.resolved ? theme.success + '20' : '#fef3c7' }]}>
+                        <Text style={{ color: note.resolved ? theme.success : '#d97706', fontSize: 10, fontWeight: '700' }}>
+                          {note.resolved ? "RESOLVED" : "QUESTION"}
+                        </Text>
+                      </View>
+                    )}
+                    <TouchableOpacity onPress={() => handleDeleteNote(note.id)} style={{ marginLeft: 'auto', padding: 4 }}>
+                      <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={{ color: theme.text, fontSize: 14, marginTop: 10, lineHeight: 20 }}>{note.text}</Text>
+                  
+                  {note.mentorReply && (
+                    <View style={[styles.mentorReply, { backgroundColor: theme.border }]}>
+                      <Text style={{ color: theme.text, fontSize: 12, fontWeight: '700', marginBottom: 4 }}>Mentor Reply:</Text>
+                      <Text style={{ color: theme.muted, fontSize: 13, lineHeight: 18 }}>{note.mentorReply}</Text>
+                    </View>
+                  )}
+                </View>
+                );
+              })
+            )}
+          </View>
+        </ScrollView>
+      ) : null}
+
+      {/* Bottom Action Bar */}
+      <View style={[styles.bottomBar, { backgroundColor: theme.card, borderTopColor: theme.border }]}>
+        {prevLessonId ? (
+          <TouchableOpacity style={[styles.navBtn, { borderColor: theme.border }]} onPress={() => navigation.replace('CoursePlayer', { id: prevLessonId })}>
+            <Ionicons name="arrow-back" size={20} color={theme.text} />
+          </TouchableOpacity>
+        ) : <View style={styles.navBtnEmpty} />}
+
+        {!lesson.assignment && !lesson.quiz && canComplete && !isCompleted ? (
+          <TouchableOpacity 
+            style={[styles.mainBtn, { backgroundColor: theme.primary }]}
+            onPress={handleComplete}
+            disabled={completing}
+          >
+            {completing ? <ActivityIndicator color="#fff" /> : <Text style={styles.mainBtnText}>Mark Complete</Text>}
+          </TouchableOpacity>
+        ) : isCompleted ? (
+          <View style={[styles.mainBtn, { backgroundColor: theme.success + '20' }]}>
+            <Ionicons name="checkmark-circle" size={18} color={theme.success} style={{ marginRight: 6 }} />
+            <Text style={[styles.mainBtnText, { color: theme.success }]}>Completed</Text>
+          </View>
+        ) : (
+          <View style={{ flex: 1 }} />
+        )}
+
+        {nextLessonId ? (
+          <TouchableOpacity style={[styles.navBtn, { borderColor: theme.border }]} onPress={() => navigation.replace('CoursePlayer', { id: nextLessonId })}>
+            <Ionicons name="arrow-forward" size={20} color={theme.text} />
+          </TouchableOpacity>
+        ) : <View style={styles.navBtnEmpty} />}
+      </View>
+      </>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  playerContainer: { width: '100%', backgroundColor: '#000', position: 'relative' },
+  placeholderVideo: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  floatingBack: { position: 'absolute', top: 10, right: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+  headerInfo: { padding: 20, borderBottomWidth: 1 },
+  moduleTitle: { fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
+  lessonTitle: { fontSize: 22, fontWeight: '800' },
+  tabs: { flexDirection: 'row', paddingHorizontal: 20, borderBottomWidth: 1 },
+  tab: { paddingVertical: 14, marginRight: 24 },
+  tabText: { fontSize: 14, fontWeight: '600' },
+  scrollContent: { flex: 1 },
+  tabContent: { padding: 20 },
+  noteInput: { flex: 1, borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, height: 44, marginRight: 8 },
+  addNoteBtn: { width: 44, height: 44, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  noteCard: { borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 12 },
+  noteHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  noteTime: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  noteTimeText: { fontSize: 12, fontWeight: '600' },
+  noteBody: { fontSize: 14, lineHeight: 20 },
+  assignmentLabel: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
+  assignmentText: { fontSize: 15, lineHeight: 24, marginBottom: 20 },
+  submissionStatus: { padding: 16, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' },
+  bottomBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderTopWidth: 1 },
+  navBtn: { width: 48, height: 48, borderRadius: 24, borderWidth: 1, justifyContent: 'center', alignItems: 'center' },
+  navBtnEmpty: { width: 48, height: 48 },
+  mainBtn: { flex: 1, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginHorizontal: 16 },
+  mainBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  centerPlayBtn: { width: 56, height: 56, borderRadius: 28, overflow: 'hidden' },
+  centerPlayBlur: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.15)' },
+  topControlsBar: { position: 'absolute', top: 0, left: 0, right: 0, paddingTop: 12, paddingHorizontal: 12, paddingBottom: 24 },
+  topControlsRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  backButton: { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' },
+  topTitles: { flex: 1 },
+  topModuleTitle: { color: 'rgba(255,255,255,0.7)', fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 1 },
+  topLessonTitle: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  controlsBar: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 12, paddingTop: 40, paddingBottom: 12 },
+  controlsRowBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: -2 },
+  sliderFull: { width: '100%', height: 30, marginHorizontal: -4 },
+  timeTextSmall: { color: '#fff', fontSize: 11, fontWeight: '600', fontVariant: ['tabular-nums'] },
+  controlsLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  controlsRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  settingsButton: { backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  speedText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  fullscreenButton: { padding: 4 },
+  settingsMenu: { position: 'absolute', bottom: 36, right: 0, backgroundColor: 'rgba(20,20,20,0.95)', borderRadius: 12, padding: 4, width: 70, zIndex: 100 },
+  speedOption: { paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
+  speedOptionActive: { backgroundColor: 'rgba(255,255,255,0.15)' },
+  speedOptionText: { color: '#fff', fontSize: 14, fontWeight: '600' },
+  rippleContainer: { position: 'absolute', top: '50%', marginTop: -40, width: 80, height: 80, justifyContent: 'center', alignItems: 'center' },
+  rippleCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
+  rippleText: { color: '#fff', fontSize: 11, fontWeight: '800', marginTop: 2 },
+  unlockBtn: { overflow: 'hidden', borderRadius: 24 },
+  unlockBlur: { paddingHorizontal: 20, paddingVertical: 12, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)' },
+  unlockText: { color: '#fff', fontSize: 13, fontWeight: '700', marginTop: 4 },
+  noteInputContainer: { padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 24 },
+  noteInput: { fontSize: 15, minHeight: 80, textAlignVertical: 'top' },
+  noteActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
+  doubtCheckbox: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  doubtText: { fontSize: 13, fontWeight: '600' },
+  addNoteBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 16 },
+  addNoteText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  noteCard: { padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 16 },
+  noteHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  noteTimestamp: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, marginRight: 8 },
+  doubtBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
+  mentorReply: { padding: 12, borderRadius: 8, marginTop: 12 }
+});

@@ -19,13 +19,14 @@ export function DashboardGreeting({ userName, fullName, avatarUrl }: { userName:
   }, []);
 
   return (
-    <div className="flex items-center justify-between py-6 mb-4">
+    <div className="flex items-center justify-between py-4 sm:py-6 mb-2 sm:mb-4">
       <div className="animate-in slide-in-from-left-4 fade-in duration-500">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground flex items-center gap-3">
-          {mounted ? greeting : "Welcome back"}, <span className="text-primary">{userName}</span>
-          <span className="animate-wave text-3xl">👋</span>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-foreground flex items-center flex-wrap sm:flex-nowrap gap-2 sm:gap-3">
+          <span>{mounted ? greeting : "Welcome back"},</span>
+          <span className="text-primary">{userName}</span>
+          <span className="animate-wave text-2xl sm:text-3xl">👋</span>
         </h1>
-        <p className="text-sm font-medium text-muted-foreground mt-2">
+        <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-1.5 sm:mt-2">
           You've completed 3 lessons today - keep up the momentum!
         </p>
       </div>

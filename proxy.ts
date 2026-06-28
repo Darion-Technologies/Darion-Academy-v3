@@ -10,7 +10,8 @@ export async function proxy(request: NextRequest) {
     path === "/" ||
     authPaths.includes(path) ||
     path.startsWith("/auth/") ||
-    path.startsWith("/verify/");
+    path.startsWith("/verify/") ||
+    path.startsWith("/api/mobile/");
 
   if (!user && !publicPath) {
     const login = new URL("/login", request.url);

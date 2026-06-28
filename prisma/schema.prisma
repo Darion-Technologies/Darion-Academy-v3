@@ -10,28 +10,32 @@ datasource db {
 }
 
 model User {
-  id                  String              @id @db.Uuid
-  email               String              @unique
+  id                  String                    @id @db.Uuid
+  email               String                    @unique
   name                String
-  role                UserRole            @default(EMPLOYEE)
+  role                UserRole                  @default(EMPLOYEE)
   department          String?
   avatarUrl           String?
-  active              Boolean             @default(true)
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  employeeId          String?             @unique
+  active              Boolean                   @default(true)
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  employeeId          String?                   @unique
   lastLoginAt         DateTime?
-  totalShortScore     Int                 @default(0)
+  totalShortScore     Int                       @default(0)
   activity            ActivityLog[]
-  certificatesIssued  Certificate[]       @relation("CertificateIssuer")
-  certificatesRevoked Certificate[]       @relation("CertificateRevoker")
+  certificatesIssued  Certificate[]             @relation("CertificateIssuer")
+  certificatesRevoked Certificate[]             @relation("CertificateRevoker")
   certificates        Certificate[]
-  enrollments         Enrollment[]        @relation("LearnerEnrollments")
-  mentoredEnrollments Enrollment[]        @relation("EnrollmentMentor")
-  feedbackAuthored    Feedback[]          @relation("FeedbackAuthor")
+  conversations       ConversationParticipant[]
+  enrollments         Enrollment[]              @relation("LearnerEnrollments")
+  mentoredEnrollments Enrollment[]              @relation("EnrollmentMentor")
+  expoPushTokens      ExpoPushToken[]
+  feedbackAuthored    Feedback[]                @relation("FeedbackAuthor")
   preference          LearningPreference?
   loginStreaks        LoginStreak[]
+  messages            Message[]
   notifications       Notification[]
+  personalEvents      PersonalEvent[]
   progress            Progress[]
   pushSubscriptions   PushSubscription[]
   quizAttempts        QuizAttempt[]
@@ -39,15 +43,12 @@ model User {
   shortComments       ShortComment[]
   shortNotes          ShortNote[]
   shortProgress       ShortProgress[]
-  submissions         Submission[]        @relation("LearnerSubmissions")
-  reviewedSubmissions Submission[]        @relation("SubmissionReviewer")
-  badges              UserBadge[]         @relation("UserBadges")
+  submissions         Submission[]              @relation("LearnerSubmissions")
+  reviewedSubmissions Submission[]              @relation("SubmissionReviewer")
+  badges              UserBadge[]               @relation("UserBadges")
   sessions            UserSession[]
   videoNotes          VideoNote[]
   videoProgress       VideoProgress[]
-  conversations       ConversationParticipant[]
-  messages            Message[]
-  personalEvents      PersonalEvent[]
 }
 
 model UserSession {
@@ -98,12 +99,12 @@ model Course {
   category              String
   difficulty            Difficulty           @default(BEGINNER)
   estimatedMinutes      Int                  @default(60)
-  deadlineDays          Int?
   thumbnailUrl          String?
   status                CourseStatus         @default(DRAFT)
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
   certificateTemplateId String?
+  deadlineDays          Int?
   certificates          Certificate[]
   certificateTemplate   CertificateTemplate? @relation(fields: [certificateTemplateId], references: [id])
   enrollments           Enrollment[]
@@ -140,8 +141,8 @@ model Lesson {
   updatedAt          DateTime        @updatedAt
   transcriptUrl      String?
   videoDuration      Int?
-  videoStartTime     Int?
   videoEndTime       Int?
+  videoStartTime     Int?
   assignment         Assignment?
   module             Module          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   progress           Progress[]
@@ -263,18 +264,18 @@ model Feedback {
 }
 
 model Quiz {
-  id           String        @id @default(cuid())
-  lessonId     String        @unique
-  title        String
-  instructions String?
-  passMark     Int           @default(70)
+  id                       String        @id @default(cuid())
+  lessonId                 String        @unique
+  title                    String
+  instructions             String?
+  passMark                 Int           @default(70)
   maxAttempts              Int?
   isStrict                 Boolean       @default(false)
-  requireShortAnswerReview Boolean       @default(false)
   timeLimit                Int?
-  questions    Question[]
-  lesson       Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  attempts     QuizAttempt[]
+  requireShortAnswerReview Boolean       @default(false)
+  questions                Question[]
+  lesson                   Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  attempts                 QuizAttempt[]
 }
 
 model Question {
@@ -455,6 +456,17 @@ model PushSubscription {
   @@index([userId])
 }
 
+model ExpoPushToken {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 model YouTubeShort {
   id              String          @id @default(cuid())
   youtubeVideoId  String          @unique
@@ -463,7 +475,6 @@ model YouTubeShort {
   channelName     String?
   channelId       String?
   thumbnailUrl    String?
-  transcript      String?
   durationSeconds Int
   sourceUrl       String
   category        String
@@ -474,6 +485,7 @@ model YouTubeShort {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   shortScore      Int             @default(5)
+  transcript      String?
   bookmarks       ShortBookmark[]
   comments        ShortComment[]
   notes           ShortNote[]
@@ -543,6 +555,56 @@ model ShortNote {
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, shortId])
+}
+
+model Conversation {
+  id           String                    @id @default(cuid())
+  type         ConversationType
+  name         String?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id                String          @id @default(cuid())
+  conversationId    String
+  userId            String          @db.Uuid
+  role              ParticipantRole @default(MEMBER)
+  lastReadMessageId String?
+  joinedAt          DateTime        @default(now())
+  lastDeliveredAt   DateTime?
+  lastReadAt        DateTime?
+  conversation      Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String       @db.Uuid
+  content        String
+  createdAt      DateTime     @default(now())
+  attachmentType String?
+  attachmentUrl  String?
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model PersonalEvent {
+  id          String   @id @default(cuid())
+  userId      String   @db.Uuid
+  title       String
+  description String?
+  date        DateTime @db.Date
+  color       String   @default("blue")
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum UserRole {
@@ -647,56 +709,4 @@ enum ConversationType {
 enum ParticipantRole {
   MEMBER
   ADMIN
-}
-
-model Conversation {
-  id           String                    @id @default(cuid())
-  type         ConversationType
-  name         String?
-  createdAt    DateTime                  @default(now())
-  updatedAt    DateTime                  @updatedAt
-  participants ConversationParticipant[]
-  messages     Message[]
-}
-
-model ConversationParticipant {
-  id                String          @id @default(cuid())
-  conversationId    String
-  userId            String          @db.Uuid
-  role              ParticipantRole @default(MEMBER)
-  lastReadMessageId String?
-  lastReadAt        DateTime?
-  lastDeliveredAt   DateTime?
-  joinedAt          DateTime        @default(now())
-  
-  conversation      Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([conversationId, userId])
-}
-
-model Message {
-  id             String       @id @default(cuid())
-  conversationId String
-  senderId       String       @db.Uuid
-  content        String
-  attachmentUrl  String?
-  attachmentType String?
-  createdAt      DateTime     @default(now())
-  
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
-}
-
-model PersonalEvent {
-  id          String   @id @default(cuid())
-  userId      String   @db.Uuid
-  title       String
-  description String?
-  date        DateTime @db.Date
-  color       String   @default("blue")
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
 }

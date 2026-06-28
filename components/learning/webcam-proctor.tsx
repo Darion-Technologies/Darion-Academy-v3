@@ -15,7 +15,7 @@ export function WebcamProctor({ onWarning, onModelLoaded, onCameraDenied }: Webc
 
   useEffect(() => {
     let active = true;
-    let detectionInterval: NodeJS.Timeout;
+    let detectionInterval: ReturnType<typeof setInterval>;
     let worker: Worker | null = null;
 
     async function initProctoring() {

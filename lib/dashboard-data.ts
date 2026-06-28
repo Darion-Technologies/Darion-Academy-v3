@@ -43,10 +43,11 @@ export type PendingAction = {
   status: string;
   priority: "high" | "medium" | "low";
   dueDate?: Date;
+  courseThumbnail?: string | null;
 };
 
 export type TopDashboardData = {
-  user: { id: string; name: string; email: string; employeeId: string | null; department: string | null };
+  user: { id: string; name: string; email: string; employeeId: string | null; department: string | null; avatarUrl: string | null };
   enrollments: DashboardEnrollment[];
   pendingActions: PendingAction[];
   stats: {
@@ -63,63 +64,87 @@ export type TopDashboardData = {
 };
 
 /* ------------------------------------------------------------------ */
+/* Helpers                                                              */
+/* ------------------------------------------------------------------ */
+
+async function withDbRetry<T>(fn: () => Promise<T>, retries = 2): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries > 0) return withDbRetry(fn, retries - 1);
+    throw error;
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Data fetcher (cached per request)                                    */
 /* ------------------------------------------------------------------ */
 
 export const getTopDashboardData = reactCache(async (userId: string): Promise<TopDashboardData> => {
   return unstable_cache(async () => {
-  const [user, enrollmentsRaw, progressRecords, submissions, quizAttempts, certificates, streaks, videoProgress] = await Promise.all([
-    prisma.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: { id: true, name: true, email: true, employeeId: true, department: true },
-    }),
-    prisma.enrollment.findMany({
-      where: { learnerId: userId },
-      include: {
-        course: {
-          include: {
-            modules: {
-              include: {
-                lessons: {
-                  include: { assignment: { select: { id: true, dueDays: true } }, quiz: { select: { id: true } } },
-                  orderBy: { order: "asc" },
+  // Retry the two query batches inside the cache callback so that
+  // `unstable_cache` never stores a thrown error in its cache.
+  // Batch 1: heavyweight queries (user + enrollments + progress + submissions)
+  const [user, enrollmentsRaw, progressRecords, submissions] = await withDbRetry(() =>
+    Promise.all([
+      prisma.user.findUniqueOrThrow({
+        where: { id: userId },
+        select: { id: true, name: true, email: true, employeeId: true, department: true, avatarUrl: true },
+      }),
+      prisma.enrollment.findMany({
+        where: { learnerId: userId },
+        include: {
+          course: {
+            include: {
+              modules: {
+                include: {
+                  lessons: {
+                    include: { assignment: { select: { id: true, dueDays: true } }, quiz: { select: { id: true } } },
+                    orderBy: { order: "asc" },
+                  },
                 },
+                orderBy: { order: "asc" },
               },
-              orderBy: { order: "asc" },
             },
           },
         },
-      },
-      orderBy: { assignedAt: "desc" },
-    }),
-    prisma.progress.findMany({
-      where: { userId, completed: true },
-      select: { lessonId: true },
-    }),
-    prisma.submission.findMany({
-      where: { learnerId: userId },
-      select: { assignmentId: true, status: true },
-    }),
-    prisma.quizAttempt.findMany({
-      where: { userId },
-      select: { quizId: true, status: true, score: true, submittedAt: true },
-      orderBy: { submittedAt: "desc" },
-    }),
-    prisma.certificate.findMany({
-      where: { userId },
-      select: { id: true, enrollmentId: true, status: true },
-    }),
-    // Week-only streaks - used by StreakWidget
-    prisma.loginStreak.findMany({
-      where: { userId, date: { gte: getStartOfWeek() } },
-      select: { date: true },
-      orderBy: { date: "asc" },
-    }),
-    prisma.videoProgress.aggregate({
-      where: { userId },
-      _sum: { maxTimestamp: true },
-    }),
-  ]);
+        orderBy: { assignedAt: "desc" },
+      }),
+      prisma.progress.findMany({
+        where: { userId, completed: true },
+        select: { lessonId: true },
+      }),
+      prisma.submission.findMany({
+        where: { learnerId: userId },
+        select: { assignmentId: true, status: true },
+      }),
+    ])
+  );
+
+  // Batch 2: lightweight aggregation queries
+  const [quizAttempts, certificates, streaks, videoProgress] = await withDbRetry(() =>
+    Promise.all([
+      prisma.quizAttempt.findMany({
+        where: { userId },
+        select: { quizId: true, status: true, score: true, submittedAt: true },
+        orderBy: { submittedAt: "desc" },
+      }),
+      prisma.certificate.findMany({
+        where: { userId },
+        select: { id: true, enrollmentId: true, status: true },
+      }),
+      // Week-only streaks - used by StreakWidget
+      prisma.loginStreak.findMany({
+        where: { userId, date: { gte: getStartOfWeek() } },
+        select: { date: true },
+        orderBy: { date: "asc" },
+      }),
+      prisma.videoProgress.aggregate({
+        where: { userId },
+        _sum: { maxTimestamp: true },
+      }),
+    ])
+  );
 
   const completedLessonIds = new Set(progressRecords.map((p) => p.lessonId));
   const submissionMap = new Map(submissions.map((s) => [s.assignmentId, s.status]));
@@ -240,6 +265,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
                 title: firstPending.title,
                 courseName: course.title,
                 courseSlug: course.slug,
+                courseThumbnail: course.thumbnailUrl ? `/api/mobile/courses/${course.id}/thumbnail` : null,
                 quizId: firstPending.quiz.id,
                 status: qResult?.status === "FAILED" ? "Retake needed" : "Not attempted",
                 priority: qResult?.status === "FAILED" ? "high" : "medium",
@@ -262,6 +288,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
                 title: firstPending.title,
                 courseName: course.title,
                 courseSlug: course.slug,
+                courseThumbnail: course.thumbnailUrl ? `/api/mobile/courses/${course.id}/thumbnail` : null,
                 lessonId: firstPending.id,
                 assignmentId: firstPending.assignment.id,
                 status: subStatus === "SUBMITTED" ? "Waiting for approval" : subStatus === "NEEDS_CORRECTION" ? "Rework needed" : "Not submitted",
@@ -276,6 +303,7 @@ export const getTopDashboardData = reactCache(async (userId: string): Promise<To
               title: firstPending.title,
               courseName: course.title,
               courseSlug: course.slug,
+              courseThumbnail: course.thumbnailUrl ? `/api/mobile/courses/${course.id}/thumbnail` : null,
               lessonId: firstPending.id,
               status: "Incomplete",
               priority: "medium",

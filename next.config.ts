@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "12mb",
     },
   },
+  serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium-min"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**" },

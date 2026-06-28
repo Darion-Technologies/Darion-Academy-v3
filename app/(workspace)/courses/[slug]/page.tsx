@@ -269,6 +269,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     return (
                       <Link
                         key={lesson.id}
+                        prefetch={true}
                         href={`/lessons/${lesson.id}`}
                         className="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent/30"
                       >

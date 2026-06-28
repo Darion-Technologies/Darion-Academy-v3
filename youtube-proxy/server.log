@@ -1,0 +1,41 @@
+🚀 Ad-Free YouTube Proxy running on port 8085 with On-the-Fly HLS
+[Proxy] Extracting NEW stream url for LzMnsfqjzkA
+[HLS] Starting FFmpeg for session: LzMnsfqjzkA_0_87 (Start: 0s, Duration: 87s)
+node:events:486
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: spawn ffmpeg ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:286:19)
+    at onErrorNT (node:internal/child_process:484:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+Emitted 'error' event on ChildProcess instance at:
+    at ChildProcess._handle.onexit (node:internal/child_process:292:12)
+    at onErrorNT (node:internal/child_process:484:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn ffmpeg',
+  path: 'ffmpeg',
+  spawnargs: [
+    '-ss',
+    '0',
+    '-i',
+    'https://rr5---sn-ci5gup-itqr.googlevideo.com/videoplayback?expire=1781962158&ei=TkE2auHqEtiD9fwPwMGZkAQ&ip=2401%3A4900%3A4fe5%3A10c0%3A85ed%3A62a%3A7801%3A238b&id=o-ACCY_JsX2KxmekQIWwgZzqfo9c1H7B_f69t-BLEygS7M&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&cps=370&met=1781940558%2C&mh=AE&mm=31%2C29&mn=sn-ci5gup-itqr%2Csn-ci5gup-h55y&ms=au%2Crdu&mv=m&mvi=5&pl=44&rms=au%2Cau&initcwndbps=550000&bui=ARmQxEWeO4JwnprdxvajjRow-4Q63t7tRCAizaBsMUkpS6Ocz8dKAKrG8GgcuJ0y20HRRNp8LELQE_vb&spc=SQ-umhKkPCjU3yX_Is2Wk_v1RGlB3CCt8YbgoW0-HyHr91dzXDKp&vprv=1&svpuc=1&mime=video%2Fmp4&rqh=1&gir=yes&clen=3471944504&ratebypass=yes&dur=170960.445&lmt=1780634704333541&mt=1781940306&fvip=2&fexp=51565115%2C51565681%2C51987687&c=ANDROID_VR&txp=3318224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AHEqNM4wRQIhAN5lAMzQR96fBxf1K86MdVNAaDNSl8cBdMwSwWLGEKaCAiAkaiNPiTlJH4_d6sdf02LA443v0KwsUkqlMLsW_ZFmQQ%3D%3D&lsparams=cps%2Cmet%2Cmh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Crms%2Cinitcwndbps&lsig=APaTxxMwRAIgNA1kRWoAMuMVJHN-TN8iirsNXbSsQcqj6qptTl25d2wCIFQflmuiQa-7NT9AP3n1MsN5UpelcDxHgp5jwgDz-o0q',
+    '-t',
+    '87',
+    '-c',
+    'copy',
+    '-f',
+    'hls',
+    '-hls_time',
+    '10',
+    '-hls_list_size',
+    '0',
+    '-hls_segment_filename',
+    '/home/pavan/DT/darion-academy/youtube-proxy/hls_tmp/LzMnsfqjzkA_0_87/chunk_%03d.ts',
+    '/home/pavan/DT/darion-academy/youtube-proxy/hls_tmp/LzMnsfqjzkA_0_87/playlist.m3u8'
+  ]
+}
+
+Node.js v24.13.1

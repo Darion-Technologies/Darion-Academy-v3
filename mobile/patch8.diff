@@ -1,0 +1,38 @@
+--- src/screens/learn/CoursePlayerScreen.tsx
++++ src/screens/learn/CoursePlayerScreen.tsx
+@@ -81,30 +81,9 @@
+ 
+   useEffect(() => {
+-    // Android ExoPlayer can sometimes ignore seeks if applied while paused or loading.
+-    // By waiting until the player is actively playing (player.playing), we ensure the seek is accepted.
+-    console.log(`[AutoSeek] Evaluate -> status: ${player?.status}, playing: ${player?.playing}, duration: ${duration}, hasSeeked: ${hasSeekedInit.current}`);
+-    if (player && player.status === 'readyToPlay' && player.playing && !hasSeekedInit.current) {
+-      const initialSeek = progressRef.current;
+-      
+-      if (initialSeek <= videoStartTime) {
+-         if (!isYoutubeProxy && videoStartTime > 0) {
+-            player.currentTime = videoStartTime;
+-         }
+-         hasSeekedInit.current = true;
+-         return;
+-      }
+-
+-      const targetTime = isYoutubeProxy ? initialSeek - videoStartTime : initialSeek;
+-      
+-      // Wait for the HLS proxy stream to buffer enough before attempting to seek
+-      // if (isYoutubeProxy && targetTime > duration && duration < (playerEndTime - videoStartTime) - 5) {
+-      //    console.log(`[AutoSeek] Waiting for buffer... duration: ${duration}`);
+-      //    return; // Wait for duration to increase as playlist generates
+-      // }
+-
+-      // Wait 1s after playback starts to ensure buffers are ready
+-      setTimeout(() => {
+-        if (player) player.currentTime = targetTime;
+-        hasSeekedInit.current = true;
+-      }, 1000);
+-    }
+-  }, [player?.status, player?.playing, duration, videoStartTime, isYoutubeProxy, playerEndTime]);
++    if (player && player.status === 'readyToPlay' && !hasSeekedInit.current) {
++      hasSeekedInit.current = true;
++    }
++  }, [player?.status]);

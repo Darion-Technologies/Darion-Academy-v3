@@ -1,0 +1,463 @@
+
+> darion-academy@0.1.0 build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.8.2) to ./generated/prisma in 369ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+▲ Next.js 16.2.7 (Turbopack)
+- Environments: .env.local, .env
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+Turbopack build encountered 3 warnings:
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./lib/certificate.ts
+    ./app/api/admin/certificate-templates/[id]/preview/route.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/(workspace)/quizzes/[id]/page.js
+  [output]/.next/server/chunks/ssr/[root-of-the-server]__0kjz2nv._.js
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./lib/certificate.ts
+    ./app/api/admin/certificate-templates/[id]/preview/route.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/api/mobile/learning/complete/route.js
+  [output]/.next/server/chunks/[root-of-the-server]__0v4b5jd._.js
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./lib/certificate.ts
+    ./app/api/admin/certificate-templates/[id]/preview/route.ts
+
+
+✓ Compiled successfully in 29.7s
+  Running TypeScript ...
+It looks like you're trying to use TypeScript but do not have the required package(s) installed.
+Installing dependencies
+
+If you are not trying to use TypeScript, please remove the tsconfig.json file from your package root (and any TypeScript files in your app and pages directories).
+
+
+Installing devDependencies (npm):
+- typescript
+
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peerOptional typescript@">=5.1.0" from @prisma/client@6.8.2
+npm warn node_modules/@prisma/client
+npm warn   @prisma/client@"^6.8.2" from the root project
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/client@11.18.0
+npm warn node_modules/@trpc/client
+npm warn   peer @trpc/client@"11.18.0" from @trpc/next@11.18.0
+npm warn   node_modules/@trpc/next
+npm warn   2 more (@trpc/react-query, the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/client@11.18.0
+npm warn node_modules/@trpc/client
+npm warn   peer @trpc/client@"11.18.0" from @trpc/next@11.18.0
+npm warn   node_modules/@trpc/next
+npm warn   2 more (@trpc/react-query, the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/client@11.18.0
+npm warn node_modules/@trpc/client
+npm warn   peer @trpc/client@"11.18.0" from @trpc/next@11.18.0
+npm warn   node_modules/@trpc/next
+npm warn   2 more (@trpc/react-query, the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/next@11.18.0
+npm warn node_modules/@trpc/next
+npm warn   @trpc/next@"^11.18.0" from the root project
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/react-query@11.18.0
+npm warn node_modules/@trpc/react-query
+npm warn   peerOptional @trpc/react-query@"11.18.0" from @trpc/next@11.18.0
+npm warn   node_modules/@trpc/next
+npm warn   1 more (the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/react-query@11.18.0
+npm warn node_modules/@trpc/react-query
+npm warn   peerOptional @trpc/react-query@"11.18.0" from @trpc/next@11.18.0
+npm warn   node_modules/@trpc/next
+npm warn   1 more (the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/server@11.18.0
+npm warn node_modules/@trpc/server
+npm warn   peer @trpc/server@"11.18.0" from @trpc/client@11.18.0
+npm warn   node_modules/@trpc/client
+npm warn   3 more (@trpc/next, @trpc/react-query, the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/server@11.18.0
+npm warn node_modules/@trpc/server
+npm warn   peer @trpc/server@"11.18.0" from @trpc/client@11.18.0
+npm warn   node_modules/@trpc/client
+npm warn   3 more (@trpc/next, @trpc/react-query, the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/server@11.18.0
+npm warn node_modules/@trpc/server
+npm warn   peer @trpc/server@"11.18.0" from @trpc/client@11.18.0
+npm warn   node_modules/@trpc/client
+npm warn   3 more (@trpc/next, @trpc/react-query, the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=5.7.2" from @trpc/server@11.18.0
+npm warn node_modules/@trpc/server
+npm warn   peer @trpc/server@"11.18.0" from @trpc/client@11.18.0
+npm warn   node_modules/@trpc/client
+npm warn   3 more (@trpc/next, @trpc/react-query, the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peerOptional typescript@">=3.3.1" from eslint-config-next@16.2.7
+npm warn node_modules/eslint-config-next
+npm warn   dev eslint-config-next@"16.2.7" from the root project
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peerOptional typescript@">=5.1.0" from prisma@6.8.2
+npm warn node_modules/prisma
+npm warn   peerOptional prisma@"*" from @prisma/client@6.8.2
+npm warn   node_modules/@prisma/client
+npm warn   1 more (the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: darion-academy@0.1.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peerOptional typescript@">=5.1.0" from prisma@6.8.2
+npm warn node_modules/prisma
+npm warn   peerOptional prisma@"*" from @prisma/client@6.8.2
+npm warn   node_modules/@prisma/client
+npm warn   1 more (the root project)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: typescript-eslint@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from typescript-eslint@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn   typescript-eslint@"^8.46.0" from eslint-config-next@16.2.7
+npm warn   node_modules/eslint-config-next
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from typescript-eslint@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn     typescript-eslint@"^8.46.0" from eslint-config-next@16.2.7
+npm warn     node_modules/eslint-config-next
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @typescript-eslint/eslint-plugin@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/eslint-plugin@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin
+npm warn   @typescript-eslint/eslint-plugin@"8.61.1" from typescript-eslint@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/eslint-plugin@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin
+npm warn     @typescript-eslint/eslint-plugin@"8.61.1" from typescript-eslint@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @typescript-eslint/parser@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/parser@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/parser
+npm warn   @typescript-eslint/parser@"8.61.1" from typescript-eslint@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn   1 more (@typescript-eslint/eslint-plugin)
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/parser@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/parser
+npm warn     @typescript-eslint/parser@"8.61.1" from typescript-eslint@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn     1 more (@typescript-eslint/eslint-plugin)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @typescript-eslint/typescript-estree@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/typescript-estree@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+npm warn   @typescript-eslint/typescript-estree@"8.61.1" from typescript-eslint@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn   3 more (@typescript-eslint/type-utils, ...)
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/typescript-estree@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+npm warn     @typescript-eslint/typescript-estree@"8.61.1" from typescript-eslint@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn     3 more (@typescript-eslint/type-utils, ...)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @typescript-eslint/utils@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/utils@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/utils
+npm warn   @typescript-eslint/utils@"8.61.1" from typescript-eslint@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn   2 more (@typescript-eslint/eslint-plugin, @typescript-eslint/type-utils)
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/utils@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/utils
+npm warn     @typescript-eslint/utils@"8.61.1" from typescript-eslint@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint
+npm warn     2 more (@typescript-eslint/eslint-plugin, @typescript-eslint/type-utils)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @typescript-eslint/type-utils@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/type-utils@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin/node_modules/@typescript-eslint/type-utils
+npm warn   @typescript-eslint/type-utils@"8.61.1" from @typescript-eslint/eslint-plugin@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/type-utils@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin/node_modules/@typescript-eslint/type-utils
+npm warn     @typescript-eslint/type-utils@"8.61.1" from @typescript-eslint/eslint-plugin@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: ts-api-utils@2.5.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4" from ts-api-utils@2.5.0
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin/node_modules/ts-api-utils
+npm warn   ts-api-utils@"^2.5.0" from @typescript-eslint/eslint-plugin@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin
+npm warn   1 more (@typescript-eslint/type-utils)
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4" from ts-api-utils@2.5.0
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin/node_modules/ts-api-utils
+npm warn     ts-api-utils@"^2.5.0" from @typescript-eslint/eslint-plugin@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin
+npm warn     1 more (@typescript-eslint/type-utils)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @typescript-eslint/project-service@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/project-service@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/@typescript-eslint/project-service
+npm warn   @typescript-eslint/project-service@"8.61.1" from @typescript-eslint/typescript-estree@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/project-service@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/@typescript-eslint/project-service
+npm warn     @typescript-eslint/project-service@"8.61.1" from @typescript-eslint/typescript-estree@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @typescript-eslint/tsconfig-utils@8.61.1
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/tsconfig-utils@8.61.1
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/@typescript-eslint/tsconfig-utils
+npm warn   @typescript-eslint/tsconfig-utils@"8.61.1" from @typescript-eslint/typescript-estree@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+npm warn   1 more (@typescript-eslint/project-service)
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4 <6.1.0" from @typescript-eslint/tsconfig-utils@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/@typescript-eslint/tsconfig-utils
+npm warn     @typescript-eslint/tsconfig-utils@"8.61.1" from @typescript-eslint/typescript-estree@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+npm warn     1 more (@typescript-eslint/project-service)
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: ts-api-utils@2.5.0
+npm warn Found: typescript@7.0.1-rc
+npm warn node_modules/typescript
+npm warn   dev typescript@"^7.0.1-rc" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer typescript@">=4.8.4" from ts-api-utils@2.5.0
+npm warn node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/ts-api-utils
+npm warn   ts-api-utils@"^2.5.0" from @typescript-eslint/typescript-estree@8.61.1
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+npm warn
+npm warn Conflicting peer dependency: typescript@6.0.3
+npm warn node_modules/typescript
+npm warn   peer typescript@">=4.8.4" from ts-api-utils@2.5.0
+npm warn   node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/ts-api-utils
+npm warn     ts-api-utils@"^2.5.0" from @typescript-eslint/typescript-estree@8.61.1
+npm warn     node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree
+
+up to date, audited 1116 packages in 4s
+
+361 packages are looking for funding
+  run `npm fund` for details
+
+4 vulnerabilities (2 moderate, 2 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+The "id" argument must be of type string. Received undefined
+Next.js build worker exited with code: 1 and signal: null

@@ -1,0 +1,13 @@
+--- src/screens/learn/CoursePlayerScreen.tsx
++++ src/screens/learn/CoursePlayerScreen.tsx
+@@ -103,7 +103,9 @@
+       //    return; // Wait for duration to increase as playlist generates
+       // }
+ 
+-      player.seekBy(targetTime - player.currentTime);
++      setTimeout(() => {
++        if (player) player.currentTime = targetTime;
++      }, 1000);
+       hasSeekedInit.current = true;
+     }
+   }, [player?.status, player?.playing, duration, videoStartTime, isYoutubeProxy, playerEndTime]);

@@ -1,0 +1,43 @@
+--- src/screens/learn/CoursePlayerScreen.tsx
++++ src/screens/learn/CoursePlayerScreen.tsx
+@@ -73,6 +73,23 @@
+   const playerEndTime = videoEndTime > 0 ? videoEndTime : (isYoutubeProxy ? videoStartTime + duration : duration);
+ 
++  const [autoplayCountdown, setAutoplayCountdown] = useState<number | null>(null);
++
++  useEffect(() => {
++    if (autoplayCountdown === null) return;
++    if (autoplayCountdown <= 0) {
++      setAutoplayCountdown(null);
++      if (data?.nextLessonId) {
++        navigation.replace('CoursePlayer', { id: data.nextLessonId });
++      }
++      return;
++    }
++    const timer = setTimeout(() => {
++      setAutoplayCountdown(prev => (prev !== null ? prev - 1 : null));
++    }, 1000);
++    return () => clearTimeout(timer);
++  }, [autoplayCountdown, data?.nextLessonId, navigation]);
++
+   const progressRef = useRef(progress);
+   const maxWatchedRef = useRef(maxWatched);
+@@ -373,6 +390,19 @@
+   });
+ 
++  useEffect(() => {
++    if (!player) return;
++    const sub = player.addListener('playToEnd', () => {
++      if (data?.nextLessonId) {
++        setAutoplayCountdown(5);
++        if (isFullscreen) {
++           ScreenOrientation.unlockAsync();
++           setIsFullscreen(false);
++        }
++      }
++    });
++    return () => sub.remove();
++  }, [player, data?.nextLessonId, isFullscreen]);
++
+   // Debug player status
+   useEffect(() => {

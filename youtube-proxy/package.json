@@ -1,0 +1,15 @@
+{
+  "name": "youtube-docker-proxy",
+  "version": "1.0.0",
+  "description": "Local yt-dlp proxy for ad-free streaming",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^4.1.1",
+    "youtube-dl-exec": "^3.0.7"
+  }
+}

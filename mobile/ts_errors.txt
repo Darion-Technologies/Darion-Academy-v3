@@ -1,0 +1,31 @@
+src/navigation/MainTabNavigator.tsx(35,12): error TS2322: Type '{ android_ripple: { color: string; }; style: ({ pressed }: PressableStateCallbackType) => StyleProp<ViewStyle>[]; children: (((string | ... 7 more ... | ((state: PressableStateCallbackType) => ReactNode)) & (string | ... 6 more ... | Promise<...>)) & (string | ... 6 more ... | Promise<...>)) | null | undefined; ... ...' is not assignable to type 'RefAttributes<View>'.
+  Types of property 'ref' are incompatible.
+    Type 'Ref<View | LegacyRef<View>> | undefined' is not assignable to type 'Ref<View> | undefined'.
+      Type 'RefObject<View | LegacyRef<View> | null>' is not assignable to type 'Ref<View> | undefined'.
+        Type 'RefObject<View | LegacyRef<View> | null>' is not assignable to type 'RefObject<View | null>'.
+          Type 'View | LegacyRef<View> | null' is not assignable to type 'View | null'.
+            Type 'LegacyRef<View>' is not assignable to type 'ReactNativeElement & ViewComponent'.
+              Type 'LegacyRef<View>' is missing the following properties from type 'ReactNativeElement': blur, focus, offsetHeight, offsetLeft, and 44 more.
+src/navigation/TabNavigator.tsx(7,29): error TS2307: Cannot find module '../screens/DashboardScreen' or its corresponding type declarations.
+src/navigation/TabNavigator.tsx(39,12): error TS2322: Type '{ android_ripple: { color: string; }; style: ({ pressed }: PressableStateCallbackType) => StyleProp<ViewStyle>[]; children: (((string | ... 7 more ... | ((state: PressableStateCallbackType) => ReactNode)) & (string | ... 6 more ... | Promise<...>)) & (string | ... 6 more ... | Promise<...>)) | null | undefined; ... ...' is not assignable to type 'RefAttributes<View>'.
+  Types of property 'ref' are incompatible.
+    Type 'Ref<View | LegacyRef<View>> | undefined' is not assignable to type 'Ref<View> | undefined'.
+      Type 'RefObject<View | LegacyRef<View> | null>' is not assignable to type 'Ref<View> | undefined'.
+        Type 'RefObject<View | LegacyRef<View> | null>' is not assignable to type 'RefObject<View | null>'.
+          Type 'View | LegacyRef<View> | null' is not assignable to type 'View | null'.
+            Type 'LegacyRef<View>' is not assignable to type 'ReactNativeElement & ViewComponent'.
+              Type 'LegacyRef<View>' is missing the following properties from type 'ReactNativeElement': blur, focus, offsetHeight, offsetLeft, and 44 more.
+src/screens/learn/CoursePlayerScreen.tsx(143,7): error TS2448: Block-scoped variable 'player' used before its declaration.
+src/screens/learn/CoursePlayerScreen.tsx(143,7): error TS2454: Variable 'player' is used before being assigned.
+src/screens/learn/CoursePlayerScreen.tsx(220,17): error TS2304: Cannot find name 'useMemo'.
+src/screens/learn/CoursePlayerScreen.tsx(369,7): error TS2448: Block-scoped variable 'player' used before its declaration.
+src/screens/learn/CoursePlayerScreen.tsx(369,7): error TS2454: Variable 'player' is used before being assigned.
+src/screens/learn/CoursePlayerScreen.tsx(369,15): error TS2448: Block-scoped variable 'videoSource' used before its declaration.
+src/screens/learn/CoursePlayerScreen.tsx(453,56): error TS2339: Property 'error' does not exist on type 'VideoPlayer'.
+src/screens/learn/CoursePlayerScreen.tsx(456,61): error TS2339: Property 'error' does not exist on type 'VideoPlayer'.
+src/screens/learn/CoursePlayerScreen.tsx(769,13): error TS2322: Type '{ data: any[]; extraData: number; keyExtractor: (item: any) => any; estimatedItemSize: number; contentContainerStyle: { padding: number; }; showsVerticalScrollIndicator: false; renderItem: ({ item: note }: any) => Element; ListEmptyComponent: Element; ListHeaderComponent: Element; }' is not assignable to type 'IntrinsicAttributes & FlashListProps<any> & { ref?: Ref<FlashListRef<any>> | undefined; }'.
+  Property 'estimatedItemSize' does not exist on type 'IntrinsicAttributes & FlashListProps<any> & { ref?: Ref<FlashListRef<any>> | undefined; }'.
+src/screens/learn/CoursePlayerScreen.tsx(911,3): error TS1117: An object literal cannot have multiple properties with the same name.
+src/screens/learn/CoursePlayerScreen.tsx(915,3): error TS1117: An object literal cannot have multiple properties with the same name.
+src/screens/learn/CoursePlayerScreen.tsx(917,3): error TS1117: An object literal cannot have multiple properties with the same name.
+src/screens/learn/CoursePlayerScreen.tsx(918,3): error TS1117: An object literal cannot have multiple properties with the same name.

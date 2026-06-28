@@ -1,6 +1,7 @@
 import chromium from "@sparticuz/chromium-min";
 import QRCode from "qrcode";
 import puppeteer from "puppeteer-core";
+import fs from "fs";
 import { Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -186,7 +187,6 @@ export async function renderCertificatePdf(html: string) {
   
   if (executablePath) {
     try {
-      const fs = await import("fs");
       if (fs.existsSync(executablePath)) {
         isLocal = true;
       } else {

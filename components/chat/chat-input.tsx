@@ -16,7 +16,7 @@ export function ChatInput({ conversationId, currentUserId, currentUserName }: { 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
   const channelRef = useRef<any>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     channelRef.current = supabase.channel(`typing_${conversationId}`);

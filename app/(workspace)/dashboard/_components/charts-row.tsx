@@ -109,46 +109,46 @@ export function ChartsRow({ enrollments, heatmapDays }: { enrollments: Dashboard
             <h2 className="text-sm font-bold text-foreground">Progress Overview</h2>
             <p className="text-[10px] text-muted-foreground mt-0.5">Your learning activity and completion trends.</p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex bg-muted/50 p-0.5 rounded-lg border border-border">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0 w-full sm:w-auto shrink-0">
+            <div className="flex bg-muted/50 p-0.5 rounded-lg border border-border shrink-0">
               <button 
                 onClick={() => setViewMode("heatmap")}
-                className={cn("p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors", viewMode === "heatmap" && "bg-card text-foreground shadow-sm")}
+                className={cn("p-2 sm:p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors", viewMode === "heatmap" && "bg-card text-foreground shadow-sm")}
               >
-                <Grid3x3 className="size-3.5" />
+                <Grid3x3 className="size-4 sm:size-3.5" />
               </button>
               <button 
                 onClick={() => setViewMode("chart")}
-                className={cn("p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors", viewMode === "chart" && "bg-card text-foreground shadow-sm")}
+                className={cn("p-2 sm:p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors", viewMode === "chart" && "bg-card text-foreground shadow-sm")}
               >
-                <LineChart className="size-3.5" />
+                <LineChart className="size-4 sm:size-3.5" />
               </button>
             </div>
-            <div className="relative">
+            <div className="relative shrink-0">
               <Select 
                 value={courseFilter} 
                 onChange={(e) => setCourseFilter(e.target.value)}
-                className="w-auto max-w-[160px] h-8 pl-3 pr-8 py-0 border-border rounded-lg text-foreground font-medium hover:bg-muted cursor-pointer appearance-none text-xs bg-background/50"
+                className="w-auto max-w-[160px] h-9 sm:h-8 pl-3 pr-8 py-0 border-border rounded-lg text-foreground font-medium hover:bg-muted cursor-pointer appearance-none text-xs bg-background/50"
               >
                 <option value="all">All Courses</option>
                 {enrollments.map((course) => (
                   <option key={course.id} value={course.id}>{course.courseTitle}</option>
                 ))}
               </Select>
-              <ChevronDown className="size-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+              <ChevronDown className="size-3.5 sm:size-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
             </div>
             
-            <div className="relative">
+            <div className="relative shrink-0">
               <Select 
                 value={timeFilter} 
                 onChange={(e) => setTimeFilter(e.target.value)}
-                className="w-auto h-8 pl-3 pr-8 py-0 border-border rounded-lg text-foreground font-medium hover:bg-muted cursor-pointer appearance-none text-xs bg-background/50"
+                className="w-auto h-9 sm:h-8 pl-3 pr-8 py-0 border-border rounded-lg text-foreground font-medium hover:bg-muted cursor-pointer appearance-none text-xs bg-background/50"
               >
                 <option value="7days">Last 7 Days</option>
                 <option value="30days">Last 30 Days</option>
                 <option value="90days">Last 3 Months</option>
               </Select>
-              <ChevronDown className="size-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+              <ChevronDown className="size-3.5 sm:size-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
             </div>
           </div>
         </div>

@@ -24,7 +24,7 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 pb-4 animate-in fade-in duration-700">
       {/* Upcoming Deadlines - Takes up 2 columns */}
       <div className="lg:col-span-2 bg-card rounded-md border border-border p-3 shadow-none">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3 sm:gap-2">
           <div 
             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors group"
             onClick={() => router.push('/calendar')}
@@ -32,19 +32,19 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
             <Hourglass className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
             <h2 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Upcoming Deadlines & Actions</h2>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="p-1.5 border border-border rounded-lg hover:bg-muted transition-colors">
-              <Search className="size-3.5 text-muted-foreground" />
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button className="p-2 sm:p-1.5 border border-border rounded-lg hover:bg-muted transition-colors">
+              <Search className="size-4 sm:size-3.5 text-muted-foreground" />
             </button>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-foreground bg-background/50 border border-border rounded-lg hover:bg-muted transition-colors">
-              <Filter className="size-3.5" />
+            <button className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 text-xs font-medium text-foreground bg-background/50 border border-border rounded-lg hover:bg-muted transition-colors">
+              <Filter className="size-4 sm:size-3.5" />
               Filter
             </button>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
+        <div className="overflow-x-auto no-scrollbar pb-2 sm:pb-0">
+          <table className="w-full text-xs text-left whitespace-nowrap">
             <thead className="text-[10px] text-muted-foreground bg-muted/50 rounded-lg">
               <tr>
                 <th className="px-3 py-2 font-medium rounded-l-lg">Course / Task</th>
@@ -61,7 +61,7 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
                   onClick={() => router.push(`/courses/${item.courseSlug}`)}
                   className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer"
                 >
-                  <td className="px-3 py-2.5 font-medium text-foreground flex flex-col">
+                  <td className="px-3 py-3 sm:py-2.5 font-medium text-foreground flex flex-col">
                     <div className="flex items-center gap-2">
                       <div className={`size-1.5 shrink-0 rounded-full ${getTypeDotColor(item.type)}`}></div>
                       <span className="font-bold text-[13px] leading-tight">{item.title}</span>

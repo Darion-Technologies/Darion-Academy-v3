@@ -1,0 +1,15 @@
+--- src/screens/learn/CoursePlayerScreen.tsx
++++ src/screens/learn/CoursePlayerScreen.tsx
+@@ -99,9 +99,10 @@
+       
+       // Wait for the HLS proxy stream to buffer enough before attempting to seek
+-      if (isYoutubeProxy && targetTime > duration && duration < (playerEndTime - videoStartTime) - 5) {
+-         return; // Wait for duration to increase as playlist generates
+-      }
++      // if (isYoutubeProxy && targetTime > duration && duration < (playerEndTime - videoStartTime) - 5) {
++      //    console.log(`[AutoSeek] Waiting for buffer... duration: ${duration}`);
++      //    return; // Wait for duration to increase as playlist generates
++      // }
+ 
+       player.currentTime = targetTime;
+       hasSeekedInit.current = true;

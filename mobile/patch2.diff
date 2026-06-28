@@ -1,0 +1,11 @@
+--- src/screens/learn/CoursePlayerScreen.tsx
++++ src/screens/learn/CoursePlayerScreen.tsx
+@@ -86,7 +86,7 @@
+     // Android ExoPlayer can sometimes ignore seeks if applied while paused or loading.
+     // By waiting until the player is actively playing (player.playing), we ensure the seek is accepted.
+     console.log(`[AutoSeek] Evaluate -> status: ${player?.status}, playing: ${player?.playing}, duration: ${duration}, hasSeeked: ${hasSeekedInit.current}`);
+-    if (player && player.status === 'readyToPlay' && player.playing && !hasSeekedInit.current && duration > 0) {
++    if (player && player.status === 'readyToPlay' && player.playing && !hasSeekedInit.current) {
+       const initialSeek = progressRef.current;
+       console.log(`[AutoSeek] Executing seek to ${initialSeek} (target ${initialSeek - videoStartTime})`);
+       
