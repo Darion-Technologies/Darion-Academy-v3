@@ -119,7 +119,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <ChevronLeft className="size-3.5" />
           Back to Courses
         </Link>
-        <div className="overflow-hidden border bg-card">
+        <div className="overflow-hidden border bg-card rounded-xl shadow-sm">
           {course.thumbnailUrl && (
             <div className="relative aspect-[16/6] min-h-44">
               <Image
@@ -133,7 +133,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             </div>
           )}
           <div className="p-5">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{course.title}</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">{course.title}</h1>
             <div className="mt-4 max-w-2xl">
               <MarkdownRenderer content={course.description} />
             </div>
@@ -143,15 +143,15 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
       {/* Stats row */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="bg-card border border-border p-5">
+        <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Difficulty</p>
           <p className="mt-1.5 font-bold text-foreground">{course.difficulty}</p>
         </div>
-        <div className="bg-card border border-border p-5">
+        <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Duration</p>
           <p className="mt-1.5 font-bold text-foreground">{formatDuration(course.estimatedMinutes)}</p>
         </div>
-        <div className="bg-card border border-border p-5">
+        <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
           <div className="flex justify-between mb-2">
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Progress</p>
             <span className="font-bold text-sm text-foreground">{enrollment?.progressPercent ?? 0}%</span>
@@ -162,7 +162,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
       {/* Completion banner */}
       {isCompleted && (
-        <div className="border border-[var(--success)] bg-[var(--success-light)] p-5 flex flex-wrap items-center gap-3">
+        <div className="border border-[var(--success)] bg-[var(--success-light)] p-5 flex flex-wrap items-center gap-3 rounded-xl shadow-sm">
           <CheckCircle2 className="size-5 text-[var(--success)] shrink-0" />
           <span className="font-bold text-[var(--success)] text-sm">Course completed!</span>
           <div className="ml-auto flex flex-wrap gap-2">
@@ -198,7 +198,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           return (
             <div
               key={module.id}
-              className={`bg-card border border-border overflow-hidden transition-all ${
+              className={`bg-card border border-border overflow-hidden rounded-xl shadow-sm transition-all ${
                 isModuleLocked     ? "opacity-60" : ""
               } ${isModuleInProgress ? "border-primary/30 bg-accent/30" : ""}`}
             >

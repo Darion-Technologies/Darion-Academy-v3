@@ -12,9 +12,9 @@ export function HighlightsRow({ stats, enrollments }: { stats: any, enrollments:
         <h2 className="text-sm font-bold text-foreground">Highlights</h2>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1 */}
-        <Link href="/courses" className="bg-card rounded-md border border-border p-2 sm:p-3 shadow-none relative overflow-hidden block transition-colors hover:bg-muted/40 group">
+        <Link href="/courses" className="bg-card rounded-xl border border-border p-4 shadow-sm relative overflow-hidden block transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-md hover:bg-muted/40 group">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
               <svg className="size-3 sm:size-3.5 text-muted-foreground/70 group-hover:text-primary transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -36,7 +36,7 @@ export function HighlightsRow({ stats, enrollments }: { stats: any, enrollments:
         </Link>
 
         {/* Card 2 */}
-        <Link href="/progress" className="bg-card rounded-md border border-border p-2 sm:p-3 shadow-none block transition-colors hover:bg-muted/40 group">
+        <Link href="/progress" className="bg-card rounded-xl border border-border p-4 shadow-sm block transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-md hover:bg-muted/40 group">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
               <svg className="size-3 sm:size-3.5 text-muted-foreground/70 group-hover:text-primary transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -58,7 +58,7 @@ export function HighlightsRow({ stats, enrollments }: { stats: any, enrollments:
         </Link>
 
         {/* Card 3 */}
-        <Link href="/progress" className="bg-card rounded-md border border-border p-2 sm:p-3 shadow-none block transition-colors hover:bg-muted/40 group">
+        <Link href="/progress" className="bg-card rounded-xl border border-border p-4 shadow-sm block transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-md hover:bg-muted/40 group">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
               <svg className="size-3 sm:size-3.5 text-muted-foreground/70 group-hover:text-primary transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -87,7 +87,7 @@ export function HighlightsRow({ stats, enrollments }: { stats: any, enrollments:
         </Link>
 
         {/* Card 4 */}
-        <Link href="/leaderboard" className="bg-card rounded-md border border-border p-2 sm:p-3 shadow-none block transition-colors hover:bg-muted/40 group">
+        <Link href="/leaderboard" className="bg-card rounded-xl border border-border p-4 shadow-sm block transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-md hover:bg-muted/40 group">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
               <Flame className="size-3 sm:size-3.5 text-muted-foreground/70 group-hover:text-primary transition-colors shrink-0" />

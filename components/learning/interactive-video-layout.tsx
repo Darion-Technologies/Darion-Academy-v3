@@ -25,7 +25,7 @@ export function InteractiveVideoLayout({
   const [currentTime, setCurrentTime] = useState(initialProgress);
 
   return (
-    <div className="border border-border bg-black shadow-sm overflow-hidden">
+    <div className="border border-border bg-black shadow-sm overflow-hidden aspect-video relative w-full rounded-xl">
       <NativeVideoPlayer
           lessonId={lessonId}
           videoUrl={videoUrl}

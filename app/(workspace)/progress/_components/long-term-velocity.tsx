@@ -7,7 +7,7 @@ export function LongTermVelocity({ data }: { data: ProgressAnalyticsData }) {
   const monthlyData = data.monthlyData || [];
   
   return (
-    <div className="bg-card rounded-md border border-border p-3 flex flex-col h-[250px] shadow-none">
+    <div className="bg-card rounded-xl border border-border p-4 flex flex-col h-[250px] shadow-sm">
       <div className="mb-2 flex items-center justify-between border-b border-border pb-2">
         <div>
           <h2 className="text-sm font-bold text-foreground">Long-Term Velocity</h2>

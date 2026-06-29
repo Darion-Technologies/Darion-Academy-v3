@@ -21,9 +21,9 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 pb-4 animate-in fade-in duration-700">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 pb-4 animate-in fade-in duration-700">
       {/* Upcoming Deadlines - Takes up 2 columns */}
-      <div className="lg:col-span-2 bg-card rounded-md border border-border p-3 shadow-none">
+      <div className="lg:col-span-2 bg-card rounded-xl border border-border p-4 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3 sm:gap-2">
           <div 
             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors group"
@@ -64,9 +64,9 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
                   <td className="px-3 py-3 sm:py-2.5 font-medium text-foreground flex flex-col">
                     <div className="flex items-center gap-2">
                       <div className={`size-1.5 shrink-0 rounded-full ${getTypeDotColor(item.type)}`}></div>
-                      <span className="font-bold text-[13px] leading-tight">{item.title}</span>
+                      <span className="font-bold text-[13px] leading-tight truncate max-w-[150px] sm:max-w-[200px] md:max-w-[250px] xl:max-w-[300px]">{item.title}</span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground pl-3.5 mt-0.5 leading-tight">{item.courseName}</span>
+                    <span className="text-[10px] text-muted-foreground pl-3.5 mt-0.5 leading-tight truncate max-w-[150px] sm:max-w-[200px] md:max-w-[250px] xl:max-w-[300px]">{item.courseName}</span>
                   </td>
                   <td className="px-3 py-2.5 text-muted-foreground">{item.dueDate ? format(new Date(item.dueDate), "MMM d, yy") : "-"}</td>
                   <td className="px-3 py-2.5 text-muted-foreground capitalize">{item.type}</td>
@@ -88,7 +88,7 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
       </div>
 
       {/* Focused Course - Takes up 1 column */}
-      <div className="lg:col-span-1 bg-card rounded-md border border-border shadow-none flex flex-col overflow-hidden min-h-[220px]">
+      <div className="lg:col-span-1 bg-card rounded-xl border border-border shadow-sm flex flex-col overflow-hidden min-h-[220px]">
         <FocusCourseCard course={activeCourse} />
       </div>
     </div>

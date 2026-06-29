@@ -15,7 +15,7 @@ export default function HistoryLoading() {
         
         {/* Filters Section (Static HTML to prevent flash) */}
         <div className="flex flex-wrap items-center gap-1.5">
-          <div className="flex items-center bg-card border border-border rounded-md p-1 shadow-sm opacity-70 pointer-events-none">
+          <div className="flex items-center bg-card border border-border rounded-xl p-1 shadow-sm opacity-70 pointer-events-none">
             <Filter className="h-3.5 w-3.5 text-muted-foreground ml-2 mr-1" />
             <div className="h-4 w-[1px] bg-border mx-1"></div>
             <button className="px-3 py-1.5 text-xs font-medium rounded-sm transition-colors bg-primary text-primary-foreground shadow-sm">All Content</button>
@@ -24,7 +24,7 @@ export default function HistoryLoading() {
             <button className="px-3 py-1.5 text-xs font-medium rounded-sm transition-colors bg-transparent text-muted-foreground">Comments</button>
           </div>
           
-          <div className="flex items-center bg-card border border-border rounded-md p-1 shadow-sm opacity-70 pointer-events-none">
+          <div className="flex items-center bg-card border border-border rounded-xl p-1 shadow-sm opacity-70 pointer-events-none">
             <Calendar className="h-3.5 w-3.5 text-muted-foreground ml-2 mr-1" />
             <div className="h-4 w-[1px] bg-border mx-1"></div>
             <button className="px-3 py-1.5 text-xs font-medium rounded-sm transition-colors bg-primary text-primary-foreground shadow-sm">All Time</button>
@@ -36,7 +36,7 @@ export default function HistoryLoading() {
       </div>
 
       {/* History Items List Skeleton */}
-      <div className="bg-card rounded-md border border-border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="divide-y divide-border">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div

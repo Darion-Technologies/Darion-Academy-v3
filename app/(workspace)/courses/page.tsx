@@ -67,7 +67,7 @@ async function CoursesData({ userId }: { userId: string }) {
       </div>
 
       <TabsContent value="All" className="mt-0">
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {enrollments.map(({ course, progressPercent, status }) => (
             <CourseCard key={`all-${course.id}`} course={course} progressPercent={progressPercent} status={status} />
           ))}
@@ -76,7 +76,7 @@ async function CoursesData({ userId }: { userId: string }) {
 
       {Object.entries(enrollmentsByCategory).map(([category, catEnrollments]) => (
         <TabsContent key={category} value={category} className="mt-0">
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {catEnrollments.map(({ course, progressPercent, status }) => (
               <CourseCard key={`${category}-${course.id}`} course={course} progressPercent={progressPercent} status={status} />
             ))}
@@ -89,7 +89,7 @@ async function CoursesData({ userId }: { userId: string }) {
 
 function CourseCard({ course, progressPercent, status }: { course: any; progressPercent: number; status: string }) {
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden border bg-card shadow-[var(--shadow-sm)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40">
+    <div className="group relative flex h-full flex-col overflow-hidden border bg-card rounded-xl shadow-[var(--shadow-sm)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-xl hover:border-primary/40">
       <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       {/* Course header */}
       <div className="gradient-welcome relative min-h-36 overflow-hidden px-6 py-5 text-white">

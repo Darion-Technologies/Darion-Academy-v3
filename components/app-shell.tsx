@@ -221,14 +221,16 @@ export function AppShell({
         )}>
           <div key={pathname} className={cn(
             "animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both",
-            pathname.startsWith("/chat") && "h-[calc(100dvh-2.5rem)] flex flex-col"
+            pathname.startsWith("/chat") && "h-[100dvh] flex flex-col"
           )}>
             {children}
           </div>
         </main>
-        <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-1 backdrop-blur-xl lg:hidden pb-safe">
-          {mobileItems.map((item) => <Link key={item.href} href={item.href} prefetch={true} className={cn("flex min-w-16 min-h-12 flex-col items-center justify-center gap-1 rounded-md px-1 py-2 text-[10px] font-medium active:scale-95 transition-all", isActive(item.href) ? "bg-accent/10 text-accent" : "text-muted-foreground hover:text-foreground hover:bg-accent/5")}>{item.icon && <item.icon className="size-5" />}{item.label}</Link>)}
-        </nav>
+        {!(pathname.startsWith("/chat")) && (
+          <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t bg-card/95 p-1 backdrop-blur-xl lg:hidden pb-safe">
+            {mobileItems.map((item) => <Link key={item.href} href={item.href} prefetch={true} className={cn("flex min-w-16 min-h-12 flex-col items-center justify-center gap-1 rounded-md px-1 py-2 text-[10px] font-medium active:scale-95 transition-all", isActive(item.href) ? "bg-accent/10 text-accent" : "text-muted-foreground hover:text-foreground hover:bg-accent/5")}>{item.icon && <item.icon className="size-5" />}{item.label}</Link>)}
+          </nav>
+        )}
       </div>
     </div>
   );

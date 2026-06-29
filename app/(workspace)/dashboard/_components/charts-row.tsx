@@ -101,9 +101,9 @@ export function ChartsRow({ enrollments, heatmapDays }: { enrollments: Dashboard
   const totalActivity = pieDataRaw.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 mb-3 bg-card rounded-md border border-border shadow-none animate-in fade-in duration-700">
+    <div className="grid grid-cols-1 lg:grid-cols-3 mb-3 bg-card rounded-xl border border-border shadow-sm animate-in fade-in duration-700 gap-0">
       {/* Progress Overview - Takes up 2 columns */}
-      <div className="lg:col-span-2 p-3 border-b lg:border-b-0 lg:border-r border-border">
+      <div className="lg:col-span-2 p-4 border-b lg:border-b-0 lg:border-r border-border">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
           <div>
             <h2 className="text-sm font-bold text-foreground">Progress Overview</h2>
@@ -196,7 +196,7 @@ export function ChartsRow({ enrollments, heatmapDays }: { enrollments: Dashboard
       </div>
 
       {/* Learning Breakdown - Takes up 1 column */}
-      <div className="lg:col-span-1 p-3 flex flex-col">
+      <div className="lg:col-span-1 p-4 flex flex-col">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
             <svg className="size-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">

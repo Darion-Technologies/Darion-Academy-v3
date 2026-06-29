@@ -69,7 +69,7 @@ export function CalendarGrid({ currentDate, data, viewType, activeCalendars }: C
     <div className="flex-1 flex flex-col bg-card border border-border rounded-none overflow-hidden">
       {/* Header Row */}
       {viewType !== "day" && (
-        <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-border bg-muted/20">
+        <div className="hidden lg:grid grid-cols-[60px_repeat(7,1fr)] border-b border-border bg-muted/20">
           <div className="py-1.5 flex items-center justify-center text-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-r border-border">
             GMT +7
           </div>
@@ -86,7 +86,7 @@ export function CalendarGrid({ currentDate, data, viewType, activeCalendars }: C
         
         {/* Current Time Line Indicator (Mock at 11:20 AM) */}
         {viewType !== "month" && (
-          <div className="absolute left-0 right-0 top-[150px] z-20 flex items-center pointer-events-none">
+          <div className="hidden lg:flex absolute left-0 right-0 top-[150px] z-20 items-center pointer-events-none">
             <div className="w-[60px] flex justify-center">
               <span className="bg-foreground text-background text-[8px] font-bold px-1.5 py-0.5 rounded-full">11.20 AM</span>
             </div>
@@ -98,7 +98,7 @@ export function CalendarGrid({ currentDate, data, viewType, activeCalendars }: C
 
         {/* Time Axis Column */}
         {viewType !== "month" && (
-          <div className="w-[60px] shrink-0 border-r border-border flex flex-col bg-card pt-10">
+          <div className="hidden lg:flex w-[60px] shrink-0 border-r border-border flex-col bg-card pt-10">
             {["8 AM", "9 AM", "10 AM", "11 AM", "12 AM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"].map(time => (
               <div key={time} className="h-[60px] flex items-start justify-center pt-2">
                 <span className="text-[10px] font-bold text-muted-foreground">{time}</span>
@@ -110,8 +110,8 @@ export function CalendarGrid({ currentDate, data, viewType, activeCalendars }: C
         {/* Days Grid */}
         <div className={cn(
           "flex-1 grid",
-          viewType === "day" ? "grid-cols-1" : "grid-cols-7",
-          viewType === "month" ? "grid-rows-[auto]" : "grid-rows-1"
+          viewType === "day" ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-7",
+          viewType === "month" ? "grid-rows-[auto]" : "grid-rows-auto lg:grid-rows-1"
         )}>
           {days.map((day, i) => {
           const isToday = isSameDay(day, new Date());
@@ -132,14 +132,15 @@ export function CalendarGrid({ currentDate, data, viewType, activeCalendars }: C
             >
               {/* Day Header */}
               <div className={cn(
-                "flex items-center justify-center gap-2 mb-3 py-2 border-b border-border/50 pb-3",
-                viewType === "month" && "py-0 mb-1 flex-row justify-between border-0"
+                "flex items-center justify-between lg:justify-center gap-2 mb-3 py-2 border-b border-border/50 pb-3",
+                viewType === "month" && "py-2 lg:py-0 mb-1 lg:flex-row lg:justify-between lg:border-0"
               )}>
-                {viewType !== "month" && <span className="text-xs font-bold text-foreground">{format(day, "EEEE")}</span>}
+                <span className="text-xs font-bold text-foreground lg:hidden">{format(day, "EEEE, MMMM d")}</span>
+                {viewType !== "month" && <span className="text-xs font-bold text-foreground hidden lg:inline">{format(day, "EEEE")}</span>}
                 <div className="flex items-center justify-center">
                   <span className={cn(
                     "text-[10px] font-bold flex items-center justify-center h-6 w-6 rounded-full",
-                    viewType === "month" ? "h-5 w-5 rounded-none" : "",
+                    viewType === "month" ? "lg:h-5 lg:w-5 lg:rounded-none" : "",
                     isToday ? "bg-foreground text-background shadow-md" : "bg-muted text-muted-foreground"
                   )}>
                     {format(day, "d")}
@@ -159,10 +160,11 @@ export function CalendarGrid({ currentDate, data, viewType, activeCalendars }: C
                 </div>
               )}
 
-              <div className={cn("flex flex-col flex-1 px-0.5 pb-0.5", viewType === "month" && "max-h-[60px] overflow-hidden", viewType !== "month" && "gap-1.5 mt-2")}>
-                {dayEvents.slice(0, viewType === "month" ? 2 : 10).map(event => (
+              <div className={cn("flex flex-col flex-1 px-0.5 pb-0.5", viewType === "month" && "lg:max-h-[60px] lg:overflow-hidden", viewType !== "month" && "gap-1.5 mt-2")}>
+                {dayEvents.slice(0, viewType === "month" ? (typeof window !== "undefined" && window.innerWidth < 1024 ? dayEvents.length : 2) : 10).map(event => (
                   <EventBadge key={event.id} event={event} compact={viewType === "month"} />
                 ))}
+                <div className="hidden lg:block">
                 {dayEvents.length > (viewType === "month" ? 2 : 10) && (
                   <Popover>
                     <PopoverTrigger asChild>
@@ -183,6 +185,7 @@ export function CalendarGrid({ currentDate, data, viewType, activeCalendars }: C
                     </PopoverContent>
                   </Popover>
                 )}
+                </div>
               </div>
             </div>
           );

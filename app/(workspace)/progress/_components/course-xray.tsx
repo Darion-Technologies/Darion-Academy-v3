@@ -9,7 +9,7 @@ export function CourseXRay({ data }: { data: ProgressAnalyticsData }) {
 
   if (!courses || courses.length === 0) {
     return (
-      <div className="bg-card rounded-md border border-border p-8 flex flex-col items-center justify-center text-center shadow-none h-full">
+      <div className="bg-card rounded-xl border border-border p-8 flex flex-col items-center justify-center text-center shadow-sm h-full">
         <div className="mb-3 flex size-8 items-center justify-center rounded bg-muted">
           <Activity className="size-4 text-muted-foreground" />
         </div>
@@ -23,7 +23,7 @@ export function CourseXRay({ data }: { data: ProgressAnalyticsData }) {
   const activeCourse = courses.find(c => c.status === "IN_PROGRESS") || courses[0];
 
   return (
-    <div className="bg-card rounded-md border border-border p-3 flex flex-col h-full shadow-none">
+    <div className="bg-card rounded-xl border border-border p-4 flex flex-col h-full shadow-sm">
       <div className="mb-4 flex items-center justify-between border-b border-border pb-2">
         <div>
           <h2 className="text-sm font-bold text-foreground flex items-center gap-2">

@@ -25,7 +25,7 @@ export default function DashboardLoading() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-card rounded-md border border-border p-3 shadow-none flex flex-col justify-between h-[88px]">
+            <div key={i} className="bg-card rounded-xl border border-border p-4 shadow-sm flex flex-col justify-between h-[88px]">
               <div className="flex items-center justify-between mb-2">
                 <Skeleton className="h-3 w-28 rounded-full" />
               </div>
@@ -39,7 +39,7 @@ export default function DashboardLoading() {
       </div>
 
       {/* Charts Row Skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 mb-3 bg-card rounded-md border border-border shadow-none">
+      <div className="grid grid-cols-1 lg:grid-cols-3 mb-3 bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {/* Area Chart / Heatmap Skeleton */}
         <div className="lg:col-span-2 p-3 border-b lg:border-b-0 lg:border-r border-border flex flex-col">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">

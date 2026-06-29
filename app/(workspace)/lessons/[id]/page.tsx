@@ -349,8 +349,8 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
               <ArrowLeft className="size-3.5" />
               Back to {lesson.module.course.title}
             </Link>
-            <div className="mt-3 flex items-center gap-3">
-              <h1 className="text-2xl font-bold">{lesson.title}</h1>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">{lesson.title}</h1>
               <Badge>{lesson.type}</Badge>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">{lesson.module.title}</p>

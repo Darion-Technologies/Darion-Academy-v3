@@ -42,11 +42,11 @@ export function EfficiencyMetrics({ data }: { data: ProgressAnalyticsData }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {metrics.map((metric, idx) => (
         <div 
           key={idx} 
-          className="bg-card rounded-md border border-border p-3 shadow-none relative overflow-hidden flex flex-col justify-between h-24 transition-colors hover:bg-muted/40"
+          className="bg-card rounded-xl border border-border p-4 shadow-sm relative overflow-hidden flex flex-col justify-between h-28 transition-colors hover:bg-muted/40"
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">

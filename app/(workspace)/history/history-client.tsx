@@ -62,7 +62,7 @@ export function HistoryClient({ initialData }: HistoryClientProps) {
         </div>
         
         <div className="flex flex-wrap items-center gap-1.5">
-          <div className="flex items-center bg-card border border-border rounded-md p-1 shadow-sm">
+          <div className="flex items-center bg-card border border-border rounded-xl p-1 shadow-sm">
             <Filter className="h-3.5 w-3.5 text-muted-foreground ml-2 mr-1" />
             <div className="h-4 w-[1px] bg-border mx-1"></div>
             {(["ALL", "COURSE", "SHORT", "COMMENT"] as FilterType[]).map((f) => (
@@ -80,7 +80,7 @@ export function HistoryClient({ initialData }: HistoryClientProps) {
             ))}
           </div>
           
-          <div className="flex items-center bg-card border border-border rounded-md p-1 shadow-sm">
+          <div className="flex items-center bg-card border border-border rounded-xl p-1 shadow-sm">
             <Calendar className="h-3.5 w-3.5 text-muted-foreground ml-2 mr-1" />
             <div className="h-4 w-[1px] bg-border mx-1"></div>
             {[
@@ -105,7 +105,7 @@ export function HistoryClient({ initialData }: HistoryClientProps) {
         </div>
       </div>
 
-      <div className="bg-card rounded-md border border-border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <History className="h-10 w-10 mb-4 text-muted-foreground/50" />
