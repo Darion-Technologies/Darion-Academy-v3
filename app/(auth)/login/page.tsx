@@ -18,7 +18,6 @@ export default async function LoginPage() {
         {/* Dark overlay to ensure the text remains readable against the bright backgrounds */}
         <div className="absolute inset-0 bg-black/60" />
         
-        <div className="pointer-events-none absolute -right-24 top-1/4 size-96 border border-white/10 z-10" />
         
         <div className="relative z-10">
           <Brand inverse />
