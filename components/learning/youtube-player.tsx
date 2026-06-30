@@ -157,6 +157,12 @@ export function YouTubePlayer({
             ytPlayerRef.current = event.target;
             setDuration(event.target.getDuration());
             setIsReady(true);
+            
+            // Force disable captions by default, overriding any user YouTube preferences
+            try {
+              event.target.unloadModule("captions");
+            } catch (e) {}
+
             if (initialProgress > 0 && (!videoStartTime || initialProgress > videoStartTime)) {
               event.target.seekTo(initialProgress, true);
             } else if (videoStartTime) {
