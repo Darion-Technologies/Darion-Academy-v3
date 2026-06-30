@@ -109,7 +109,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
   const moduleDeadlineMap = new Map(moduleDeadlines.map(md => [md.moduleId, md.deadlineAt]));
 
   return (
-    <div className="space-y-6 max-w-[900px] mx-auto">
+    <div className="space-y-4 max-w-[900px] mx-auto">
       {/* Back + Course title */}
       <div>
         <Link
@@ -120,8 +120,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           Back to Courses
         </Link>
         <div className="overflow-hidden border bg-card rounded-xl shadow-sm">
-          {course.thumbnailUrl && (
-            <div className="relative aspect-[16/6] min-h-44">
+          {course.thumbnailUrl ? (
+            <div className="relative aspect-[21/9] min-h-[160px] sm:min-h-[200px] flex items-end">
               <Image
                 src={`/api/admin/courses/${course.id}/thumbnail`}
                 alt={`${course.title} thumbnail`}
@@ -129,42 +129,49 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                 className="object-cover"
                 unoptimized
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#10202D]/85 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+              <div className="relative z-10 p-4 sm:p-5 w-full">
+                <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white">{course.title}</h1>
+                <div className="mt-2 text-sm max-w-3xl line-clamp-2 sm:line-clamp-none text-white/90">
+                  <MarkdownRenderer content={course.description} className="prose-invert [&_*]:text-white/90" />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 sm:p-5">
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">{course.title}</h1>
+              <div className="mt-2 text-sm max-w-3xl text-muted-foreground">
+                <MarkdownRenderer content={course.description} />
+              </div>
             </div>
           )}
-          <div className="p-5">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">{course.title}</h1>
-            <div className="mt-4 max-w-2xl">
-              <MarkdownRenderer content={course.description} />
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Stats row */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Difficulty</p>
-          <p className="mt-1.5 font-bold text-foreground">{course.difficulty}</p>
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div className="bg-card border border-border p-3 rounded-lg shadow-sm">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Difficulty</p>
+          <p className="mt-0.5 text-sm font-bold text-foreground">{course.difficulty}</p>
         </div>
-        <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Duration</p>
-          <p className="mt-1.5 font-bold text-foreground">{formatDuration(course.estimatedMinutes)}</p>
+        <div className="bg-card border border-border p-3 rounded-lg shadow-sm">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Duration</p>
+          <p className="mt-0.5 text-sm font-bold text-foreground">{formatDuration(course.estimatedMinutes)}</p>
         </div>
-        <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
-          <div className="flex justify-between mb-2">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Progress</p>
-            <span className="font-bold text-sm text-foreground">{enrollment?.progressPercent ?? 0}%</span>
+        <div className="bg-card border border-border p-3 rounded-lg shadow-sm">
+          <div className="flex justify-between mb-1.5">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Progress</p>
+            <span className="font-bold text-xs text-foreground">{enrollment?.progressPercent ?? 0}%</span>
           </div>
-          <Progress value={enrollment?.progressPercent ?? 0} />
+          <Progress value={enrollment?.progressPercent ?? 0} className="h-1.5" />
         </div>
       </div>
 
       {/* Completion banner */}
       {isCompleted && (
-        <div className="border border-[var(--success)] bg-[var(--success-light)] p-5 flex flex-wrap items-center gap-3 rounded-xl shadow-sm">
-          <CheckCircle2 className="size-5 text-[var(--success)] shrink-0" />
-          <span className="font-bold text-[var(--success)] text-sm">Course completed!</span>
+        <div className="border border-[var(--success)] bg-[var(--success-light)] p-3 flex flex-wrap items-center gap-2 rounded-lg shadow-sm">
+          <CheckCircle2 className="size-4 text-[var(--success)] shrink-0" />
+          <span className="font-bold text-[var(--success)] text-xs">Course completed!</span>
           <div className="ml-auto flex flex-wrap gap-2">
             <Button variant="outline" size="sm" asChild>
               <Link href={`/courses/${slug}`}>
@@ -188,7 +195,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
       )}
 
       {/* Module timeline */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {course.modules.map((module, moduleIndex) => {
           const isModuleCompleted  = moduleCompletionMap.get(module.id) ?? false;
           const prevModuleCompleted = moduleIndex === 0 || (moduleCompletionMap.get(course.modules[moduleIndex - 1].id) ?? false);
@@ -203,11 +210,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               } ${isModuleInProgress ? "border-primary/30 bg-accent/30" : ""}`}
             >
               {/* Module header */}
-              <div className="p-5 pb-3">
-                <div className="flex items-center gap-3">
+              <div className="px-3 py-2">
+                <div className="flex items-center gap-2">
                   {/* Status circle */}
                   <div
-                    className={`flex size-8 shrink-0 items-center justify-center text-sm font-bold ${
+                    className={`flex size-6 shrink-0 items-center justify-center text-xs font-bold rounded-md ${
                       isModuleCompleted
                         ? "bg-[var(--success-light)] text-[var(--success)]"
                         : isModuleLocked
@@ -216,18 +223,18 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     }`}
                   >
                     {isModuleCompleted ? (
-                      <CheckCircle2 className="size-4" />
+                      <CheckCircle2 className="size-3.5" />
                     ) : isModuleLocked ? (
-                      <Lock className="size-3.5" />
+                      <Lock className="size-3" />
                     ) : (
                       moduleIndex + 1
                     )}
                   </div>
 
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-bold text-foreground">
-                        Module {module.order}: {module.title}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <h3 className="text-sm font-bold text-foreground">
+                        Mod {module.order}: {module.title}
                       </h3>
                       {isModuleCompleted  && <Badge variant="success">Complete</Badge>}
                       {isModuleInProgress && <Badge variant="info">In Progress</Badge>}
@@ -246,7 +253,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
                 {/* Lock message */}
                 {isModuleLocked && (
-                  <div className="ml-11 mt-3 bg-muted border border-border p-3 text-xs text-muted-foreground">
+                  <div className="ml-8 mt-2 bg-muted border border-border p-2 text-[10px] text-muted-foreground rounded">
                     <Lock className="mr-1 inline-block size-3" />
                     Complete Module {moduleIndex} ({course.modules[moduleIndex - 1].title}) to unlock.
                   </div>
@@ -271,16 +278,16 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                         key={lesson.id}
                         prefetch={true}
                         href={`/lessons/${lesson.id}`}
-                        className="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent/30"
+                        className="group flex items-center gap-2 px-3 py-2 transition-colors hover:bg-accent/30"
                       >
                         {isDone ? (
-                          <CheckCircle2 className="size-4 shrink-0 text-[var(--success)]" />
+                          <CheckCircle2 className="size-3.5 shrink-0 text-[var(--success)]" />
                         ) : (
-                          <Circle className="size-4 shrink-0 text-border" />
+                          <Circle className="size-3.5 shrink-0 text-border" />
                         )}
 
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                          <p className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
                             {lesson.order}. {lesson.title}
                           </p>
                           <div className="mt-1 flex flex-wrap gap-2">

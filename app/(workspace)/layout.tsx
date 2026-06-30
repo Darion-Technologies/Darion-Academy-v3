@@ -43,13 +43,12 @@ async function fetchSidebarCourses(userId: string) {
 
 export default async function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  await syncCurrentSession(user.id);
+  // Fire and forget session sync so we don't block the layout render
+  void syncCurrentSession(user.id);
   
-  // We don't cache unreadChatCount because chat needs real-time accuracy, but we run it concurrently
-  const [{ unreadCount, hasEnrollment, preference }, unreadChatCount] = await Promise.all([
-    getCachedLayoutData(user.id),
-    getUnreadChatCountAction(),
-  ]);
+  const { unreadCount, hasEnrollment, preference } = await getCachedLayoutData(user.id);
+  
+  // We fetch chat count client-side now to avoid blocking the layout
   
   const activeCoursesPromise = fetchSidebarCourses(user.id);
 
@@ -57,7 +56,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
     <AppShell
       user={{ name: user.name, email: user.email, role: user.role, employeeId: user.employeeId, avatarUrl: user.avatarUrl }}
       unreadCount={unreadCount}
-      unreadChatCount={unreadChatCount}
+      unreadChatCount={0} // Fetched on client
       hasEnrollment={hasEnrollment}
       initialSidebarCollapsed={preference?.sidebarCollapsed ?? false}
       initialTheme={preference?.theme ?? "SYSTEM"}

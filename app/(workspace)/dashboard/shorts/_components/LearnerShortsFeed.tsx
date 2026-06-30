@@ -478,14 +478,26 @@ export function LearnerShortsFeed({
                   className="short-item relative w-full h-full snap-start snap-always bg-black flex flex-col items-center justify-center overflow-hidden"
                 >
                   {/* Video Area */}
-                  {isActive ? (
+                  {/* Always show thumbnail behind the iframe so the screen is never black while loading */}
+                  <div className="absolute inset-0 w-full h-full z-0">
+                    {short.thumbnailUrl && (
+                      <img src={short.thumbnailUrl} alt="" className="w-full h-full object-cover opacity-80" />
+                    )}
+                    {!isActive && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <Play className="w-16 h-16 text-white/60 drop-shadow-lg" />
+                      </div>
+                    )}
+                  </div>
+
+                  {isActive && (
                     <>
                       <iframe
                         src={`https://www.youtube-nocookie.com/embed/${short.youtubeVideoId}?autoplay=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=${short.youtubeVideoId}&playsinline=1`}
                         title={short.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
-                        className="w-full h-full absolute inset-0 object-cover pointer-events-none lg:pointer-events-auto scale-[1.2] lg:scale-100"
+                        className="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none lg:pointer-events-auto scale-[1.2] lg:scale-100"
                       />
                       {/* Interaction Overlay to ensure UI shows on tap/hover (Mobile Only) */}
                       <div 
@@ -498,15 +510,6 @@ export function LearnerShortsFeed({
                         }}
                       />
                     </>
-                  ) : (
-                    <div className="relative w-full h-full absolute inset-0">
-                      {short.thumbnailUrl && (
-                        <img src={short.thumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover opacity-50" />
-                      )}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Play className="w-16 h-16 text-white/30" />
-                      </div>
-                    </div>
                   )}
 
                   {/* Right Action Bar Overlay */}
@@ -521,14 +524,14 @@ export function LearnerShortsFeed({
                       onClick={() => handleToggleBookmark(short.id)}
                       className="flex flex-col items-center gap-1.5 group"
                     >
-                      <div className="p-3 rounded-full lg:rounded-none bg-black/40 lg:bg-black/50 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-black/60 lg:group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                         {isBookmarked ? (
-                          <Heart className="w-6 h-6 text-red-500 fill-red-500" />
+                          <Heart className="w-7 h-7 text-red-500 fill-red-500 drop-shadow-md" />
                         ) : (
-                          <Heart className="w-6 h-6 text-white" />
+                          <Heart className="w-7 h-7 text-white drop-shadow-md" />
                         )}
                       </div>
-                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Save</span>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">Save</span>
                     </button>
 
                     {/* Share Button */}
@@ -539,10 +542,10 @@ export function LearnerShortsFeed({
                       }}
                       className="flex flex-col items-center gap-1.5 group mt-1"
                     >
-                      <div className="p-3 rounded-full lg:rounded-none bg-black/40 lg:bg-black/50 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-black/60 lg:group-hover:bg-black/80 transition-all group-active:scale-95">
-                        <Share2 className="w-6 h-6 text-white fill-white/20" />
+                      <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        <Share2 className="w-7 h-7 text-white fill-white/20 drop-shadow-md" />
                       </div>
-                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Share</span>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">Share</span>
                     </button>
 
                     {/* Transcript (Mobile Only) */}
@@ -550,10 +553,10 @@ export function LearnerShortsFeed({
                       onClick={loadTranscriptMobile}
                       className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
                     >
-                      <div className="p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10 group-hover:bg-black/60 transition-all group-active:scale-95">
-                        <AlignLeft className="w-6 h-6 text-white fill-white/20" />
+                      <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        <AlignLeft className="w-7 h-7 text-white fill-white/20 drop-shadow-md" />
                       </div>
-                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Transcript</span>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">Transcript</span>
                     </button>
 
                     {/* Notes (Mobile Only) */}
@@ -561,10 +564,10 @@ export function LearnerShortsFeed({
                       onClick={loadNotesMobile}
                       className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
                     >
-                      <div className="p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10 group-hover:bg-black/60 transition-all group-active:scale-95">
-                        <PenLine className="w-6 h-6 text-white fill-white/20" />
+                      <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        <PenLine className="w-7 h-7 text-white fill-white/20 drop-shadow-md" />
                       </div>
-                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Notes</span>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">Notes</span>
                     </button>
 
                     {/* Comments (Mobile Only) */}
@@ -572,10 +575,10 @@ export function LearnerShortsFeed({
                       onClick={loadCommentsMobile}
                       className="flex lg:hidden flex-col items-center gap-1.5 group relative mt-1"
                     >
-                      <div className="p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10 group-hover:bg-black/60 transition-all group-active:scale-95">
-                        <MessageSquare className="w-6 h-6 text-white fill-white/20" />
+                      <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        <MessageSquare className="w-7 h-7 text-white fill-white/20 drop-shadow-md" />
                       </div>
-                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Discuss</span>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">Discuss</span>
                     </button>
 
                     {/* Watched */}
@@ -583,14 +586,14 @@ export function LearnerShortsFeed({
                       onClick={() => handleManualMarkWatched(short.id)}
                       className="flex flex-col items-center gap-1.5 group"
                     >
-                      <div className="p-3 rounded-full lg:rounded-none bg-black/40 lg:bg-black/50 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-black/60 lg:group-hover:bg-black/80 transition-all group-active:scale-95">
+                      <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                         {isWatched ? (
-                          <CheckCircle2 className="w-6 h-6 text-green-400 fill-green-400/20" />
+                          <CheckCircle2 className="w-7 h-7 text-green-400 fill-green-400/20 drop-shadow-md" />
                         ) : (
-                          <CheckCircle2 className="w-6 h-6 text-white" />
+                          <CheckCircle2 className="w-7 h-7 text-white drop-shadow-md" />
                         )}
                       </div>
-                      <span className="text-[11px] text-white font-semibold drop-shadow-md">Done</span>
+                      <span className="text-[11px] text-white font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">Done</span>
                     </button>
 
                     {/* Quiz (If exists) */}
@@ -599,14 +602,14 @@ export function LearnerShortsFeed({
                         onClick={() => setQuizOpen(true)}
                         className="flex flex-col items-center gap-1.5 group relative mt-1"
                       >
-                        <div className="p-3 rounded-full lg:rounded-none bg-primary/90 backdrop-blur-md border border-white/20 lg:border-transparent group-hover:bg-primary transition-all shadow-[0_0_20px_rgba(var(--primary),0.6)] group-active:scale-95">
-                          <FileQuestion className="w-6 h-6 text-primary-foreground fill-primary-foreground/20" />
+                        <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_0_15px_rgba(var(--primary),0.8)]">
+                          <FileQuestion className="w-7 h-7 text-primary fill-primary/20 drop-shadow-md" />
                         </div>
-                        <span className="text-[11px] text-white font-semibold drop-shadow-md">Quiz</span>
+                        <span className="text-[11px] text-white font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">Quiz</span>
                         
                         {/* Bouncing notification dot if not watched yet */}
                         {!isWatched && (
-                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 animate-bounce border-2 border-black" />
+                          <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-red-500 animate-bounce border-2 border-black" />
                         )}
                       </button>
                     )}
@@ -618,8 +621,8 @@ export function LearnerShortsFeed({
                       rel="noreferrer"
                       className="flex flex-col items-center gap-1.5 group mt-3"
                     >
-                      <div className="p-2.5 rounded-full lg:rounded-none bg-white/10 backdrop-blur-md border border-white/10 lg:border-transparent group-hover:bg-white/20 transition-all group-active:scale-95">
-                        <ExternalLink className="w-5 h-5 text-white" />
+                      <div className="p-2 transition-all group-active:scale-95 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        <ExternalLink className="w-6 h-6 text-white drop-shadow-md" />
                       </div>
                     </a>
 

@@ -7,7 +7,7 @@ export function HighlightsRow({ stats, enrollments }: { stats: any, enrollments:
   const lessonsCompleted = enrollments.reduce((acc, e) => acc + e.completedLessons, 0);
 
   return (
-    <div className="mb-3 animate-in fade-in duration-700">
+    <div className="mb-3">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-bold text-foreground">Highlights</h2>
       </div>

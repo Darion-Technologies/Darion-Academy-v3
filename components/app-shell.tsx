@@ -219,8 +219,8 @@ export function AppShell({
           "flex-1 w-full",
           pathname.startsWith("/chat") ? "p-0 max-w-none" : "container-responsive pb-20 pt-4"
         )}>
-          <div key={pathname} className={cn(
-            "animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both",
+          <div className={cn(
+            "w-full h-full",
             pathname.startsWith("/chat") && "h-[100dvh] flex flex-col"
           )}>
             {children}

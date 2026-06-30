@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import { ChevronDown, Search, ChevronRight, LineChart, Grid3x3 } from "lucide-react";
 import type { DashboardEnrollment } from "@/lib/dashboard-data";
@@ -100,8 +100,10 @@ export function ChartsRow({ enrollments, heatmapDays }: { enrollments: Dashboard
   const pieData = pieDataRaw.length > 0 ? pieDataRaw : [{ name: 'No Activity', value: 1, color: '#e2e8f0' }];
   const totalActivity = pieDataRaw.reduce((acc, curr) => acc + curr.value, 0);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 mb-3 bg-card rounded-xl border border-border shadow-sm animate-in fade-in duration-700 gap-0">
+    <div className="grid grid-cols-1 lg:grid-cols-3 mb-3 bg-card rounded-xl border border-border shadow-sm gap-0">
       {/* Progress Overview - Takes up 2 columns */}
       <div className="lg:col-span-2 p-4 border-b lg:border-b-0 lg:border-r border-border">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">

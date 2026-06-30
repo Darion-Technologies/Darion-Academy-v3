@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { Search, Filter, Hourglass } from "lucide-react";
 import type { PendingAction, DashboardEnrollment } from "@/lib/dashboard-data";
 import { format } from "date-fns";
@@ -21,7 +22,7 @@ export function BottomWidgetsRow({ pendingActions, activeCourse }: { pendingActi
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 pb-4 animate-in fade-in duration-700">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 pb-4">
       {/* Upcoming Deadlines - Takes up 2 columns */}
       <div className="lg:col-span-2 bg-card rounded-xl border border-border p-4 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3 sm:gap-2">

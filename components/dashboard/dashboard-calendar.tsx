@@ -121,7 +121,7 @@ export function DashboardCalendar({ heatmapDays, pendingActions }: Props) {
                       setHoveredCell(null);
                     }}
                     className={cn(
-                      "relative flex flex-col items-center justify-start bg-card p-1 transition-colors min-h-[40px] sm:min-h-[48px] rounded-md border border-border/50",
+                      "calendar-cell relative flex flex-col items-center justify-start bg-card p-1 transition-colors min-h-[40px] sm:min-h-[48px] rounded-md border border-border/50",
                       !isCurrentMonth && "text-muted-foreground opacity-50 bg-secondary/10 border-transparent",
                       isCurrentMonth && "hover:bg-secondary/50",
                       isTodayDate && "font-bold text-primary border-primary/50"

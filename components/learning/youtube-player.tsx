@@ -248,13 +248,14 @@ export function YouTubePlayer({
     if (ytPlayerRef.current) {
       try {
         if (captionsEnabled) {
-          ytPlayerRef.current.unloadModule("captions");
+          // Turn off captions instantly by clearing the track instead of fully unloading the module
+          ytPlayerRef.current.setOption("captions", "track", {});
         } else {
           ytPlayerRef.current.loadModule("captions");
           ytPlayerRef.current.setOption("captions", "track", { languageCode: "en" });
         }
       } catch (e) {
-        console.error("Captions module not available", e);
+        console.error("Captions toggle failed", e);
       }
       setCaptionsEnabled(!captionsEnabled);
     }
@@ -373,19 +374,11 @@ export function YouTubePlayer({
         <div className="absolute inset-0 size-full border-0 pointer-events-none" ref={playerRoot} />
         
         {/* Custom Overlay (Play state) */}
-        {!isPlaying ? (
-          <div 
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md cursor-pointer transition-all hover:bg-black/50"
-            onClick={togglePlay}
-          >
-            <div className="flex flex-col items-center gap-5 transform transition-transform duration-300 group-hover:scale-105">
-              <div className="flex h-20 w-20 items-center justify-center bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-110 hover:bg-primary-hover">
-                <Play className="h-8 w-8 ml-1 fill-white" />
-              </div>
-              <span className="text-white font-medium tracking-wide drop-shadow-md">
-                {isReady ? "Click to Play Video" : "Loading Player..."}
-              </span>
-            </div>
+        {!isReady ? (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md">
+            <span className="text-white font-medium tracking-wide drop-shadow-md">
+              Loading Player...
+            </span>
           </div>
         ) : (
           <div 
@@ -396,7 +389,7 @@ export function YouTubePlayer({
 
         {/* Custom Controls (Active when playing or ready) */}
         {isReady && (
-          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent pt-10 pb-2 px-4 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-2 z-20">
+          <div className={`absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent pt-10 pb-2 px-4 transition-opacity flex flex-col gap-2 z-20 ${!isPlaying ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
             {/* Timeline scrubber */}
             <input
               type="range"

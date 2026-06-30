@@ -10,23 +10,22 @@ export const metadata = {
 export default async function LearnerShortsPage() {
   const user = await requireUser();
   
-  // Get all approved shorts with quizzes included
-  const shorts = await prisma.youTubeShort.findMany({
-    where: { approved: true },
-    orderBy: { createdAt: "desc" },
-    include: { quizzes: true }
-  });
-  
-  // Get user progress and bookmarks for shorts
-  const progress = await prisma.shortProgress.findMany({
-    where: { userId: user.id },
-    select: { shortId: true, watched: true }
-  });
-  
-  const bookmarks = await prisma.shortBookmark.findMany({
-    where: { userId: user.id },
-    select: { shortId: true }
-  });
+  // Run all database queries in parallel
+  const [shorts, progress, bookmarks] = await Promise.all([
+    prisma.youTubeShort.findMany({
+      where: { approved: true },
+      orderBy: { createdAt: "desc" },
+      include: { quizzes: true }
+    }),
+    prisma.shortProgress.findMany({
+      where: { userId: user.id },
+      select: { shortId: true, watched: true }
+    }),
+    prisma.shortBookmark.findMany({
+      where: { userId: user.id },
+      select: { shortId: true }
+    })
+  ]);
 
   const watchedSet = new Set(progress.filter(p => p.watched).map(p => p.shortId));
   const bookmarkedSet = new Set(bookmarks.map(b => b.shortId));

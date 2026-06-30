@@ -11,7 +11,7 @@ function buildDatasourceUrl() {
   const base = process.env.DATABASE_URL ?? "";
   if (!base || base.includes("connection_limit=")) return base;
   const sep = base.includes("?") ? "&" : "?";
-  return `${base}${sep}connection_limit=2&pool_timeout=15`;
+  return `${base}${sep}connection_limit=10&pool_timeout=15`;
 }
 
 export const prisma =

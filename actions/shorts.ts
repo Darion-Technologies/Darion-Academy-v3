@@ -164,18 +164,23 @@ export async function fetchAutoTranscriptAction(shortId: string, videoId: string
       apiKey: process.env.DEEPSEEK_API_KEY,
     });
 
-    const completion = await openai.chat.completions.create({
-      messages: [
-        { 
-          role: "system", 
-          content: "You are an expert technical writer. Format this raw video transcript into a highly readable, structured Markdown study guide. Fix grammar, add headings, and organize with paragraphs. CRITICAL: Whenever programming code or syntax is discussed or implied, you MUST reconstruct the code and wrap it in proper fenced Markdown code blocks (e.g., ```javascript). Do not output any preamble, just return the final markdown content." 
-        },
-        { role: "user", content: rawText }
-      ],
-      model: "deepseek-chat",
-    });
-
-    const formattedText = completion.choices[0].message.content || rawText;
+    let formattedText = rawText;
+    try {
+      const completion = await openai.chat.completions.create({
+        messages: [
+          { 
+            role: "system", 
+            content: "You are an expert technical writer. Format this raw video transcript into a highly readable, structured Markdown study guide. Fix grammar, add headings, and organize with paragraphs. CRITICAL: Whenever programming code or syntax is discussed or implied, you MUST reconstruct the code and wrap it in proper fenced Markdown code blocks (e.g., ```javascript). Do not output any preamble, just return the final markdown content." 
+          },
+          { role: "user", content: rawText }
+        ],
+        model: "deepseek-chat",
+      });
+      formattedText = completion.choices[0].message.content || rawText;
+    } catch (aiError: any) {
+      console.warn("AI formatting failed (e.g., insufficient balance), falling back to raw transcript.", aiError.message);
+      // Fall back to rawText, no need to throw
+    }
 
     // Save to database so it's only processed once
     await prisma.youTubeShort.update({
