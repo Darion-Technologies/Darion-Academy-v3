@@ -57,14 +57,14 @@ export default async function QuizResultPage({
       </Link>
 
       {/* Score card */}
-      <Card className={`overflow-hidden ${isPassed ? "border-emerald-200" : "border-red-200"}`}>
-        <div className={`px-8 py-10 text-center ${isPassed ? "bg-gradient-to-b from-emerald-50 to-white" : "bg-gradient-to-b from-red-50 to-white"}`}>
+      <Card className={`overflow-hidden ${isPassed ? "border-emerald-200 dark:border-emerald-900/50" : "border-red-200 dark:border-red-900/50"}`}>
+        <div className={`px-8 py-10 text-center ${isPassed ? "bg-gradient-to-b from-emerald-50 to-white dark:from-emerald-950/30 dark:to-card" : "bg-gradient-to-b from-red-50 to-white dark:from-red-950/30 dark:to-card"}`}>
           {/* Icon */}
-          <div className={`mx-auto mb-4 flex size-16 items-center justify-center ${isPassed ? "bg-emerald-100" : "bg-red-100"}`}>
+          <div className={`mx-auto mb-4 flex size-16 items-center justify-center rounded-full ${isPassed ? "bg-emerald-100 dark:bg-emerald-900/50" : "bg-red-100 dark:bg-red-900/50"}`}>
             {isPassed ? (
-              <Trophy className="size-8 text-emerald-600" />
+              <Trophy className="size-8 text-emerald-600 dark:text-emerald-500" />
             ) : (
-              <XCircle className="size-8 text-red-500" />
+              <XCircle className="size-8 text-red-500 dark:text-red-500" />
             )}
           </div>
 
@@ -74,9 +74,7 @@ export default async function QuizResultPage({
           </Badge>
 
           {/* Score */}
-          <p className="mt-6 text-6xl font-extrabold tracking-tight animate-[count-up_0.5s_ease-out]"
-            style={{ color: isPassed ? "#065f46" : "#991b1b" }}
-          >
+          <p className={`mt-6 text-6xl font-extrabold tracking-tight animate-[count-up_0.5s_ease-out] ${isPassed ? "text-emerald-800 dark:text-emerald-400" : "text-red-800 dark:text-red-500"}`}>
             {attempt.score}%
           </p>
 
@@ -90,20 +88,20 @@ export default async function QuizResultPage({
 
           <div className="mt-6 flex justify-center">
             {isPassed ? (
-              <div className="w-full max-w-sm border border-emerald-200 bg-emerald-50/50 px-4 py-3">
-                <p className="text-sm font-semibold text-emerald-800">
+              <div className="w-full max-w-sm border border-emerald-200 bg-emerald-50/50 px-4 py-3 dark:border-emerald-900/50 dark:bg-emerald-900/20">
+                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-400">
                   Congratulations on passing! 🎉
                 </p>
-                <p className="mt-1 text-xs italic text-emerald-700/90">
+                <p className="mt-1 text-xs italic text-emerald-700/90 dark:text-emerald-400/90">
                   &quot;Success is the sum of small efforts, repeated day in and day out.&quot;
                 </p>
               </div>
             ) : (
-              <div className="w-full max-w-sm border border-red-200 bg-red-50/50 px-4 py-3">
-                <p className="text-sm font-semibold text-red-800">
+              <div className="w-full max-w-sm border border-red-200 bg-red-50/50 px-4 py-3 dark:border-red-900/50 dark:bg-red-900/20">
+                <p className="text-sm font-semibold text-red-800 dark:text-red-400">
                   Keep trying, you can do it! 💪
                 </p>
-                <p className="mt-1 text-xs italic text-red-700/90">
+                <p className="mt-1 text-xs italic text-red-700/90 dark:text-red-400/90">
                   &quot;Our greatest glory is not in never falling, but in rising every time we fall.&quot;
                 </p>
               </div>
@@ -147,7 +145,7 @@ export default async function QuizResultPage({
               <div
                 key={question.id}
                 className={`border p-4 ${
-                  isCorrect ? "border-emerald-200 bg-emerald-50/50" : "border-red-200 bg-red-50/50"
+                  isCorrect ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-900/20" : "border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-900/20"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -164,13 +162,13 @@ export default async function QuizResultPage({
 
                     <div className="mt-2 space-y-1 text-sm">
                       {answer && (
-                        <p className={isCorrect ? "text-emerald-700" : "text-red-700"}>
-                          <span className="font-medium">Your answer:</span> {answer.answer || "(no answer)"}
+                        <p className={isCorrect ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}>
+                          <span className="font-medium text-foreground">Your answer:</span> {answer.answer || "(no answer)"}
                         </p>
                       )}
                       {!isCorrect && (
-                        <p className="text-emerald-700">
-                          <span className="font-medium">Correct answer:</span> {question.correctAnswer}
+                        <p className="text-emerald-700 dark:text-emerald-400">
+                          <span className="font-medium text-foreground">Correct answer:</span> {question.correctAnswer}
                         </p>
                       )}
                     </div>

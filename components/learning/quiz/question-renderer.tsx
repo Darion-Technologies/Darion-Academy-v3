@@ -11,9 +11,24 @@ type QuestionRendererProps = {
 export function QuestionRenderer({ question, answer, onAnswerChange }: QuestionRendererProps) {
   
   if (question.type === "MULTIPLE_CHOICE") {
+    let options: string[] = [];
+    if (Array.isArray(question.options)) {
+      options = question.options;
+    } else if (typeof question.options === 'string') {
+      try {
+        options = JSON.parse(question.options);
+      } catch (e) {
+        if (question.options.includes('\n')) {
+          options = question.options.split('\n').map((s: string) => s.trim()).filter(Boolean);
+        } else {
+          options = question.options.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
+      }
+    }
+
     return (
       <div className="space-y-3">
-        {(question.options as string[]).map((option) => {
+        {options.map((option) => {
           const isSelected = answer === option;
           return (
             <label 

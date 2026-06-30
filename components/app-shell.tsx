@@ -121,7 +121,7 @@ export function AppShell({
         "fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 lg:flex lg:flex-col antialiased",
         collapsed ? "w-[64px]" : "w-[200px]",
       )}>
-        <div className={cn("flex h-10 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "px-4")}>
+        <div className={cn("flex h-14 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "px-4")}>
           <Brand collapsed={collapsed} />
         </div>
         <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-6">
@@ -196,7 +196,7 @@ export function AppShell({
 
       <div data-app-content className={cn("flex min-h-screen flex-col transition-[padding] duration-200", collapsed ? "lg:pl-[64px]" : "lg:pl-[200px]")}>
         {!(pathname === "/dashboard" || pathname.startsWith("/chat")) && (
-          <header className="sticky top-0 z-30 flex h-auto min-h-12 pt-safe items-center gap-2 lg:gap-3 border-b border-border bg-card/95 px-2 lg:px-4 shadow-none backdrop-blur-xl sm:px-4 py-1">
+          <header className="sticky top-0 z-30 flex h-14 pt-safe items-center gap-2 lg:gap-3 border-b border-border bg-card/95 px-2 lg:px-4 shadow-none backdrop-blur-xl sm:px-4">
             <Button variant="ghost" size="icon" className="relative z-40 shrink-0 touch-manipulation lg:hidden h-10 w-10" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu className="size-5" /></Button>
             <div className="lg:hidden"><Brand /></div>
             <div className="hidden min-w-0 max-w-xl flex-1 lg:block"><SearchBar /></div>
@@ -353,7 +353,7 @@ function MobileDrawer({ groups, activeCoursesPromise, user, close, pathname, unr
   return <div className="fixed inset-0 z-50 lg:hidden">
     <button className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={close} aria-label="Close navigation" />
     <aside className="relative flex h-full w-[240px] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl antialiased">
-      <div className="flex h-10 items-center justify-between border-b border-sidebar-border px-4"><Brand /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><X /></Button></div>
+      <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-4"><Brand /><Button variant="ghost" size="icon-xs" onClick={close} className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><X /></Button></div>
       <nav className="flex-1 overflow-y-auto p-2">
         {groups.map((group) => <div key={group.label} className="mb-4"><p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--sidebar-muted)]">{group.label}</p><div className="space-y-0.5">{group.items.map((item) => <NavLink key={item.href} item={item} active={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && item.href !== "/mentor" && pathname.startsWith(item.href))} collapsed={false} onClick={close} unreadChatCount={unreadChatCount} unreadCount={unreadCount} pathname={pathname} />)}</div></div>)}
         {activeCoursesPromise && (

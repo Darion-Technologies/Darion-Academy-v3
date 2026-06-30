@@ -19,7 +19,8 @@
     "supabase:check-auth": "node --env-file=.env --import tsx scripts/check-supabase-auth.ts",
     "db:appearance-migrate": "node --env-file=.env --import tsx scripts/apply-appearance-migration.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "clean": "rm -rf .next node_modules && npm install"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -167,7 +167,20 @@ export function QuizClient({ quiz, canAttempt }: QuizProps) {
       const key = e.key.toLowerCase();
       
       if (currentQ.type === "MULTIPLE_CHOICE" && currentQ.options) {
-        const options = currentQ.options as string[];
+        let options: string[] = [];
+        if (Array.isArray(currentQ.options)) {
+          options = currentQ.options;
+        } else if (typeof currentQ.options === 'string') {
+          try {
+            options = JSON.parse(currentQ.options);
+          } catch (e) {
+            if (currentQ.options.includes('\n')) {
+              options = currentQ.options.split('\n').map((s: string) => s.trim()).filter(Boolean);
+            } else {
+              options = currentQ.options.split(',').map((s: string) => s.trim()).filter(Boolean);
+            }
+          }
+        }
         if (key === "1" && options[0]) handleAnswerChange(currentQ.id, options[0]);
         if (key === "2" && options[1]) handleAnswerChange(currentQ.id, options[1]);
         if (key === "3" && options[2]) handleAnswerChange(currentQ.id, options[2]);

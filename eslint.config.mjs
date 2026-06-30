@@ -22,6 +22,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "generated/**",
     "next-env.d.ts",
+    "scripts/**",
+    "youtube-proxy/**"
   ]),
 ]);
 
