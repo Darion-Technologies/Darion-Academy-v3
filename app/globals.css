@@ -135,7 +135,7 @@
   * { @apply border-border outline-ring/50; }
   html { background: var(--background); }
   body {
-    @apply min-h-screen bg-background text-foreground;
+    @apply min-h-screen bg-background text-foreground leading-tight;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
