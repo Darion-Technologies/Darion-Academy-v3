@@ -325,6 +325,34 @@ export async function addQuestionAction(formData: FormData) {
   revalidatePath("/admin/quizzes");
 }
 
+export async function updateQuestionAction(formData: FormData) {
+  const admin = await requireRole("ADMIN");
+  const questionId = String(formData.get("questionId") ?? "");
+  const type = String(formData.get("type") ?? "") as "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER";
+  const prompt = String(formData.get("prompt") ?? "");
+  const correctAnswer = String(formData.get("correctAnswer") ?? "");
+  const points = Number(formData.get("points") ?? 1);
+  const optionsRaw = String(formData.get("options") ?? "");
+  const options = optionsRaw ? optionsRaw.split("\n").map((item) => item.trim()).filter(Boolean) : undefined;
+  
+  if (!prompt || !correctAnswer) throw new Error("Question and answer are required.");
+  
+  const question = await prisma.question.update({
+    where: { id: questionId },
+    data: {
+      type,
+      prompt,
+      correctAnswer,
+      points,
+      options: type === "MULTIPLE_CHOICE" ? options : [],
+    },
+  });
+  await prisma.activityLog.create({
+    data: { actorId: admin.id, action: "Updated quiz question", entityType: "Question", entityId: question.id },
+  });
+  revalidatePath("/admin/quizzes");
+}
+
 export async function updateQuizSettingsAction(formData: FormData) {
   const admin = await requireRole("ADMIN");
   const quizId = String(formData.get("quizId") ?? "");
